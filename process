@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+##############################################################################
+#
+# Script for munging Unicode character data into a form suitable for UCF
+#
+
+use strict;
+use warnings;
+
+use Data::Dumper;
+use JSON::XS;
+
+my $filename = 'unicode-source-data/UnicodeData.txt';
+
+my @col_names = qw(
+  code
+  description
+  cat_a
+  comb_flag
+  cat_b
+  decomposition
+  digit_a
+  digit_b
+  numeric_value
+  paired
+  alias
+  filler
+  uppercase_a
+  lowercase
+  uppercase_b
+);
+
+open my $fh, '<', $filename or die "open($filename): $!";
+
+my @data;
+while(<$fh>) {
+    chomp;
+    my @val = split /;/, $_, scalar(@col_names);
+    my %c;
+    @c{@col_names} = map { defined($_) ? $_ : '' } @val;
+    my $desc = $c{description};
+    if($desc =~ s/ WITH / /) {
+        $c{alias} = '' if $c{alias} eq $desc;
+    }
+    print "$c{code}\t$c{description}\t$c{alias}\n";
+}
+
+#print encode_json(\@data);
+
