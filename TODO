@@ -1,0 +1,6 @@
+* autocomplete positioning patch: http://dev.jqueryui.com/changeset/3840
+* fix wrpa-around at FFFF -> 0000
+* search via regex (?)
+* fly-out code-chart menu
+* links to PDFs
+* add UTF-8 bytes support

@@ -1,0 +1,132 @@
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Liberation Sans, Arial, sans-serif;
+}
+
+h1 {
+  margin: 0;
+  padding: 5px;
+  text-align: center;
+  color: #efefef;
+  background-color: #666666;
+  font-size: 40px;
+}
+
+#my-ucf {
+/*
+  width: 700px;
+  margin: 0 auto;
+*/
+  margin: 0 100px;
+  padding: 3em 0;
+  position: relative;
+}
+
+form.ucf-app div.search-wrap {
+  margin: 3em 0 1.0em 0;
+  position: relative;
+}
+
+form.ucf-app div.search-wrap label {
+  position: relative;
+  top: -50px;
+}
+
+form.ucf-app div.search-wrap input.search {
+  width: 100%;
+  font-size: 120%;
+  padding-left: 20px;
+  position: relative;
+  top: -50px;
+}
+
+form.ucf-app div.search-wrap input.search.busy {
+  background: #eeeeee url(throbber.gif) no-repeat scroll 3px 5px;
+}
+
+form.ucf-app div.char-wrap {
+  margin: 1em 0;
+}
+
+form.ucf-app div.char-wrap button.prev-char {
+  padding: 0;
+  height: 2.8em;
+  position: relative;
+  top: -0.2em;
+}
+
+form.ucf-app div.char-wrap button.next-char {
+  padding: 0;
+  height: 2.8em;
+  position: relative;
+  top: -0.2em;
+}
+
+form.ucf-app input.char {
+  font-size: 160%;
+  width: 1.2em;
+  text-align: center;
+}
+
+form.ucf-app div.char-samples {
+  display: inline;
+  padding-left: 1em;
+  color: #cccccc;
+}
+
+form.ucf-app div.char-samples:hover {
+  color: #444444;
+}
+
+form.ucf-app div.char-samples ul {
+  visibility: hidden;
+  margin: 0 0 0 1em;
+  padding: 0;
+  list-style: none;
+  display: inline;
+}
+
+form.ucf-app div.char-samples:hover ul {
+  visibility: visible;
+}
+
+form.ucf-app div.char-samples ul li {
+  margin: none;
+  padding: 0 0.3em;
+  list-style: none;
+  display: inline;
+}
+
+form.ucf-app div.char-data table {
+  margin: 0.4em 0;
+  border-collapse: collapse;
+}
+
+form.ucf-app div.char-data table th {
+  text-align: left;
+  vertical-align: top;
+}
+
+form.ucf-app div.char-data span.alias {
+  font-size: 90%;
+  font-style: italic;
+  color: #666666;
+}
+
+form.ucf-app div.char-data table th, form.ucf-app div.char-data table td {
+  border: 1px solid #dddddd;
+  padding: 4px 10px;
+}
+
+span.code-point {
+  width: 6em;
+}
+
+span.code-sample {
+  width: 3em;
+  text-align: center;
+  font-weight: bold;
+}
+
