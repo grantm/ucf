@@ -37,11 +37,12 @@
             delay: 900,
             minLength: 1,
             source: function(request, response) {
-                console.log("Seaching for: '" + request.term + "'");
                 var target = request.term.toUpperCase().replace(/  +/g, ' ').replace(/(^ | $)/g, '');
                 if(target != '') {
                     inp.addClass('busy');
-                    setTimeout(function() { execute_search(target, app, response); }, 2 );
+                    setTimeout(function() {
+                        execute_search(target, app, response, inp);
+                    }, 2 );
                 }
             },
             open: function(e, ui) {
@@ -118,7 +119,7 @@
         return info;
     }
 
-    function execute_search(target, app, response) {
+    function execute_search(target, app, response, inp) {
         var result = [ ];
         var desc = app.char_desc;
         var max_code = 999999;
