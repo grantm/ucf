@@ -52,7 +52,6 @@
                 return false;
             },
             select: function(e, ui) {
-                var code = ui.item.value;
                 var char_inp = $(app).find('input.char');
                 char_inp.val(ui.item.character)
                 char_changed(app, char_inp);
@@ -131,17 +130,16 @@
             char = chart[code];
             if(
                 char.description.indexOf(target) >= 0
-                || char.alias.indexOf(target) >= 0
+                || (char.alias && char.alias.indexOf(target) >= 0)
             ) {
                 character = codepoint_to_string(hex2dec(code));
                 div = $('<div />').text(char.description);
-                if(char.alias && char.alias.length > 0) {
+                if(char.alias) {
                     div.append( $('<span class="code-alias" />').text(char.alias) );
                 }
                 result.push({
                     'code': code,
                     'character': character,
-                    'value': char.description + ' ' + char.alias,
                     'label': '<div class="code-point">U+' + code + '</div>'
                              + '<div class="code-sample">&#160;' + character
                              + '</div><div class="code-descr">' + div.html()
@@ -181,6 +179,7 @@
         app.last_char = char;
         var code = string_to_codepoint(char);
         var hex  = dec2hex(code, 4);
+        char     = app.code_chart[hex];
 
         var table = $('<table />')
         table.append(
@@ -189,13 +188,12 @@
                 $('<td />').text('U+' + hex)
             )
         );
-        var cd = app.code_chart[hex];
-        if(cd && cd.description.length > 0) {
-            var td = $('<td />').text(cd.description);
-            if(cd.alias.length > 0) {
+        if(char && char.description.length > 0) {
+            var td = $('<td />').text(char.description);
+            if(char.alias) {
                 td.append(
                     $('<br />'),
-                    $('<span class="alias"/>').text(cd.alias)
+                    $('<span class="alias"/>').text(char.alias)
                 );
             }
             table.append(
@@ -253,8 +251,10 @@
             code = row.shift();
             chart[code] = {
                 'description': row[0],
-                'alias':       row[1],
             };
+            if(row[1] && row[1].length > 0) {
+                chart[code].alias = row[1];
+            }
             codes.push(code);
             i = j + 1;
         }
