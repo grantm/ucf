@@ -121,14 +121,14 @@
 
     function execute_search(target, app, response, inp) {
         var result = [ ];
-        var desc  = app.code_chart;
-        var codes = app.code_list;
-        var len = codes.length;
+        var chart  = app.code_chart;
+        var codes  = app.code_list;
+        var len    = codes.length;
         var code, char, character, div;
         for(var i = 0; i < len; i++) {
             if(result.length > 10) { break };
             code = codes[i];
-            char = desc[code];
+            char = chart[code];
             if(
                 char.description.indexOf(target) >= 0
                 || char.alias.indexOf(target) >= 0
@@ -259,7 +259,7 @@
             i = j + 1;
         }
         app.code_chart = chart;
-        app.code_list = codes;
+        app.code_list  = codes;
     }
 
     function codepoint_to_string(i) {
