@@ -121,16 +121,16 @@
 
     function execute_search(target, app, response, inp) {
         var result = [ ];
-        var desc = app.char_desc;
-        var max_code = 999999;
+        var desc  = app.char_desc;
+        var codes = app.code_list;
+        var len = codes.length;
         var code, char, character, div;
-        for(var i = 0; i < max_code; i++) {
+        for(var i = 0; i < len; i++) {
             if(result.length > 10) { break };
-            code = dec2hex(i, 4);
+            code = codes[i];
             char = desc[code];
-            if(char == null) { continue; };
             if(char[0].indexOf(target) >= 0) {
-                character = codepoint_to_string(i);
+                character = codepoint_to_string(hex2dec(code));
                 div = $('<div />').text(char[0]);
                 if(char[1] && char[1].length > 0) {
                     div.append( $('<span class="code-alias" />').text(char[1]) );
@@ -241,6 +241,7 @@
     function parse_unicode_data(app, data, status) {
         var i = 0;
         var chart = { };
+        var codes = [ ];
         var j, str, row, code;
         while(i < data.length) {
             j = data.indexOf("\n", i);
@@ -248,9 +249,11 @@
             row = data.substring(i, j).split("\t");
             code = row.shift();
             chart[code] = row;
+            codes.push(code);
             i = j + 1;
         }
         app.char_desc = chart;
+        app.code_list = codes;
     }
 
     function codepoint_to_string(i) {
