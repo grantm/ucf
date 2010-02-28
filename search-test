@@ -1,0 +1,64 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Data::Dumper;
+use Time::HiRes qw( gettimeofday tv_interval );
+
+my $filename = 'unicode-source-data/UnicodeData.txt';
+
+my @col_names = qw(
+  code
+  description
+  cat_a
+  comb_flag
+  cat_b
+  decomposition
+  digit_a
+  digit_b
+  numeric_value
+  paired
+  alias
+  filler
+  uppercase_a
+  lowercase
+  uppercase_b
+);
+
+open my $fh, '<', $filename or die "open($filename): $!";
+
+my(@data, %detail);
+while(<$fh>) {
+    chomp;
+    my @val = split /;/, $_, scalar(@col_names);
+    my %c;
+    @c{@col_names} = map { defined($_) ? $_ : '' } @val;
+    my $desc = $c{description};
+    if($desc =~ s/ WITH / /) {
+        $c{alias} = '' if $c{alias} eq $desc;
+    }
+    $detail{$c{code}} = "$c{description}\t$c{alias}";
+    push @data, "$c{code}\t$c{description}\t$c{alias}\n";
+}
+
+my $chart = join '', @data;
+
+
+
+my $query = 'invis';
+$query = 'macron';
+$query = ' ';
+
+$query = uc($query);
+print "Starting search for $query\n";
+my $t0 = [gettimeofday];
+
+my @match = $chart =~ m{\n([^\t]+)\t[^\n]*$query[^\n]*(?=\n)}sg;
+
+my $elapsed = tv_interval ( $t0 );
+
+print Dumper(\@match);
+
+print @match . " hits\n";
+printf("Elapsed time: %5.3f\n", $elapsed);
