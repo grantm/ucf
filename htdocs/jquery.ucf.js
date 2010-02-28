@@ -123,7 +123,7 @@
         var result = [ ];
         var desc = app.char_desc;
         var max_code = 999999;
-        var code, char, character, text;
+        var code, char, character, div;
         for(var i = 0; i < max_code; i++) {
             if(result.length > 10) { break };
             code = dec2hex(i, 4);
@@ -131,14 +131,18 @@
             if(char == null) { continue; };
             if(char[0].indexOf(target) >= 0) {
                 character = codepoint_to_string(i);
-                text = $('<div />').text(char[0] + ' ' + char[1]).html();
+                div = $('<div />').text(char[0]);
+                if(char[1] && char[1].length > 0) {
+                    div.append( $('<span class="code-alias" />').text(char[1]) );
+                }
                 result.push({
                     'code': code,
                     'character': character,
-                    'value': text,
-                    'label': '<span class="code-point">U+' + code + '</span> '
-                             + '<span class="code-sample">' + character
-                             + '</span> ' + text
+                    'value': char[0] + ' ' + char[1],
+                    'label': '<div class="code-point">U+' + code + '</div>'
+                             + '<div class="code-sample">&#160;' + character
+                             + '</div><div class="code-descr">' + div.html()
+                             + '</div>'
                 });
             }
         }

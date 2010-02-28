@@ -2,3 +2,5 @@
 * fly-out code-chart menu
 * links to PDFs
 * add UTF-8 bytes support
+* make next/prev buttons repeat when held down
+* get rid of max_code

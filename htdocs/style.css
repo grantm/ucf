@@ -56,7 +56,7 @@ form.ucf-app div.char-wrap button.next-char {
 
 form.ucf-app input.char {
   font-size: 160%;
-  width: 1.2em;
+  width: 1.6em;
   text-align: center;
 }
 
@@ -110,13 +110,26 @@ form.ucf-app div.char-data table th, form.ucf-app div.char-data table td {
   padding: 4px 10px;
 }
 
-span.code-point {
-  width: 6em;
+form.ucf-app div.code-point {
+  float: left;
+  width: 4.2em;
 }
 
-span.code-sample {
-  width: 3em;
-  text-align: center;
+form.ucf-app div.code-sample {
+  float: left;
   font-weight: bold;
+  width: 1.5em;
+  text-align: center;
+}
+
+form.ucf-app div.code-descr {
+  margin-left: 6.4em;
+}
+
+form.ucf-app span.code-alias {
+  font-size: 92%;
+  font-style: italic;
+  font-weight: normal;
+  padding-left: 0.6em;
 }
 
