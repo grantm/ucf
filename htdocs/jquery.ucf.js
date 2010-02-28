@@ -129,7 +129,7 @@
             if(result.length > 10) { break };
             code = codes[i];
             char = desc[code];
-            if(char[0].indexOf(target) >= 0) {
+            if(char[0].indexOf(target) >= 0 || char[1].indexOf(target) >= 0) {
                 character = codepoint_to_string(hex2dec(code));
                 div = $('<div />').text(char[0]);
                 if(char[1] && char[1].length > 0) {
