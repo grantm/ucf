@@ -1,4 +1,4 @@
-// http://www.unicode.org/Public/UNIDATA/Index.txt
+
 (function($) {
     $.fn.ucf = function(options) {
         options = $.extend($.fn.ucf.defaults, options);
@@ -100,7 +100,7 @@
         var list = $('<ul></ul>');
         for(i = 0; i < chars.length; i++) {
             var item = $('<li></li>');
-            item.text(String.fromCharCode(chars[i]));
+            item.text(codepoint_to_string(chars[i]));
             list.append(item);
         }
         div.append(list);
@@ -130,7 +130,7 @@
             char = desc[code];
             if(char == null) { continue; };
             if(char[0].indexOf(target) >= 0) {
-                character = String.fromCharCode(i);
+                character = codepoint_to_string(i);
                 text = $('<div />').text(char[0] + ' ' + char[1]).html();
                 result.push({
                     'code': code,
@@ -150,8 +150,14 @@
 
     function char_changed(app, inp) {
         var txt = inp.val();
-        if(txt.length > 1) {
-            inp.val(txt.substr(txt.length - 1, 1));
+        var len = txt.length;
+        if(len > 1) {
+            if((txt.charCodeAt(len - 2) & 0xF800) == 0xD800) {
+                inp.val(txt.substr(txt.length - 2, 1));
+            }
+            else {
+                inp.val(txt.substr(txt.length - 1, 1));
+            }
         }
         examine_char(app, inp);
     }
@@ -163,12 +169,10 @@
         }
         if(char.length == 0) {
             $(app).find('div.char-data').hide();
-        }
-        if(char.length != 1) {
             return;
         }
         app.last_char = char;
-        var code = char.charCodeAt(0);
+        var code = string_to_codepoint(char);
         var hex  = dec2hex(code, 4);
 
         var table = $('<table />')
@@ -203,14 +207,14 @@
     function increment_code_point(app, inp, inc) {
         var char = app.last_char
         if(!char) { return; }
-        var code = char.charCodeAt(0) + inc;
+        var code = string_to_codepoint(char) + inc;
         var hex  = dec2hex(code, 4);
         while(!app.char_desc[hex]) {
             code = code + inc;
             if(code < 0) { return; }
             hex = dec2hex(code, 4);
         }
-        inp.val(String.fromCharCode(code));
+        inp.val(codepoint_to_string(code));
         examine_char(app, inp);
     }
 
@@ -245,6 +249,23 @@
         app.char_desc = chart;
     }
 
+    function codepoint_to_string(i) {
+        if(i < 65536) {
+            return String.fromCharCode(i);
+        }
+        var hi = Math.floor((i - 0x10000) / 0x400) + 0xD800;
+        var lo = ((i - 0x10000) % 0x400) + 0xDC00;
+        return String.fromCharCode(hi) + String.fromCharCode(lo);
+    }
+
+    function string_to_codepoint(str) {
+        var hi = str.charCodeAt(0);
+        if((hi & 0xF800) != 0xD800) {
+            return hi;
+        }
+        var lo = str.charCodeAt(1);
+        return ((hi - 0xD800) * 0x400) + (lo - 0xDC00) + 0x10000;
+    }
 
 })(jQuery);
 
