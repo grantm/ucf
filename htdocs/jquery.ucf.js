@@ -37,7 +37,7 @@
             delay: 900,
             minLength: 1,
             source: function(request, response) {
-                var target = request.term.toUpperCase().replace(/  +/g, ' ').replace(/(^ | $)/g, '');
+                var target = request.term.toUpperCase();
                 if(target != '') {
                     inp.addClass('busy');
                     setTimeout(function() {
