@@ -121,7 +121,7 @@
 
     function execute_search(target, app, response, inp) {
         var result = [ ];
-        var desc  = app.char_desc;
+        var desc  = app.code_chart;
         var codes = app.code_list;
         var len = codes.length;
         var code, char, character, div;
@@ -129,16 +129,19 @@
             if(result.length > 10) { break };
             code = codes[i];
             char = desc[code];
-            if(char[0].indexOf(target) >= 0 || char[1].indexOf(target) >= 0) {
+            if(
+                char.description.indexOf(target) >= 0
+                || char.alias.indexOf(target) >= 0
+            ) {
                 character = codepoint_to_string(hex2dec(code));
-                div = $('<div />').text(char[0]);
-                if(char[1] && char[1].length > 0) {
-                    div.append( $('<span class="code-alias" />').text(char[1]) );
+                div = $('<div />').text(char.description);
+                if(char.alias && char.alias.length > 0) {
+                    div.append( $('<span class="code-alias" />').text(char.alias) );
                 }
                 result.push({
                     'code': code,
                     'character': character,
-                    'value': char[0] + ' ' + char[1],
+                    'value': char.description + ' ' + char.alias,
                     'label': '<div class="code-point">U+' + code + '</div>'
                              + '<div class="code-sample">&#160;' + character
                              + '</div><div class="code-descr">' + div.html()
@@ -186,13 +189,13 @@
                 $('<td />').text('U+' + hex)
             )
         );
-        var cd = app.char_desc[hex];
-        if(cd && cd[0].length > 0) {
-            var td = $('<td />').text(cd[0]);
-            if(cd[1].length > 0) {
+        var cd = app.code_chart[hex];
+        if(cd && cd.description.length > 0) {
+            var td = $('<td />').text(cd.description);
+            if(cd.alias.length > 0) {
                 td.append(
                     $('<br />'),
-                    $('<span class="alias"/>').text(cd[1])
+                    $('<span class="alias"/>').text(cd.alias)
                 );
             }
             table.append(
@@ -213,7 +216,7 @@
         if(!char) { return; }
         var code = string_to_codepoint(char) + inc;
         var hex  = dec2hex(code, 4);
-        while(!app.char_desc[hex]) {
+        while(!app.code_chart[hex]) {
             code = code + inc;
             if(code < 0) { return; }
             hex = dec2hex(code, 4);
@@ -248,11 +251,14 @@
             if(j < 1) { break; }
             row = data.substring(i, j).split("\t");
             code = row.shift();
-            chart[code] = row;
+            chart[code] = {
+                'description': row[0],
+                'alias':       row[1],
+            };
             codes.push(code);
             i = j + 1;
         }
-        app.char_desc = chart;
+        app.code_chart = chart;
         app.code_list = codes;
     }
 
