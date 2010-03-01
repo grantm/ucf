@@ -55,6 +55,7 @@
                 var char_inp = $(app).find('input.char');
                 char_inp.val(ui.item.character)
                 char_changed(app, char_inp);
+                window.scrollTo(0,0);
                 return false;
             }
         })

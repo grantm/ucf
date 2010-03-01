@@ -1,3 +1,35 @@
+* {
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+.content {
+  min-height: 100%;
+  height: auto !important;
+  height: 100%;
+  margin: 0 auto -35px;
+  padding-bottom: 320px;
+}
+
+.footer, .push {
+  height: 35px;
+}
+
+.footer {
+  color: #999999;
+  background-color: #000000;
+  font-size: 11px;
+  text-align: center;
+}
+
+.footer ul {
+  padding: 10px 0 0 0;
+  list-style: none;
+}
+
 
 body {
   margin: 0;
@@ -12,6 +44,7 @@ h1 {
   color: #efefef;
   background-color: #666666;
   font-size: 40px;
+  white-space: nowrap;
 }
 
 #my-ucf {
@@ -147,7 +180,6 @@ form.ucf-app.empty div.char-wrap button.next-char {
 }
 
 form.ucf-app div.sample-wrap {
-  display: inline;
   color: #cccccc;
 }
 
