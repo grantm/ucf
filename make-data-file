@@ -3,14 +3,26 @@
 #
 # Script for munging Unicode character data into a form suitable for UCF
 #
+# Assumes local copies of:
+#
+#   * http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+#   * http://www.unicode.org/Public/UNIDATA/Blocks.txt
+#   * http://www.unicode.org/charts/PDF (as pdf-index.html)
+#
 
 use strict;
 use warnings;
 
-use Data::Dumper;
-use JSON::XS;
+use FindBin;
 
-my $filename = 'unicode-source-data/UnicodeData.txt';
+my $data_file = $FindBin::Bin . '/htdocs/char-data.txt';
+
+my $src_file  = $FindBin::Bin . '/unicode-source-data/UnicodeData.txt';
+my $pdf_index = $FindBin::Bin . '/unicode-source-data/pdf-index.html';
+my $blk_file  = $FindBin::Bin . '/unicode-source-data/Blocks.txt';
+
+my $pdf_base  = 'http://www.unicode.org/charts/PDF';
+
 
 my @col_names = qw(
   code
@@ -30,9 +42,12 @@ my @col_names = qw(
   uppercase_b
 );
 
-open my $fh, '<', $filename or die "open($filename): $!";
 
-my @data;
+# Start by writing out character descriptions
+
+open my $fh,  '<', $src_file  or die "open($src_file): $!";
+open my $out, '>', $data_file or die "open(>$data_file): $!";
+
 while(<$fh>) {
     chomp;
     my @val = split /;/, $_, scalar(@col_names);
@@ -42,8 +57,37 @@ while(<$fh>) {
     if($desc =~ s/ WITH / /) {
         $c{alias} = '' if $c{alias} eq $desc;
     }
-    print "$c{code}\t$c{description}\t$c{alias}\n";
+    print $out "$c{code}\t$c{description}\t$c{alias}\n";
 }
 
-#print encode_json(\@data);
+
+# Build up a list of available PDF files
+
+open $fh, '<', $pdf_index or die "open($pdf_index): $!";
+
+my %pdf_url;
+while(<$fh>) {
+    if(my($page) = $_ =~ m{<a href="U([\dA-F]+)[.]pdf">}) {
+        $pdf_url{$page} = "$pdf_base/U$page.pdf";
+    }
+}
+
+# Append a list of block -> PDF mappings
+
+open $fh, '<', $blk_file or die "open($blk_file): $!";
+
+while(<$fh>) {
+    chomp;
+    my($start, $end, $title) =
+        $_ =~ m{^([\dA-F]+)[.][.]([\dA-F]+); (.*)$}
+          or next;
+    my $file = $start;
+    $file = 'D800' if $file eq 'DB80';
+    if(my $url = $pdf_url{$file}) {
+        print $out "BLK\t$start\t$end\t$title\tU$file.pdf\t$url\n",
+    }
+    else {
+        die "No PDF for $start..$end";
+    }
+}
 

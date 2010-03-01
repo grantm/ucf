@@ -1,5 +1,5 @@
+* add copyright/license
 * move info table to top with huge char on left
-* links to PDFs
 * fly-out code-chart menu
 * support /regex/ searches
 * display JS surrogate pair chars for > xFFFF
@@ -11,3 +11,5 @@
 * add UTF-8 bytes support
 * display search results in a persistent list
 * make next/prev buttons repeat when held down
+* allow user font selections
+* add "Fork me" link

@@ -177,9 +177,10 @@
             return;
         }
         app.last_char = char;
-        var code = string_to_codepoint(char);
-        var hex  = dec2hex(code, 4);
-        char     = app.code_chart[hex];
+        var code  = string_to_codepoint(char);
+        var hex   = dec2hex(code, 4);
+        var block = codepoint_to_block(app, code);
+        char      = app.code_chart[hex];
 
         var table = $('<table />')
         table.append(
@@ -206,6 +207,18 @@
                 $('<td />').text('&#' + code + ';')
             )
         );
+        if(block) {
+            var pdf_link = $('<a />')
+                .text(block.title)
+                .attr('href', block.pdf_url)
+                .attr('title', block.filename + ' at Unicode.org');
+            table.append(
+                $('<tr />').append(
+                    $('<th />').text('Character block'),
+                    $('<td />').append(pdf_link)
+                )
+            );
+        }
         $(app).find('div.char-data').empty().append(table).show();
     }
 
@@ -241,25 +254,41 @@
 
     function parse_unicode_data(app, data, status) {
         var i = 0;
-        var chart = { };
-        var codes = [ ];
-        var j, str, row, code;
+        var chart  = { };
+        var codes  = [ ];
+        var blocks = [ ];
+        var j, str, row, code, block;
         while(i < data.length) {
             j = data.indexOf("\n", i);
             if(j < 1) { break; }
             row = data.substring(i, j).split("\t");
-            code = row.shift();
-            chart[code] = {
-                'description': row[0],
-            };
-            if(row[1] && row[1].length > 0) {
-                chart[code].alias = row[1];
+            if(row[0] == 'BLK') {
+                block = {
+                    'start'    : row[1],
+                    'end'      : row[2],
+                    'start_dec': hex2dec(row[1]),
+                    'end_dec'  : hex2dec(row[2]),
+                    'title'    : row[3],
+                    'filename' : row[4],
+                    'pdf_url'  : row[5],
+                };
+                blocks.push(block);
             }
-            codes.push(code);
+            else {
+                code = row.shift();
+                chart[code] = {
+                    'description': row[0],
+                };
+                if(row[1] && row[1].length > 0) {
+                    chart[code].alias = row[1];
+                }
+                codes.push(code);
+            }
             i = j + 1;
         }
-        app.code_chart = chart;
-        app.code_list  = codes;
+        app.code_chart  = chart;
+        app.code_list   = codes;
+        app.code_blocks = blocks;
     }
 
     function codepoint_to_string(i) {
@@ -278,6 +307,19 @@
         }
         var lo = str.charCodeAt(1);
         return ((hi - 0xD800) * 0x400) + (lo - 0xDC00) + 0x10000;
+    }
+
+    function codepoint_to_block(app, code) {
+        for(i = 0; i < app.code_blocks.length; i++) {
+            if(code > app.code_blocks[i].end_dec){
+                continue;
+            }
+            if(code < app.code_blocks[i].start){
+                return;
+            }
+            return app.code_blocks[i];
+        }
+        return;
     }
 
 })(jQuery);
