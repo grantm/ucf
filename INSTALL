@@ -1,0 +1,11 @@
+In order to serve a copy of this software from your own web server, you will
+need to generate the 'htdocs/char-data.txt' data file, by following these
+steps:
+
+  cd unicode-source-data/
+  wget http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
+  wget -O pdf-index.html http://www.unicode.org/charts/PDF/
+  wget http://www.unicode.org/Public/UNIDATA/Blocks.txt
+  cd ..
+  ./make-data-file
+
