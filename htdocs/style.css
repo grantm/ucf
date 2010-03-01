@@ -17,19 +17,35 @@ h1 {
 #my-ucf {
   width: 700px;
   margin: 0 auto;
-  padding: 2em 0;
+  padding: 0;
   position: relative;
+}
+
+form.ucf-app a {
+  color: #C77405;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+form.ucf-app a:visited {
+  color: #C77405;
+}
+
+form.ucf-app a:hover {
+  text-decoration: underline;
 }
 
 form.ucf-app div.search-wrap {
-  margin: 3em 0 2.6em 0;
+  margin: 0 0 1.6em 0;
   position: relative;
+  clear: both;
+  z-index: 1;
 }
 
 form.ucf-app div.search-wrap input.search {
-  width: 100%;
+  width: 686px;
   font-size: 120%;
-  padding-left: 20px;
+  padding: 5px;
 }
 
 form.ucf-app div.search-wrap input.search.busy {
@@ -37,40 +53,109 @@ form.ucf-app div.search-wrap input.search.busy {
 }
 
 form.ucf-app div.char-wrap {
-  margin: 1em 0;
+  background-color: #eeeeee;
+  float: left;
+  width: 100%;
+  margin: 0 0 30px 0;
+  z-index: 2;
+}
+
+form.ucf-app div.char-wrap div.char-preview {
+  float: left;
+  position: relative;
+  width: 300px;
+}
+
+form.ucf-app div.char-wrap div.char-props {
+  float: left;
+  position: relative;
+  width: 400px;
+}
+
+form.ucf-app div.char-wrap div.char-preview-label {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  width: 250px;
+  z-index: 1;
+  text-align: center;
+  font-size: 32px;
+  line-height: 50px;
+  padding: 28px 0 0 0;
+  color: #bbbbbb;
+  visibility: hidden;
+}
+
+form.ucf-app.empty div.char-wrap div.char-preview-label {
+  visibility: visible;
+}
+
+form.ucf-app input.char {
+  position: relative;
+  z-index: 2;
+  color: #333333;
+  background-color: transparent;
+  margin: 25px 25px 0 25px;
+  width: 250px;
+  height: 160px;
+  font-size: 130px;
+  text-align: center;
+  border: 2px solid #bbbbbb;
+}
+
+form.ucf-app div.char-wrap div.char-props-label {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  width: 350px;
+  z-index: 1;
+  text-align: center;
+  font-size: 32px;
+  line-height: 50px;
+  padding: 28px 0 0 0;
+  color: #bbbbbb;
+  visibility: hidden;
+}
+
+form.ucf-app.empty div.char-wrap div.char-props-label {
+  visibility: visible;
 }
 
 form.ucf-app div.char-wrap button.prev-char {
   padding: 0;
-  height: 2.8em;
+  margin-bottom: 4px;
+  width: 125px;
+  height: 25px;
   position: relative;
-  top: -0.2em;
+  left: 25px;
+}
+
+form.ucf-app.empty div.char-wrap button.prev-char {
+  visibility: hidden;
 }
 
 form.ucf-app div.char-wrap button.next-char {
   padding: 0;
-  height: 2.8em;
+  width: 130px;
+  height: 25px;
   position: relative;
-  top: -0.2em;
+  left: 25px;
 }
 
-form.ucf-app input.char {
-  font-size: 160%;
-  width: 1.6em;
-  text-align: center;
+form.ucf-app.empty div.char-wrap button.next-char {
+  visibility: hidden;
 }
 
-form.ucf-app div.char-samples {
+form.ucf-app div.sample-wrap {
   display: inline;
-  padding-left: 1em;
   color: #cccccc;
 }
 
-form.ucf-app div.char-samples:hover {
+form.ucf-app div.sample-wrap:hover {
   color: #444444;
 }
 
-form.ucf-app div.char-samples ul {
+form.ucf-app div.sample-wrap ul {
   visibility: hidden;
   margin: 0 0 0 1em;
   padding: 0;
@@ -78,37 +163,49 @@ form.ucf-app div.char-samples ul {
   display: inline;
 }
 
-form.ucf-app div.char-samples:hover ul {
+form.ucf-app div.sample-wrap:hover ul {
   visibility: visible;
 }
 
-form.ucf-app div.char-samples ul li {
+form.ucf-app div.sample-wrap ul li {
   margin: none;
   padding: 0 0.3em;
   list-style: none;
   display: inline;
 }
 
-form.ucf-app div.char-data table {
-  margin: 0.4em 0;
+form.ucf-app div.char-info table {
+  margin: 22px 0 0 0;
+  width: 375px;
   border-collapse: collapse;
+  font-size: 14px;
+  color: #333333;
 }
 
-form.ucf-app div.char-data table th {
+form.ucf-app div.char-info table th {
   text-align: left;
   vertical-align: top;
 }
 
-form.ucf-app div.char-data span.alias {
+form.ucf-app div.char-info span.alias {
   font-size: 90%;
   font-style: italic;
   color: #666666;
 }
 
-form.ucf-app div.char-data table th, form.ucf-app div.char-data table td {
-  border: 1px solid #dddddd;
-  padding: 4px 10px;
+form.ucf-app div.char-info table th,
+form.ucf-app div.char-info table td {
+  border: 4px solid #eeeeee;
+  padding: 3px;
 }
+
+form.ucf-app div.char-info table td {
+  width: 236px;
+  background-color: #fcfcfc;
+  padding-left: 8px;
+}
+
+/* -------------------- for auto complete list ------------------------- */
 
 form.ucf-app div.code-point {
   float: left;

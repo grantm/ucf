@@ -17,20 +17,20 @@
     }
 
     function build_app(app) {
-        var form = $('<form class="ucf-app"></form>');
+        var form = $('<form class="ucf-app empty"></form>');
         form.submit(function() { return false; });
         $(app).append(form);
 
+        form.append( char_info_pane(app, form) );
         form.append( char_search_field(app, form) );
-        form.append( char_input_field(app, form) );
-        form.append( char_info_panel(app, form) );
+        form.append( sample_char_links(app) );
 
         $(app).find('input.search').focus();
     }
 
     function char_search_field(app, form) {
         var div = $('<div class="search-wrap"><label>Search character descriptions:</label><br></div>');
-        var inp = $('<input type="text" class="search">');
+        var inp = $('<input type="text" class="search" />');
         div.append(inp);
 
         inp.autocomplete({
@@ -62,37 +62,45 @@
         return div;
     }
 
-    function char_input_field(app, form) {
-        var div = $('<div class="char-wrap">Type/paste a character: </div>');
-        var inp = $('<input type="text" class="char">');
-        div.append(
+    function char_info_pane(app, form) {
+        var div = $('<div class="char-wrap"></div>');
+
+        var panel1 = $('<div class="char-preview"></div>');
+        var label1 = $('<div class="char-preview-label">Character<br />Preview</div>');
+        var inp = $('<input type="text" class="char" title="Type or paste a character" />');
+        panel1.append(
+            label1, inp,
             $('<button type="button" class="prev-char" title="Previous character">◂</button>'),
-            inp,
             $('<button type="button" class="next-char" title="Next character">▸</button>')
         );
-
-        div.append( sample_chars(app, inp) );
 
         var cb = function() { char_changed(app, inp) };
         inp.change( cb );
         inp.keypress(function(event) { setTimeout(cb, 50); });
         inp.mouseup(function(event) { setTimeout(cb, 50); });
 
-        div.find('button.prev-char').click(function() {
+        panel1.find('button.prev-char').click(function() {
             increment_code_point(app, inp, -1);
         });
-        div.find('button.next-char').click(function() {
+        panel1.find('button.next-char').click(function() {
             increment_code_point(app, inp, 1);
         });
+
+        var panel2 = $('<div class="char-props"></div>');
+        var label2 = $('<div class="char-props-label">Character<br />Properties</div>');
+        var info   = $('<div class="char-info"></div>');
+        panel2.append(label2, info);
+
+        div.append(panel1, panel2);
 
         return div;
     }
 
-    function sample_chars(app, inp) {
+    function sample_char_links(app) {
         var chars = app.options.sample_chars;
 
         var div = $(
-            '<div class="char-samples" title="click character to select">'
+            '<div class="sample-wrap" title="click character to select">'
             + 'Examples … </div>'
         );
 
@@ -105,17 +113,11 @@
         div.append(list);
 
         list.find('li').click(function (event) {
+            var inp = $(app).find('input.char');
             inp.val($(this).text());
-            inp.focus();
             char_changed(app, inp);
         });
         return div;
-    }
-
-    function char_info_panel(app, form) {
-        var info = $('<div class="char-data"></div>');
-        info.hide();
-        return info;
     }
 
     function execute_search(target, app, response, inp) {
@@ -156,6 +158,12 @@
     function char_changed(app, inp) {
         var txt = inp.val();
         var len = txt.length;
+        if(len == 0) {
+            $(app).find('form').addClass('empty');
+        }
+        else {
+            $(app).find('form').removeClass('empty');
+        }
         if(len > 1) {
             if((txt.charCodeAt(len - 2) & 0xF800) == 0xD800) {
                 inp.val(txt.substr(txt.length - 2, 1));
@@ -173,7 +181,7 @@
             return;
         }
         if(char.length == 0) {
-            $(app).find('div.char-data').hide();
+            $(app).find('div.char-info').hide();
             return;
         }
         app.last_char = char;
@@ -185,7 +193,7 @@
         var table = $('<table />')
         table.append(
             $('<tr />').append(
-                $('<th />').text('Unicode code point'),
+                $('<th />').text('Code point'),
                 $('<td />').text('U+' + hex)
             )
         );
@@ -219,7 +227,7 @@
                 )
             );
         }
-        $(app).find('div.char-data').empty().append(table).show();
+        $(app).find('div.char-info').empty().append(table).show();
     }
 
     function increment_code_point(app, inp, inc) {
