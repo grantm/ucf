@@ -16,6 +16,14 @@
         sample_chars: [ 169, 233, 256, 257, 8364, 8451, 9733, 9731 ]
     }
 
+    var unique_ids = [];
+
+    function gen_id(str) {
+        var id = str + (unique_ids.length + 1);
+        unique_ids.push(id);
+        return id;
+    }
+
     function build_app(app) {
         var form = $('<form class="ucf-app empty"></form>');
         form.submit(function() { return false; });
@@ -24,6 +32,15 @@
         form.append( char_info_pane(app, form) );
         form.append( char_search_field(app, form) );
         form.append( sample_char_links(app) );
+
+        form.find('div.ucf-chart-menu').dialog({
+            autoOpen: false,
+            title:    "Unicode Character Chart",
+            resizable: false,
+            closeOnEscape: true,
+            width: 662,
+            height: 325
+        });
 
         $(app).find('input.search').focus();
     }
@@ -53,7 +70,7 @@
             },
             select: function(e, ui) {
                 var char_inp = $(app).find('input.char');
-                char_inp.val(ui.item.character)
+                char_inp.val(ui.item.character);
                 char_changed(app, char_inp);
                 window.scrollTo(0,0);
                 return false;
@@ -69,21 +86,31 @@
         var panel1 = $('<div class="char-preview"></div>');
         var label1 = $('<div class="char-preview-label">Character<br />Preview</div>');
         var inp = $('<input type="text" class="char" title="Type or paste a character" />');
-        panel1.append(
-            label1, inp,
-            $('<button type="button" class="prev-char" title="Previous character">◂</button>'),
-            $('<button type="button" class="next-char" title="Next character">▸</button>')
+        var span = $('<span class="char-buttons" />')
+        span.append(
+            $('<button type="button" class="char-prev" title="Previous character">◂</button>'),
+            $('<button type="button" class="char-menu" title="Show code chart">▾</button>'),
+            $('<button type="button" class="char-next" title="Next character">▸</button>')
         );
+
+        var chart_menu = $('<div class="ucf-chart-menu" />');
+        app.chart_dlg_id = gen_id('ucf-chart-dlg');
+        chart_menu.attr('id', app.chart_dlg_id);
+
+        panel1.append( label1, inp, span, chart_menu );
 
         var cb = function() { char_changed(app, inp) };
         inp.change( cb );
         inp.keypress(function(event) { setTimeout(cb, 50); });
         inp.mouseup(function(event) { setTimeout(cb, 50); });
 
-        panel1.find('button.prev-char').click(function() {
+        panel1.find('button.char-prev').click(function() {
             increment_code_point(app, inp, -1);
         });
-        panel1.find('button.next-char').click(function() {
+        panel1.find('button.char-menu').click(function() {
+            display_chart_menu(app);
+        });
+        panel1.find('button.char-next').click(function() {
             increment_code_point(app, inp, 1);
         });
 
@@ -182,7 +209,7 @@
             return;
         }
         if(char.length == 0) {
-            $(app).find('div.char-info').hide();
+            $(app).find('div.char-info');
             return;
         }
         app.last_char = char;
@@ -228,7 +255,7 @@
                 )
             );
         }
-        $(app).find('div.char-info').empty().append(table).show();
+        $(app).find('div.char-info').empty().append(table);
     }
 
     function increment_code_point(app, inp, inc) {
@@ -243,6 +270,62 @@
         }
         inp.val(codepoint_to_string(code));
         examine_char(app, inp);
+    }
+
+    function display_chart_menu(app) {
+        window.scrollTo(0,0);
+        var char_inp = $(app).find('input.char');
+        var code = string_to_codepoint(char_inp.val());
+        var table = gen_code_chart(app, code);
+        $('#' + app.chart_dlg_id)
+            .empty()
+            .append(table)
+            .dialog('option', 'position', [140, 248])
+            .dialog('open');
+    }
+
+    function gen_code_chart(app, target_code) {
+        var chart = app.code_chart;
+        var code  = target_code & 0xFFF80;
+
+        app.code_chart_base = code;
+
+        var table = $('<table class="ucf-code-chart" />');
+        var i, j, row, cell, meta;
+        for(i = 0; i < 8; i++) {
+            row = $('<tr />');
+            for(j = 0; j < 16; j++) {
+                cell = $('<td />');
+                meta = chart[dec2hex(code, 4)];
+                if(meta) {
+                    cell.text(codepoint_to_string(code));
+                    if(code == target_code) {
+                        cell.addClass('curr-char');
+                    }
+                }
+                else {
+                    cell.addClass('reserved');
+                }
+                row.append(cell);
+                code++;
+            }
+            table.append(row);
+        }
+
+        table.click(function(e) { code_chart_click(e, app) });
+        return table;
+    }
+
+    function code_chart_click(e, app) {
+        var table_rect = e.currentTarget.getBoundingClientRect();
+        var row = Math.floor((e.clientY - table_rect.top ) / 32);
+        var col = Math.floor((e.clientX - table_rect.left) / 39);
+        var code = app.code_chart_base + row * 16 + col;
+        var char_inp = $(app).find('input.char');
+        char_inp.val(codepoint_to_string(code));
+        char_changed(app, char_inp);
+        $(e.currentTarget).find('td').removeClass('curr-char');
+        $(e.originalTarget).addClass('curr-char');
     }
 
     function dec2hex(dec, len) {

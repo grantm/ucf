@@ -30,7 +30,6 @@ html, body {
   list-style: none;
 }
 
-
 body {
   margin: 0;
   padding: 0;
@@ -154,28 +153,24 @@ form.ucf-app.empty div.char-wrap div.char-props-label {
   visibility: visible;
 }
 
-form.ucf-app div.char-wrap button.prev-char {
-  padding: 0;
-  margin-bottom: 4px;
-  width: 125px;
-  height: 25px;
+form.ucf-app span.char-buttons {
   position: relative;
   left: 25px;
-}
-
-form.ucf-app.empty div.char-wrap button.prev-char {
   visibility: hidden;
 }
 
-form.ucf-app div.char-wrap button.next-char {
-  padding: 0;
-  width: 130px;
-  height: 25px;
-  position: relative;
-  left: 25px;
+form.ucf-app div.char-wrap:hover span.char-buttons {
+  visibility: visible;
 }
 
-form.ucf-app.empty div.char-wrap button.next-char {
+form.ucf-app span.char-buttons button {
+  margin-bottom: 6px;
+  margin-right: 1px;
+  width: 84px;
+  height: 25px
+}
+
+form.ucf-app.empty span.char-buttons button {
   visibility: hidden;
 }
 
@@ -204,6 +199,10 @@ form.ucf-app div.sample-wrap ul li {
   padding: 0 0.3em;
   list-style: none;
   display: inline;
+}
+
+form.ucf-app.empty div.char-info table {
+  visibility: hidden;
 }
 
 form.ucf-app div.char-info table {
@@ -260,5 +259,28 @@ form.ucf-app span.code-alias {
   font-style: italic;
   font-weight: normal;
   padding-left: 0.6em;
+}
+
+table.ucf-code-chart {
+  border-collapse: collapse;
+  font-family: Liberation Sans, Arial, sans-serif;
+}
+
+table.ucf-code-chart td {
+  border: 1px solid #cccccc;
+  padding: 0;
+  font-size: 20px;
+  text-align: center;
+  vertical-align: center;
+  width: 38px;
+  height: 32px;
+}
+
+table.ucf-code-chart td.reserved {
+  background-color: #eeeeee;
+}
+
+table.ucf-code-chart td.curr-char {
+  background-color: #fad184;
 }
 

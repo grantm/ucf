@@ -1,6 +1,5 @@
 * add copyright/license
-* move info table to top with huge char on left
-* fly-out code-chart menu
+* page next/prev buttons on code-chart menu
 * support /regex/ searches
 * display JS surrogate pair chars for > xFFFF
 * process query string:
@@ -8,8 +7,11 @@
   * xXXXX      => hex codepoint
   * uXXXXuXXXX => hex surrogate pair
   * q=...      => search query
+* display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
+* accept encoded hex bytes
 * add UTF-8 bytes support
 * display search results in a persistent list
 * make next/prev buttons repeat when held down
+* support scroll wheel in char-input box
 * allow user font selections
 * add "Fork me" link
