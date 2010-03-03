@@ -277,10 +277,11 @@
         var char_inp = $(app).find('input.char');
         var code = string_to_codepoint(char_inp.val());
         var table = gen_code_chart(app, code);
+        var rect = $(app)[0].getBoundingClientRect();
         $('#' + app.chart_dlg_id)
             .empty()
             .append(table)
-            .dialog('option', 'position', [140, 248])
+            .dialog('option', 'position', [rect.left - 1, 248])
             .dialog('open');
     }
 
