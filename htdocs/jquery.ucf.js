@@ -32,15 +32,7 @@
         form.append( char_info_pane(app, form) );
         form.append( char_search_field(app, form) );
         form.append( sample_char_links(app) );
-
-        form.find('div.ucf-chart-menu').dialog({
-            autoOpen: false,
-            title:    "Unicode Character Chart",
-            resizable: false,
-            closeOnEscape: true,
-            width: 662,
-            height: 325
-        });
+        form.append( build_code_chart_dialog(app) );
 
         $(app).find('input.search').focus();
     }
@@ -93,11 +85,7 @@
             $('<button type="button" class="char-next" title="Next character">▸</button>')
         );
 
-        var chart_menu = $('<div class="ucf-chart-menu" />');
-        app.chart_dlg_id = gen_id('ucf-chart-dlg');
-        chart_menu.attr('id', app.chart_dlg_id);
-
-        panel1.append( label1, inp, span, chart_menu );
+        panel1.append( label1, inp, span );
 
         var cb = function() { char_changed(app, inp) };
         inp.change( cb );
@@ -122,6 +110,30 @@
         div.append(panel1, panel2);
 
         return div;
+    }
+
+    function build_code_chart_dialog(app) {
+        var table = $('<table class="ucf-code-chart"></table>');
+        table.click(function(e) { code_chart_click(e, app) });
+
+        var chart_menu = $('<div class="ucf-chart-menu" />');
+        app.chart_dlg_id = gen_id('ucf-chart-dlg');
+        chart_menu.attr('id', app.chart_dlg_id);
+        chart_menu.append(table);
+
+        chart_menu.dialog({
+            autoOpen:      false,
+            title:         "Unicode Character Chart",
+            resizable:     false,
+            closeOnEscape: true,
+            width:         555,
+            height:        320,
+            buttons:       {
+                "Close": function() { $(this).dialog("close"); },
+                "Next":  function() { change_chart_page(app, 1); },
+                "Prev":  function() { change_chart_page(app, -1); }
+            }
+        });
     }
 
     function sample_char_links(app) {
@@ -276,22 +288,22 @@
         window.scrollTo(0,0);
         var char_inp = $(app).find('input.char');
         var code = string_to_codepoint(char_inp.val());
-        var table = gen_code_chart(app, code);
         var rect = $(app)[0].getBoundingClientRect();
+        set_code_chart_page(app, null, code);
         $('#' + app.chart_dlg_id)
-            .empty()
-            .append(table)
             .dialog('option', 'position', [rect.left - 1, 248])
             .dialog('open');
     }
 
-    function gen_code_chart(app, target_code) {
+    function set_code_chart_page(app, code, target_code) {
+        if(code == null) {
+            code  = target_code & 0xFFF80;
+        }
         var chart = app.code_chart;
-        var code  = target_code & 0xFFF80;
 
         app.code_chart_base = code;
 
-        var table = $('<table class="ucf-code-chart" />');
+        var tbody = $('<tbody />');
         var i, j, row, cell, meta;
         for(i = 0; i < 8; i++) {
             row = $('<tr />');
@@ -310,23 +322,32 @@
                 row.append(cell);
                 code++;
             }
-            table.append(row);
+            tbody.append(row);
         }
-
-        table.click(function(e) { code_chart_click(e, app) });
-        return table;
+        $('#' + app.chart_dlg_id + ' table.ucf-code-chart')
+            .empty()
+            .append(tbody);
     }
 
     function code_chart_click(e, app) {
         var table_rect = e.currentTarget.getBoundingClientRect();
-        var row = Math.floor((e.clientY - table_rect.top ) / 32);
-        var col = Math.floor((e.clientX - table_rect.left) / 39);
+        var row = Math.floor((e.clientY - table_rect.top ) / 26);
+        var col = Math.floor((e.clientX - table_rect.left) / 33);
         var code = app.code_chart_base + row * 16 + col;
         var char_inp = $(app).find('input.char');
         char_inp.val(codepoint_to_string(code));
         char_changed(app, char_inp);
         $(e.currentTarget).find('td').removeClass('curr-char');
         $(e.originalTarget).addClass('curr-char');
+    }
+
+    function change_chart_page(app, incr) {
+        var code_base = app.code_chart_base;
+        if(incr < 0  &&  code_base == 0) {
+            return;
+        }
+        code_base = code_base + (incr * 128);
+        set_code_chart_page(app, code_base, null);
     }
 
     function dec2hex(dec, len) {

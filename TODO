@@ -1,5 +1,4 @@
 * add copyright/license
-* page next/prev buttons on code-chart menu
 * support /regex/ searches
 * display JS surrogate pair chars for > xFFFF
 * process query string:
@@ -15,3 +14,7 @@
 * support scroll wheel in char-input box
 * allow user font selections
 * add "Fork me" link
+
+* Anomalous displays:
+  * thai character ko kai
+  * Hangul Syllable, First displayed, but rest not because no descriptions
