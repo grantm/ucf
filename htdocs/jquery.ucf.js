@@ -331,9 +331,10 @@
 
     function code_chart_click(e, app) {
         var table_rect = e.currentTarget.getBoundingClientRect();
-        var row = Math.floor((e.clientY - table_rect.top ) / 26);
-        var col = Math.floor((e.clientX - table_rect.left) / 33);
-        var code = app.code_chart_base + row * 16 + col;
+        var td = e.originalTarget;
+        var code = app.code_chart_base;
+        $(td).prevAll().each(function() { code++; });
+        $(td).parent().prevAll().each(function() { code += 16; });
         var char_inp = $(app).find('input.char');
         char_inp.val(codepoint_to_string(code));
         char_changed(app, char_inp);
