@@ -208,7 +208,7 @@
         }
         if(len > 1) {
             if((txt.charCodeAt(len - 2) & 0xF800) == 0xD800) {
-                inp.val(txt.substr(txt.length - 2, 1));
+                inp.val(txt.substr(txt.length - 2, 2));
             }
             else {
                 inp.val(txt.substr(txt.length - 1, 1));
