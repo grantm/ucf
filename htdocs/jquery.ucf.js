@@ -4,7 +4,7 @@
         options = $.extend($.fn.ucf.defaults, options);
 
         $(this).each(function(x) {
-            this.options = options;
+            $(this).data('options', options);
             load_unicode_data(this);
             build_app(this);
         });
@@ -16,6 +16,9 @@
         sample_chars: [ 169, 233, 256, 257, 8364, 8451, 9733, 9731 ]
     }
 
+    // Data shared across all functions
+
+    var code_chart, code_list, code_blocks;
     var unique_ids = [];
 
     function gen_id(str) {
@@ -113,12 +116,13 @@
     }
 
     function build_code_chart_dialog(app) {
+        var $app = $(app);
         var table = $('<table class="ucf-code-chart"></table>');
         table.click(function(e) { code_chart_click(e, app) });
 
         var chart_menu = $('<div class="ucf-chart-menu" />');
-        app.chart_dlg_id = gen_id('ucf-chart-dlg');
-        chart_menu.attr('id', app.chart_dlg_id);
+        $app.data('chart_dlg_id', gen_id('ucf-chart-dlg'));
+        chart_menu.attr('id', $app.data('chart_dlg_id'));
         chart_menu.append(table);
 
         chart_menu.dialog({
@@ -137,7 +141,7 @@
     }
 
     function sample_char_links(app) {
-        var chars = app.options.sample_chars;
+        var chars = $(app).data('options').sample_chars;
 
         var div = $(
             '<div class="sample-wrap" title="click character to select">'
@@ -162,14 +166,12 @@
 
     function execute_search(target, app, response, inp) {
         var result = [ ];
-        var chart  = app.code_chart;
-        var codes  = app.code_list;
-        var len    = codes.length;
+        var len    = code_list.length;
         var code, char, character, div;
         for(var i = 0; i < len; i++) {
             if(result.length > 10) { break };
-            code = codes[i];
-            char = chart[code];
+            code = code_list[i];
+            char = code_chart[code];
             if(
                 char.description.indexOf(target) >= 0
                 || (char.alias && char.alias.indexOf(target) >= 0)
@@ -216,19 +218,20 @@
     }
 
     function examine_char(app, inp) {
+        var $app = $(app);
         var char = inp.val();
-        if(char == app.last_char) {
+        if(char == $app.data('last_char')) {
             return;
         }
         if(char.length == 0) {
             $(app).find('div.char-info');
             return;
         }
-        app.last_char = char;
+        $app.data('last_char', char);
         var code  = string_to_codepoint(char);
         var hex   = dec2hex(code, 4);
         var block = codepoint_to_block(app, code);
-        char      = app.code_chart[hex];
+        char      = code_chart[hex];
 
         var table = $('<table />')
         table.append(
@@ -267,15 +270,15 @@
                 )
             );
         }
-        $(app).find('div.char-info').empty().append(table);
+        $app.find('div.char-info').empty().append(table);
     }
 
     function increment_code_point(app, inp, inc) {
-        var char = app.last_char
+        var char = $(app).data('last_char');
         if(!char) { return; }
         var code = string_to_codepoint(char) + inc;
         var hex  = dec2hex(code, 4);
-        while(!app.code_chart[hex]) {
+        while(!code_chart[hex]) {
             code = code + inc;
             if(code < 0) { return; }
             hex = dec2hex(code, 4);
@@ -290,7 +293,7 @@
         var code = string_to_codepoint(char_inp.val());
         var rect = $(app)[0].getBoundingClientRect();
         set_code_chart_page(app, null, code);
-        $('#' + app.chart_dlg_id)
+        $('#' + $(app).data('chart_dlg_id'))
             .dialog('option', 'position', [rect.left - 1, 248])
             .dialog('open');
     }
@@ -299,9 +302,7 @@
         if(code == null) {
             code  = target_code & 0xFFF80;
         }
-        var chart = app.code_chart;
-
-        app.code_chart_base = code;
+        $(app).data('code_chart_base', code);
 
         var tbody = $('<tbody />');
         var i, j, row, cell, meta;
@@ -309,7 +310,7 @@
             row = $('<tr />');
             for(j = 0; j < 16; j++) {
                 cell = $('<td />');
-                meta = chart[dec2hex(code, 4)];
+                meta = code_chart[dec2hex(code, 4)];
                 if(meta) {
                     cell.text(codepoint_to_string(code));
                     if(code == target_code) {
@@ -324,7 +325,7 @@
             }
             tbody.append(row);
         }
-        $('#' + app.chart_dlg_id + ' table.ucf-code-chart')
+        $('#' + $(app).data('chart_dlg_id') + ' table.ucf-code-chart')
             .empty()
             .append(tbody);
     }
@@ -332,7 +333,7 @@
     function code_chart_click(e, app) {
         var table_rect = e.currentTarget.getBoundingClientRect();
         var td = e.originalTarget;
-        var code = app.code_chart_base;
+        var code = $(app).data('code_chart_base');
         $(td).prevAll().each(function() { code++; });
         $(td).parent().prevAll().each(function() { code += 16; });
         var char_inp = $(app).find('input.char');
@@ -343,7 +344,7 @@
     }
 
     function change_chart_page(app, incr) {
-        var code_base = app.code_chart_base;
+        var code_base = $(app).data('code_chart_base');
         if(incr < 0  &&  code_base == 0) {
             return;
         }
@@ -401,9 +402,9 @@
             }
             i = j + 1;
         }
-        app.code_chart  = chart;
-        app.code_list   = codes;
-        app.code_blocks = blocks;
+        code_list   = codes;
+        code_blocks = blocks;
+        code_chart  = chart;
     }
 
     function codepoint_to_string(i) {
@@ -425,14 +426,14 @@
     }
 
     function codepoint_to_block(app, code) {
-        for(i = 0; i < app.code_blocks.length; i++) {
-            if(code > app.code_blocks[i].end_dec){
+        for(i = 0; i < code_blocks.length; i++) {
+            if(code > code_blocks[i].end_dec){
                 continue;
             }
-            if(code < app.code_blocks[i].start){
+            if(code < code_blocks[i].start){
                 return;
             }
-            return app.code_blocks[i];
+            return code_blocks[i];
         }
         return;
     }
