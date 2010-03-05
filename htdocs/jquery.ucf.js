@@ -83,9 +83,9 @@
         var inp = $('<input type="text" class="char" title="Type or paste a character" />');
         var span = $('<span class="char-buttons" />')
         span.append(
-            $('<button type="button" class="char-prev" title="Previous character">◂</button>'),
-            $('<button type="button" class="char-menu" title="Show code chart">▾</button>'),
-            $('<button type="button" class="char-next" title="Next character">▸</button>')
+            $('<button type="button" class="char-prev" title="Previous character">&#9666;</button>'),
+            $('<button type="button" class="char-menu" title="Show code chart">&#9662;</button>'),
+            $('<button type="button" class="char-next" title="Next character">&#9656;</button>')
         );
 
         panel1.append( label1, inp, span );
@@ -145,7 +145,7 @@
 
         var div = $(
             '<div class="sample-wrap" title="click character to select">'
-            + 'Examples … </div>'
+            + 'Examples &#8230; </div>'
         );
 
         var list = $('<ul></ul>');
