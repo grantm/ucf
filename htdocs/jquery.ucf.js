@@ -5,7 +5,6 @@
 
         $(this).each(function(x) {
             $(this).data('options', options);
-            load_unicode_data(this);
             build_app(this);
         });
 
@@ -28,19 +27,47 @@
     }
 
     function build_app(app) {
+        var $app = $(app);
+        $app.hide();
+        start_loading_splash(app);
+
+        load_unicode_data(app);
+
         add_font_dialog(app);
         add_help_dialog(app);
 
         var form = $('<form class="ucf-app empty"></form>');
         form.submit(function() { return false; });
-        $(app).append(form);
+        $app.append(form);
 
         form.append( char_info_pane(app, form) );
         form.append( char_search_field(app, form) );
         form.append( sample_char_links(app) );
         form.append( build_code_chart_dialog(app) );
 
-        $(app).find('input.search').focus();
+        $app.find('input.search').focus();
+    }
+
+    function start_loading_splash(app) {
+        var id  = gen_id('ucf-splash-dlg')
+        var div = $('<div />').attr('id', id);
+        div.append('<p class="ucf-loading">Please wait &#8230; </p>');
+        $(app).data('splash_dlg_id', id);
+        div.dialog({
+            autoOpen:      true,
+            title:         "Loading",
+            resizable:     false,
+            closeOnEscape: false,
+            modal:         true,
+            width:         300,
+            height:        150
+        });
+    }
+
+    function enable_ui(app) {
+        $('#' + $(app).data('splash_dlg_id'))
+            .dialog('close');
+        $(app).slideDown(600);
     }
 
     function add_font_dialog(app) {
@@ -515,6 +542,7 @@
         code_list   = codes;
         code_blocks = blocks;
         code_chart  = chart;
+        enable_ui(app);
     }
 
     function codepoint_to_string(i) {
