@@ -6,7 +6,7 @@
   * uXXXXuXXXX => hex surrogate pair
   * q=...      => search query
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
-* accept encoded hex bytes and decode to char
+* accept encoded hex bytes
 * display search results in a persistent, scrolling list
 * make next/prev buttons repeat when held down
 * support scroll wheel in char-input box
@@ -14,4 +14,4 @@
 * add "Fork me" link
 
 * Anomalous displays:
-  * Hangul Syllable, First displayed, but rest not because no descriptions
+  * Hangul Syllable AC00, First displayed, but rest not because no descriptions

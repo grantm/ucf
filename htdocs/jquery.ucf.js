@@ -28,6 +28,8 @@
     }
 
     function build_app(app) {
+        add_help_dialog(app);
+
         var form = $('<form class="ucf-app empty"></form>');
         form.submit(function() { return false; });
         $(app).append(form);
@@ -38,6 +40,30 @@
         form.append( build_code_chart_dialog(app) );
 
         $(app).find('input.search').focus();
+    }
+
+    function add_help_dialog(app) {
+        var sel = $(app).data('options').help_selector;
+        if(sel) {
+            var help_div = $(sel);
+            if(help_div[0]) {
+                var help = $('<div class="ucf-tab-help" />');
+                help_div.dialog({
+                    autoOpen:      false,
+                    title:         "Using the Unicode Character Finder",
+                    resizable:     true,
+                    closeOnEscape: true,
+                    modal:         true,
+                    width:         600,
+                    height:        400,
+                    buttons:       {
+                        "Close": function() { $(this).dialog("close"); }
+                    }
+                });
+                help.click(function() { help_div.dialog('open'); });
+                $(app).append(help);
+            }
+        }
     }
 
     function char_search_field(app, form) {

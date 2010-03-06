@@ -83,7 +83,7 @@ form.ucf-app div.search-wrap input.search {
 }
 
 form.ucf-app div.search-wrap input.search.busy {
-  background: #eeeeee url(throbber.gif) no-repeat scroll center right;
+  background: #eeeeee url(images/throbber.gif) no-repeat scroll center right;
 }
 
 form.ucf-app div.char-wrap {
@@ -289,4 +289,51 @@ table.ucf-code-chart td.curr-char {
 
 div.ui-dialog-buttonpane {
   font-weight: bold;
+}
+
+div.ucf-tab-font {
+  width: 32px;
+  height: 62px;
+  background-image: url(images/tabs.png);
+  background-position: 0px -78px;
+  position: absolute;
+  top: 25px;
+  left: -32px;
+}
+
+div.ucf-tab-font:hover {
+  background-position: 0px 0px;
+  cursor: pointer;
+}
+
+div.ucf-tab-help {
+  width: 32px;
+  height: 62px;
+  background-image: url(images/tabs.png);
+  background-position: 0px -233px;
+  position: absolute;
+  top: 25px;
+  left: 700px;
+}
+
+div.ucf-tab-help:hover {
+  background-position: 0px 153px;
+  cursor: pointer;
+}
+
+#ucf-help {
+  background-color: white;
+}
+
+#ucf-help h1 {
+  color: #ff9b08;
+  background-color: transparent;
+  font-size: 140%;
+  text-align: left;
+  padding: 0;
+  margin: 1.0em 0 0.2em 0;
+}
+
+#ucf-help p {
+  margin: 0.4em 0 1em 0;
 }
