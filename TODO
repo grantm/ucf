@@ -1,5 +1,4 @@
 * add copyright/license
-* support /regex/ searches
 * display JS surrogate pair chars for > xFFFF
 * process query string:
   * nnnn       => decimal codepoint
@@ -7,9 +6,8 @@
   * uXXXXuXXXX => hex surrogate pair
   * q=...      => search query
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
-* accept encoded hex bytes
-* add UTF-8 bytes support
-* display search results in a persistent list
+* accept encoded hex bytes and decode to char
+* display search results in a persistent, scrolling list
 * make next/prev buttons repeat when held down
 * support scroll wheel in char-input box
 * allow user font selections

@@ -13,7 +13,7 @@
     };
 
     $.fn.ucf.defaults = {
-        sample_chars: [ 169, 233, 256, 257, 8364, 8451, 9733, 9731 ]
+        sample_chars: [ 169, 233, 256, 257, 8364, 8451, 9733, 9731, 119558 ]
     }
 
     // Data shared across all functions
@@ -49,11 +49,19 @@
             delay: 900,
             minLength: 1,
             source: function(request, response) {
-                var target = request.term.toUpperCase();
+                var target = request.term;
                 if(target != '') {
+                    var search_func = execute_search;
+                    if(target.charAt(0) == '/') {
+                        if(target.length < 3 || target.charAt(target.length - 1) != '/') {
+                            return;
+                        }
+                        target = target.substr(1, target.length - 2);
+                        search_func = execute_regex_search;
+                    }
                     inp.addClass('busy');
                     setTimeout(function() {
-                        execute_search(target, app, response, inp);
+                        search_func(target, app, response, inp);
                     }, 2 );
                 }
             },
@@ -165,6 +173,7 @@
     }
 
     function execute_search(target, app, response, inp) {
+        target     = target.toUpperCase();
         var result = [ ];
         var len    = code_list.length;
         var code, char, character, div;
@@ -175,6 +184,40 @@
             if(
                 char.description.indexOf(target) >= 0
                 || (char.alias && char.alias.indexOf(target) >= 0)
+            ) {
+                character = codepoint_to_string(hex2dec(code));
+                div = $('<div />').text(char.description);
+                if(char.alias) {
+                    div.append( $('<span class="code-alias" />').text(char.alias) );
+                }
+                result.push({
+                    'code': code,
+                    'character': character,
+                    'label': '<div class="code-point">U+' + code + '</div>'
+                             + '<div class="code-sample">&#160;' + character
+                             + '</div><div class="code-descr">' + div.html()
+                             + '</div>'
+                });
+            }
+        }
+        if(result.length == 0) {
+            inp.removeClass('busy');
+        }
+        response(result);
+    }
+
+    function execute_regex_search(target, app, response, inp) {
+        var pattern = new RegExp(target, 'i');
+        var result = [ ];
+        var len    = code_list.length;
+        var code, char, character, div;
+        for(var i = 0; i < len; i++) {
+            if(result.length > 10) { break };
+            code = code_list[i];
+            char = code_chart[code];
+            if(
+                pattern.test(char.description)
+                || (char.alias && pattern.test(char.description))
             ) {
                 character = codepoint_to_string(hex2dec(code));
                 div = $('<div />').text(char.description);
