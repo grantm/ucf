@@ -214,7 +214,7 @@
     function build_code_chart_dialog(app) {
         var $app = $(app);
         var table = $('<table class="ucf-code-chart"></table>');
-        table.click(function(e) { code_chart_click(e, app) });
+        table.delegate('td', 'click', function() { code_chart_click(this, app); });
 
         var chart_menu = $('<div class="ucf-chart-menu" />');
         $app.data('chart_dlg_id', gen_id('ucf-chart-dlg'));
@@ -461,17 +461,16 @@
             .append(tbody);
     }
 
-    function code_chart_click(e, app) {
-        var table_rect = e.currentTarget.getBoundingClientRect();
-        var td = e.originalTarget;
+    function code_chart_click(el, app) {
+        var $el = $(el);
         var code = $(app).data('code_chart_base');
-        $(td).prevAll().each(function() { code++; });
-        $(td).parent().prevAll().each(function() { code += 16; });
+        $el.prevAll().each(function() { code++; });
+        $el.parent().prevAll().each(function() { code += 16; });
         var char_inp = $(app).find('input.char');
         char_inp.val(codepoint_to_string(code));
         char_changed(app, char_inp);
-        $(e.currentTarget).find('td').removeClass('curr-char');
-        $(e.originalTarget).addClass('curr-char');
+        $el.parent().parent().find('td').removeClass('curr-char');
+        $el.addClass('curr-char');
     }
 
     function change_chart_page(app, incr) {
