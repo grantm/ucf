@@ -51,12 +51,27 @@ body .ui-state-default {
   color: #333333 !important;
 }
 
+div.ucf-splash-dlg p {
+  font-size: 120%;
+  margin: 1.6em auto 1.6em auto;
+}
+
+div.ucf-splash-dlg p.error {
+  color: #AA0000;
+  font-weight: bold;
+}
+
 p.ucf-loading {
   font-size: 130%;
   width: 7em;
   padding-right: 20px;
   background: #eeeeee url(images/throbber.gif) no-repeat scroll center right;
   margin: 2em auto 2em auto;
+}
+
+div.ucf-splash-dlg p span.ui-icon {
+  float: left;
+  margin-right: 0.6em;
 }
 
 #my-ucf {

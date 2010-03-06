@@ -44,13 +44,11 @@
         form.append( char_search_field(app, form) );
         form.append( sample_char_links(app) );
         form.append( build_code_chart_dialog(app) );
-
-        $app.find('input.search').focus();
     }
 
     function start_loading_splash(app) {
         var id  = gen_id('ucf-splash-dlg')
-        var div = $('<div />').attr('id', id);
+        var div = $('<div class="ucf-splash-dlg"/>').attr('id', id);
         div.append('<p class="ucf-loading">Please wait &#8230; </p>');
         $(app).data('splash_dlg_id', id);
         div.dialog({
@@ -59,15 +57,25 @@
             resizable:     false,
             closeOnEscape: false,
             modal:         true,
-            width:         300,
+            width:         350,
             height:        150
+        });
+        div.ajaxError(function(e, req, settings, error) {
+            $(this).html(
+                '<p class="error">'
+                + '<span class="ui-icon ui-icon-alert"></span>'
+                + 'Failed to load Unicode character data.</p>'
+                + '<p>Have you run <code>make-data-file</code>?</p>'
+            );
         });
     }
 
     function enable_ui(app) {
         $('#' + $(app).data('splash_dlg_id'))
             .dialog('close');
-        $(app).slideDown(600);
+        $(app).slideDown(600, function() {
+            $(app).find('input.search').focus();
+        });
     }
 
     function add_font_dialog(app) {
