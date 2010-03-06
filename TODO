@@ -1,4 +1,5 @@
 * add copyright/license
+* handle missing data files cleanly
 * display JS surrogate pair chars for > xFFFF
 * process query string:
   * nnnn       => decimal codepoint
