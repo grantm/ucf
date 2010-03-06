@@ -455,14 +455,14 @@
                     'end_dec'  : hex2dec(row[2]),
                     'title'    : row[3],
                     'filename' : row[4],
-                    'pdf_url'  : row[5],
+                    'pdf_url'  : row[5]
                 };
                 blocks.push(block);
             }
             else {
                 code = row.shift();
                 chart[code] = {
-                    'description': row[0],
+                    'description': row[0]
                 };
                 if(row[1] && row[1].length > 0) {
                     chart[code].alias = row[1];
