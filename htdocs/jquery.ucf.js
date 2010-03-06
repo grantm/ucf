@@ -28,6 +28,7 @@
     }
 
     function build_app(app) {
+        add_font_dialog(app);
         add_help_dialog(app);
 
         var form = $('<form class="ucf-app empty"></form>');
@@ -42,12 +43,45 @@
         $(app).find('input.search').focus();
     }
 
+    function add_font_dialog(app) {
+        var $app = $(app);
+        var font_tab = $('<div class="ucf-tab-font" />');
+        $app.append(font_tab);
+
+        var help_div = $('<div class="ucf-font-menu" />');
+        $app.data('font_dlg_id', gen_id('ucf-font-dlg'));
+        help_div.attr('id', $app.data('font_dlg_id'));
+        var inp = $('<input type="text" class="ucf-font" />');
+        help_div.append(
+            $('<p>Font name</p>'),
+            inp
+        );
+
+        help_div.dialog({
+            autoOpen:      false,
+            title:         "Font Selection",
+            resizable:     false,
+            closeOnEscape: true,
+            width:         220,
+            height:        160,
+            buttons:       {
+                "Save":  function() {
+                    save_font(app, inp);
+                    $(this).dialog("close");
+                },
+                "Cancel": function() { $(this).dialog("close"); }
+            }
+        });
+
+        font_tab.click(function() { help_div.dialog('open'); });
+    }
+
     function add_help_dialog(app) {
         var sel = $(app).data('options').help_selector;
         if(sel) {
             var help_div = $(sel);
             if(help_div[0]) {
-                var help = $('<div class="ucf-tab-help" />');
+                var help_tab = $('<div class="ucf-tab-help" />');
                 help_div.dialog({
                     autoOpen:      false,
                     title:         "Using the Unicode Character Finder",
@@ -60,8 +94,8 @@
                         "Close": function() { $(this).dialog("close"); }
                     }
                 });
-                help.click(function() { help_div.dialog('open'); });
-                $(app).append(help);
+                help_tab.click(function() { help_div.dialog('open'); });
+                $(app).append(help_tab);
             }
         }
     }
@@ -114,7 +148,7 @@
 
         var panel1 = $('<div class="char-preview"></div>');
         var label1 = $('<div class="char-preview-label">Character<br />Preview</div>');
-        var inp = $('<input type="text" class="char" title="Type or paste a character" />');
+        var inp = $('<input type="text" class="char needs-font" title="Type or paste a character" />');
         var span = $('<span class="char-buttons" />')
         span.append(
             $('<button type="button" class="char-prev" title="Previous character">&#9666;</button>'),
@@ -419,6 +453,13 @@
         }
         code_base = code_base + (incr * 128);
         set_code_chart_page(app, code_base, null);
+    }
+
+    function save_font(app, inp) {
+        var new_font = inp.val();
+        $(app).find('.needs-font').css({'fontFamily': new_font});
+        $('#' + $(app).data('chart_dlg_id') + ' table.ucf-code-chart')
+            .css({'fontFamily': new_font});
     }
 
     function dec2hex(dec, len) {
