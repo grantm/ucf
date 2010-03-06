@@ -10,7 +10,7 @@
 * display search results in a persistent, scrolling list
 * make next/prev buttons repeat when held down
 * support scroll wheel in char-input box
-* allow user font selections
+* enumerate installed fonts for autocomplete
 * add "Fork me" link
 
 * Anomalous displays:

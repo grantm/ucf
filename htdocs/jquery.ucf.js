@@ -75,16 +75,17 @@
         var font_tab = $('<div class="ucf-tab-font" />');
         $app.append(font_tab);
 
-        var help_div = $('<div class="ucf-font-menu" />');
+        var div = $('<div class="ucf-font-menu" />');
         $app.data('font_dlg_id', gen_id('ucf-font-dlg'));
-        help_div.attr('id', $app.data('font_dlg_id'));
-        var inp = $('<input type="text" class="ucf-font" />');
-        help_div.append(
+        div.attr('id', $app.data('font_dlg_id'));
+        var inp = $('<input type="text" class="ucf-font" />')
+            .css({'width': '180px'});;
+        div.append(
             $('<p>Font name</p>'),
             inp
         );
 
-        help_div.dialog({
+        div.dialog({
             autoOpen:      false,
             title:         "Font Selection",
             resizable:     false,
@@ -100,7 +101,7 @@
             }
         });
 
-        font_tab.click(function() { help_div.dialog('open'); });
+        font_tab.click(function() { div.dialog('open'); });
     }
 
     function add_help_dialog(app) {
