@@ -47,6 +47,10 @@ h1 {
   white-space: nowrap;
 }
 
+body .ui-state-default {
+  color: #333333 !important;
+}
+
 p.ucf-loading {
   font-size: 130%;
   width: 7em;
