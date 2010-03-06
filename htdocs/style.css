@@ -83,7 +83,7 @@ form.ucf-app div.search-wrap input.search {
 }
 
 form.ucf-app div.search-wrap input.search.busy {
-  background: #eeeeee url(throbber.gif) no-repeat scroll 3px 5px;
+  background: #eeeeee url(throbber.gif) no-repeat scroll center right;
 }
 
 form.ucf-app div.char-wrap {
