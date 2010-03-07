@@ -10,25 +10,31 @@ html, body {
   min-height: 100%;
   height: auto !important;
   height: 100%;
-  margin: 0 auto -35px;
+  margin: 0 auto -70px;
   padding-bottom: 320px;
 }
 
 .footer, .push {
-  height: 35px;
+  height: 70px;
 }
 
 .footer {
   color: #999999;
   background-color: #000000;
-  font-size: 11px;
-  text-align: center;
+  font-size: 12px;
+  line-height: 150%;
 }
 
-.footer ul {
-  padding: 10px 0 0 0;
-  list-style: none;
+.footer a {
+  color: #ff9b08;
+  text-decoration: none;
 }
+.footer a:visited { color: #ff9b08; }
+.footer a:hover { text-decoration: underline; }
+
+.subfoot1 { padding: 0.8em; float: left; text-align: left; }
+.subfoot2 { padding: 0.8em; text-align: center; }
+.subfoot3 { padding: 0.8em; float: right; text-align: right; }
 
 body {
   margin: 0;
