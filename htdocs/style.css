@@ -89,13 +89,13 @@ div.ucf-splash-dlg p span.ui-icon {
 }
 
 form.ucf-app a {
-  color: #C77405;
+  color: #ff9b08;
   font-weight: bold;
   text-decoration: none;
 }
 
 form.ucf-app a:visited {
-  color: #C77405;
+  color: #ff9b08;
 }
 
 form.ucf-app a:hover {
@@ -370,3 +370,18 @@ div.ucf-tab-help:hover {
 #ucf-help p {
   margin: 0.4em 0 1em 0;
 }
+
+#fork-me {
+  display: block;
+  width: 56px;
+  height: 56px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-image: url(images/fork-me.png);
+}
+
+#fork-me:hover {
+  background-image: url(images/fork-me-hi.png);
+}
+

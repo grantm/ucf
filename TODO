@@ -1,4 +1,3 @@
-* add copyright/license
 * display JS surrogate pair chars for > xFFFF
 * process query string:
   * nnnn       => decimal codepoint
@@ -11,7 +10,7 @@
 * make next/prev buttons repeat when held down
 * support scroll wheel in char-input box
 * enumerate installed fonts for autocomplete
-* add "Fork me" link
+* save font selection in cookie
 
 * Anomalous displays:
   * Hangul Syllable AC00, First displayed, but rest not because no descriptions
