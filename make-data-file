@@ -48,6 +48,8 @@ my @col_names = qw(
 open my $fh,  '<', $src_file  or die "open($src_file): $!";
 open my $out, '>', $data_file or die "open(>$data_file): $!";
 
+print "Generating $data_file\n";
+
 while(<$fh>) {
     chomp;
     my @val = split /;/, $_, scalar(@col_names);
@@ -91,3 +93,4 @@ while(<$fh>) {
     }
 }
 
+print "Done.\n";
