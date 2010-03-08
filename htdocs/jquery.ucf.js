@@ -98,8 +98,19 @@
 
     function process_querystring(app) {
         var args = jQuery.deparam(jQuery.param.querystring());
-        if(args.c && args.c.match(/^U[ +]([0-9A-F]{4,7})$/i)) {
+        // c=U+XXXX
+        if(args.c && args.c.match(/^U[ +]([0-9A-Fa-f]{4,7})$/)) {
             set_preview_char(app, codepoint_to_string( hex2dec(RegExp.$1) ) );
+        }
+        // c=999
+        else if(args.c && args.c.match(/^(\d+){1,9}$/)) {
+            set_preview_char(app, codepoint_to_string( parseInt(RegExp.$1) ) );
+        }
+        // c=uXXXXuXXXX
+        else if(args.c && args.c.match(/^u([0-9A-Fa-f]{4})u([0-9A-Fa-f]{4})$/)) {
+            var str = String.fromCharCode( hex2dec(RegExp.$1) )
+                    + String.fromCharCode( hex2dec(RegExp.$2) );
+            set_preview_char(app, str );
         }
     }
 
