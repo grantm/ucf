@@ -185,7 +185,11 @@
     }
 
     function char_search_field(app, form) {
-        var div = $('<div class="search-wrap"><label>Search character descriptions:</label><br></div>');
+        var div = $(
+            '<div class="search-wrap empty"><label>Search character descriptions:'
+            + '<a class="search-link" title="Link to this search">&#167;</a>'
+            + '</label><br></div>'
+        );
         var inp = $('<input type="text" class="search" />');
         div.append(inp);
 
@@ -194,6 +198,7 @@
             minLength: 1,
             source: function(request, response) {
                 var target = request.term;
+                set_search_link(app);
                 if(target != '') {
                     var search_func = execute_search;
                     if(target.charAt(0) == '/') {
@@ -220,9 +225,24 @@
                 window.scrollTo(0,0);
                 return false;
             }
-        })
+        });
+
+        inp.keyup(function() { set_search_link(app) });
+        inp.blur( function() { set_search_link(app) });
 
         return div;
+    }
+
+    function set_search_link(app) {
+        var str = $('input.search', app).val();
+        if(str.length == 0) {
+            $('div.search-wrap', app).addClass('empty');
+        }
+        else {
+            $('div.search-wrap', app).removeClass('empty');
+            var link = jQuery.param.querystring('?', { q: str });
+            $('a.search-link', app).attr('href', link);
+        }
     }
 
     function char_info_pane(app, form) {
@@ -235,7 +255,8 @@
         span.append(
             $('<button type="button" class="char-prev" title="Previous character">&#9666;</button>'),
             $('<button type="button" class="char-menu" title="Show code chart">&#9662;</button>'),
-            $('<button type="button" class="char-next" title="Next character">&#9656;</button>')
+            $('<button type="button" class="char-next" title="Next character">&#9656;</button>'),
+            $('<a class="char-link" title="Link to this character">&#167;</a>')
         );
 
         panel1.append( label1, inp, span );
@@ -415,6 +436,7 @@
         var hex   = dec2hex(code, 4);
         var block = codepoint_to_block(app, code);
         char      = code_chart[hex];
+        $app.find('a.char-link').attr('href', '?c=U+' + hex);
 
         var table = $('<table />')
         table.append(

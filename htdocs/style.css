@@ -119,6 +119,19 @@ form.ucf-app div.search-wrap input.search.busy {
   background: #eeeeee url(images/throbber.gif) no-repeat scroll center right;
 }
 
+form.ucf-app div.search-wrap.empty a.search-link {
+  visibility: hidden;
+}
+
+form.ucf-app div.search-wrap a.search-link {
+  padding: 0 6px;
+  color: #bbbbbb;
+}
+
+form.ucf-app div.search-wrap a.search-link:hover {
+  color: #ff9b08;
+}
+
 form.ucf-app div.char-wrap {
   background-color: #eeeeee;
   float: left;
@@ -207,6 +220,20 @@ form.ucf-app span.char-buttons button {
 
 form.ucf-app.empty span.char-buttons button {
   visibility: hidden;
+}
+
+form.ucf-app.empty span.char-buttons a.char-link {
+  visibility: hidden;
+}
+
+form.ucf-app span.char-buttons a.char-link {
+  font-size: 18px;
+  padding: 0 4px;
+  color: #bbbbbb;
+}
+
+form.ucf-app span.char-buttons a.char-link:hover {
+  color: #ff9b08;
 }
 
 form.ucf-app div.sample-wrap {
