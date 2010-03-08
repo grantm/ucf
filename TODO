@@ -1,9 +1,6 @@
+* update title of code chart dialog to show character range
+* add drop-down to select code chart blocks
 * display JS surrogate pair chars for > xFFFF
-* process query string:
-  * nnnn       => decimal codepoint
-  * xXXXX      => hex codepoint
-  * uXXXXuXXXX => hex surrogate pair
-  * q=...      => search query
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
 * accept encoded hex bytes
 * display search results in a persistent, scrolling list
@@ -13,4 +10,5 @@
 * save font selection in cookie
 
 * Anomalous displays:
+  * Search for: link vs /link/
   * Hangul Syllable AC00, First displayed, but rest not because no descriptions
