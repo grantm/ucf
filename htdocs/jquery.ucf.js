@@ -93,6 +93,20 @@
         $(app).slideDown(600, function() {
             $(app).find('input.search').focus();
         });
+        process_querystring(app);
+    }
+
+    function process_querystring(app) {
+        var args = jQuery.deparam(jQuery.param.querystring());
+        if(args.c && args.c.match(/^U[ +]([0-9A-F]{4,7})$/i)) {
+            set_preview_char(app, codepoint_to_string( hex2dec(RegExp.$1) ) );
+        }
+    }
+
+    function set_preview_char(app, new_char) {
+        var inp = $('input.char', app);
+        inp.val(new_char);
+        char_changed(app, inp);
     }
 
     function add_font_dialog(app) {
@@ -185,9 +199,7 @@
                 return false;
             },
             select: function(e, ui) {
-                var char_inp = $(app).find('input.char');
-                char_inp.val(ui.item.character);
-                char_changed(app, char_inp);
+                set_preview_char(app, ui.item.character);
                 window.scrollTo(0,0);
                 return false;
             }
@@ -278,9 +290,7 @@
         div.append(list);
 
         list.find('li').click(function (event) {
-            var inp = $(app).find('input.char');
-            inp.val($(this).text());
-            char_changed(app, inp);
+            set_preview_char(app, $(this).text());
         });
         return div;
     }
@@ -439,8 +449,7 @@
             if(code < 0) { return; }
             hex = dec2hex(code, 4);
         }
-        inp.val(codepoint_to_string(code));
-        examine_char(app, inp);
+        set_preview_char(app, codepoint_to_string(code));
     }
 
     function display_chart_menu(app) {
@@ -491,9 +500,7 @@
         var code = $(app).data('code_chart_base');
         $el.prevAll().each(function() { code++; });
         $el.parent().prevAll().each(function() { code += 16; });
-        var char_inp = $(app).find('input.char');
-        char_inp.val(codepoint_to_string(code));
-        char_changed(app, char_inp);
+        set_preview_char(app, codepoint_to_string(code));
         $el.parent().parent().find('td').removeClass('curr-char');
         $el.addClass('curr-char');
     }
