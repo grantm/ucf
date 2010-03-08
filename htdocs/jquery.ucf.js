@@ -112,6 +112,12 @@
                     + String.fromCharCode( hex2dec(RegExp.$2) );
             set_preview_char(app, str );
         }
+        // q=????
+        else if(args.q) {
+            var inp = $('input.search', app);
+            inp.val(args.q);
+            inp.autocomplete('search');
+        }
     }
 
     function set_preview_char(app, new_char) {
