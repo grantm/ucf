@@ -53,6 +53,15 @@ h1 {
   white-space: nowrap;
 }
 
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+ul li {
+  margin: 0.2em 0 0.2em 1.4em;
+  padding: 0;
+}
 body .ui-state-default {
   color: #333333 !important;
 }
@@ -88,17 +97,20 @@ div.ucf-splash-dlg p span.ui-icon {
   font-size: 16px;
 }
 
-form.ucf-app a {
+form.ucf-app a,
+div#ucf-help a {
   color: #ff9b08;
   font-weight: bold;
   text-decoration: none;
 }
 
-form.ucf-app a:visited {
+form.ucf-app a:visited,
+div#ucf-help a:visited {
   color: #ff9b08;
 }
 
-form.ucf-app a:hover {
+form.ucf-app a:hover,
+div#ucf-help a:hover {
   text-decoration: underline;
 }
 
@@ -264,6 +276,7 @@ form.ucf-app div.sample-wrap ul li {
 }
 
 form.ucf-app.empty div.char-info table {
+  float: left;
   visibility: hidden;
 }
 
@@ -410,5 +423,11 @@ div.ucf-tab-help:hover {
 
 #fork-me:hover {
   background-position: 0px -56px;
+}
+
+ul#sample-bookmarks li a {
+  display: block;
+  float: left;
+  width: 8.5em;
 }
 
