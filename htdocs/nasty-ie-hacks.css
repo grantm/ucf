@@ -1,0 +1,19 @@
+
+form.ucf-app div.char-wrap div.char-props {
+  width: 375px;
+}
+
+#my-ucf form.ucf-app div.char-wrap span.char-buttons,
+#my-ucf form.ucf-app div.char-wrap span.char-buttons button,
+#my-ucf form.ucf-app div.char-wrap span.char-buttons a.char-link
+{
+  visibility: visible !important;
+}
+
+#my-ucf form.ucf-app div.char-wrap span.char-buttons a.char-link {
+  padding: 0;
+}
+
+#my-ucf form.ucf-app div.sample-wrap {
+  display: none;
+}
