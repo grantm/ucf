@@ -19,100 +19,102 @@
 </head>
 <body>
 
-  <noscript>
-    <p>This Javascript application allows you to search and browse the Unicode
-    character charts.  It will also help you determine the syntax for entering
-    characters into web pages or the source code of programs you are
-    developing.  The program is free software: you can redistribute it and/or
-    modify it under the terms of the GNU Affero General Public License.</p>
-  </noscript>
-
   <div class="content">
 
     <h1>Unicode Character Finder<a id="fork-me" alt="Fork me on GitHub" title="Fork me on GitHub" href="http://github.com/grantm/ucf"></a></h1>
 
+    <noscript>
+
+      <p>This Javascript application allows you to search and browse the
+      Unicode character charts.  It will also help you determine the syntax for
+      entering characters into web pages or the source code of programs you are
+      developing.  The program is free software: you can redistribute it and/or
+      modify it under the terms of the GNU Affero General Public License.</p>
+
+    </noscript>
+
     <div id="my-ucf"></div>
 
+    <div id="ucf-help">
+
+      <p>The best way to get familiar with the Unicode Character Finder is to
+      play with it - type in the boxes, push the buttons and see where they
+      lead you.  The paragraphs below describe the available features.</p>
+
+      <h1>Inspect Character Properties</h1>
+
+      <p>The <b>character preview</b> area is intially blank. You can
+      <b>(1)</b> click in the left-hand box; <b>(2)</b> type a character or
+      copy &amp; paste from another window; and <b>(3)</b> view the character
+      properties on the right.</p>
+
+      <p><img src="images/char-props.png" alt="picture of character properties" /></p>
+
+      <p>The <b>Code point</b> number (eg: U+00E7) uniquely identifies the
+      character in the Unicode code charts.</p>
+
+      <p>The character <b>Description</b> comes from the Unicode character
+      database.  If the character has an alias (alternate description) this
+      will be displayed also.</p>
+
+      <p>The <b>HTML entity</b> is one form you can use to represent the
+      character in the source of an HTML page.  Of course if you've set up your
+      page encoding properly then you could just paste the character in.</p>
+
+      <p>The <b>Character block</b> is the descriptive name for the group of
+      characters that this one belongs to.  The name is a <i>clickable link</i>
+      to the PDF file on the Unicode web site that illustrates and describes
+      all the characters in the block.</p>
+
+      <h1>Search for a Character</h1>
+
+      <p>You can search the character descriptions by simply typing some text
+      in the search box.  After a short delay, the first 10 matches will be
+      displayed.</p>
+
+      <p><img src="images/char-search.png" alt="picture of character search" /></p>
+
+      <p>Unfortunately this is not an exhaustive search since the data file
+      does not include a description for every character.  The software also
+      does not currently provide access to more than 10 search results - this
+      will be addressed in a later release (you may be able to work around this
+      limitation by refining your search).</p>
+
+      <p>In addition to the straight text match, you can also do a <b>regular
+      expression</b> search of the character descriptions.  If your search
+      query begins and ends with the forward slash character ('/'), then the
+      search will use regular expression rules.</p>
+
+      <h1>Browse the Code Charts</h1>
+
+      <p>When a character is displayed in the <b>character preview</b> area,
+      three buttons are available beneath it:</p>
+
+      <p><img src="images/char-browse.png" alt="picture of browse buttons" /></p>
+
+      <p>The left button (◀) will display the character that precedes the
+      current selection in the character chart.  For example if the character
+      'Y' is displayed, pressing this button will display 'X'.</p>
+
+      <p>Similarly, the right button (▶) will display the character that
+      follows the current selection.</p>
+
+      <p>The middle button (▼) will display the section of the character chart
+      which includes the currently selected character.</p>
+
+      <p><img src="images/char-chart.png" alt="picture of character chart" /></p>
+
+      <p>You can click on characters in this code chart to examine their
+      properties.</p>
+
+      <p>The <b>Next</b> and <b>Prev</b> buttons display the the next and
+      previous pages of the code chart respectively.</p>
+
+      <p>&nbsp;</p>
+
+    </div>
+
     <div class="push"></div>
-  </div>
-
-  <div id="ucf-help">
-
-    <p>The best way to get familiar with the Unicode Character Finder is to
-    play with it - type in the boxes, push the buttons and see where they lead
-    you.  The paragraphs below describe the available features.</p>
-
-    <h1>Inspect Character Properties</h1>
-
-    <p>The <b>character preview</b> area is intially blank. You can <b>(1)</b>
-    click in the left-hand box; <b>(2)</b> type a character or copy &amp; paste
-    from another window; and <b>(3)</b> view the character properties on the
-    right.</p>
-
-    <p><img src="images/char-props.png" alt="picture of character properties" /></p>
-
-    <p>The <b>Code point</b> number (eg: U+00E7) uniquely identifies the
-    character in the Unicode code charts.</p>
-
-    <p>The character <b>Description</b> comes from the Unicode character
-    database.  If the character has an alias (alternate description) this
-    will be displayed also.</p>
-
-    <p>The <b>HTML entity</b> is one form you can use to represent the
-    character in the source of an HTML page.  Of course if you've set up your
-    page encoding properly then you could just paste the character in.</p>
-
-    <p>The <b>Character block</b> is the descriptive name for the group of
-    characters that this one belongs to.  The name is a <i>clickable link</i>
-    to the PDF file on the Unicode web site that illustrates and describes all
-    the characters in the block.</p>
-
-    <h1>Search for a Character</h1>
-
-    <p>You can search the character descriptions by simply typing some text
-    in the search box.  After a short delay, the first 10 matches will be
-    displayed.</p>
-
-    <p><img src="images/char-search.png" alt="picture of character search" /></p>
-
-    <p>Unfortunately this is not an exhaustive search since the data file does
-    not include a description for every character.  The software also does not
-    currently provide access to more than 10 search results - this will be
-    addressed in a later release (you may be able to work around this
-    limitation by refining your search).</p>
-
-    <p>In addition to the straight text match, you can also do a <b>regular
-    expression</b> search of the character descriptions.  If your search query
-    begins and ends with the forward slash character ('/'), then the search
-    will use regular expression rules.</p>
-
-    <h1>Browse the Code Charts</h1>
-
-    <p>When a character is displayed in the <b>character preview</b> area,
-    three buttons are available beneath it:</p>
-
-    <p><img src="images/char-browse.png" alt="picture of browse buttons" /></p>
-
-    <p>The left button (◀) will display the character that precedes the
-    current selection in the character chart.  For example if the character
-    'Y' is displayed, pressing this button will display 'X'.</p>
-
-    <p>Similarly, the right button (▶) will display the character that follows
-    the current selection.</p>
-
-    <p>The middle button (▼) will display the section of the character chart
-    which includes the currently selected character.</p>
-
-    <p><img src="images/char-chart.png" alt="picture of character chart" /></p>
-
-    <p>You can click on characters in this code chart to examine their
-    properties.</p>
-
-    <p>The <b>Next</b> and <b>Prev</b> buttons display the the next and
-    previous pages of the code chart respectively.</p>
-
-    <p>&nbsp;</p>
-
   </div>
 
   <div class="footer">
