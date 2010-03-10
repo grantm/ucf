@@ -30,7 +30,7 @@
 
     $.fn.ucf.defaults = {
         sample_chars: [ 169, 233, 256, 257, 8364, 8451, 9733, 9731, 119558 ]
-    }
+    };
 
     // Data shared across all functions
 
@@ -64,7 +64,7 @@
     }
 
     function start_loading_splash(app) {
-        var id  = gen_id('ucf-splash-dlg')
+        var id  = gen_id('ucf-splash-dlg');
         var div = $('<div class="ucf-splash-dlg"/>').attr('id', id);
         div.append('<p class="ucf-loading">Please wait &#8230; </p>');
         $(app).data('splash_dlg_id', id);
@@ -227,8 +227,8 @@
             }
         });
 
-        inp.keyup(function() { set_search_link(app) });
-        inp.blur( function() { set_search_link(app) });
+        inp.keyup(function() { set_search_link(app); });
+        inp.blur( function() { set_search_link(app); });
 
         return div;
     }
@@ -251,7 +251,7 @@
         var panel1 = $('<div class="char-preview"></div>');
         var label1 = $('<div class="char-preview-label">Character<br />Preview</div>');
         var inp = $('<input type="text" class="char needs-font" title="Type or paste a character" />');
-        var span = $('<span class="char-buttons" />')
+        var span = $('<span class="char-buttons" />');
         span.append(
             $('<button type="button" class="char-prev" title="Previous character">&#9666;</button>'),
             $('<button type="button" class="char-menu" title="Show code chart">&#9662;</button>'),
@@ -261,7 +261,7 @@
 
         panel1.append( label1, inp, span );
 
-        var cb = function() { char_changed(app, inp) };
+        var cb = function() { char_changed(app, inp); };
         inp.change( cb );
         inp.keypress(function(event) { setTimeout(cb, 50); });
         inp.mouseup(function(event) { setTimeout(cb, 50); });
@@ -337,19 +337,19 @@
         target     = target.toUpperCase();
         var result = [ ];
         var len    = code_list.length;
-        var code, char, character, div;
+        var code, ch, character, div;
         for(var i = 0; i < len; i++) {
-            if(result.length > 10) { break };
+            if(result.length > 10) { break; };
             code = code_list[i];
-            char = code_chart[code];
+            ch = code_chart[code];
             if(
-                char.description.indexOf(target) >= 0
-                || (char.alias && char.alias.indexOf(target) >= 0)
+                ch.description.indexOf(target) >= 0
+                || (ch.alias && ch.alias.indexOf(target) >= 0)
             ) {
                 character = codepoint_to_string(hex2dec(code));
-                div = $('<div />').text(char.description);
-                if(char.alias) {
-                    div.append( $('<span class="code-alias" />').text(char.alias) );
+                div = $('<div />').text(ch.description);
+                if(ch.alias) {
+                    div.append( $('<span class="code-alias" />').text(ch.alias) );
                 }
                 result.push({
                     'code': code,
@@ -371,19 +371,19 @@
         var pattern = new RegExp(target, 'i');
         var result = [ ];
         var len    = code_list.length;
-        var code, char, character, div;
+        var code, ch, character, div;
         for(var i = 0; i < len; i++) {
-            if(result.length > 10) { break };
+            if(result.length > 10) { break; };
             code = code_list[i];
-            char = code_chart[code];
+            ch = code_chart[code];
             if(
-                pattern.test(char.description)
-                || (char.alias && pattern.test(char.description))
+                pattern.test(ch.description)
+                || (ch.alias && pattern.test(ch.description))
             ) {
                 character = codepoint_to_string(hex2dec(code));
-                div = $('<div />').text(char.description);
-                if(char.alias) {
-                    div.append( $('<span class="code-alias" />').text(char.alias) );
+                div = $('<div />').text(ch.description);
+                if(ch.alias) {
+                    div.append( $('<span class="code-alias" />').text(ch.alias) );
                 }
                 result.push({
                     'code': code,
@@ -423,34 +423,34 @@
 
     function examine_char(app, inp) {
         var $app = $(app);
-        var char = inp.val();
-        if(char == $app.data('last_char')) {
+        var ch = inp.val();
+        if(ch == $app.data('last_char')) {
             return;
         }
-        if(char.length == 0) {
+        if(ch.length == 0) {
             $(app).find('div.char-info');
             return;
         }
-        $app.data('last_char', char);
-        var code  = string_to_codepoint(char);
+        $app.data('last_char', ch);
+        var code  = string_to_codepoint(ch);
         var hex   = dec2hex(code, 4);
         var block = codepoint_to_block(app, code);
-        char      = code_chart[hex];
+        ch      = code_chart[hex];
         $app.find('a.char-link').attr('href', '?c=U+' + hex);
 
-        var table = $('<table />')
+        var table = $('<table />');
         table.append(
             $('<tr />').append(
                 $('<th />').text('Code point'),
                 $('<td />').text('U+' + hex)
             )
         );
-        if(char && char.description.length > 0) {
-            var td = $('<td />').text(char.description);
-            if(char.alias) {
+        if(ch && ch.description.length > 0) {
+            var td = $('<td />').text(ch.description);
+            if(ch.alias) {
                 td.append(
                     $('<br />'),
-                    $('<span class="alias"/>').text(char.alias)
+                    $('<span class="alias"/>').text(ch.alias)
                 );
             }
             table.append(
@@ -461,6 +461,18 @@
             $('<tr />').append(
                 $('<th />').text('HTML entity'),
                 $('<td />').text('&#' + code + ';')
+            )
+        );
+        table.append(
+            $('<tr />').append(
+                $('<th />').text('UTF-8'),
+                $('<td />').text(dec2utf8(code))
+            )
+        );
+        table.append(
+            $('<tr />').append(
+                $('<th />').text('UTF-16'),
+                $('<td />').text(dec2utf16(code))
             )
         );
         if(block) {
@@ -479,9 +491,9 @@
     }
 
     function increment_code_point(app, inp, inc) {
-        var char = $(app).data('last_char');
-        if(!char) { return; }
-        var code = string_to_codepoint(char) + inc;
+        var ch = $(app).data('last_char');
+        if(!ch) { return; }
+        var code = string_to_codepoint(ch) + inc;
         var hex  = dec2hex(code, 4);
         while(!code_chart[hex]) {
             code = code + inc;
@@ -576,6 +588,40 @@
         }, 'text' );
     }
 
+	function dec2utf8(dec) {
+		if (dec < 0x80) {
+			return dec2hex(dec,2);
+		}
+		if (dec < 0x800) {
+			return dec2hex(0xC0 | (dec >> 6), 2) + " " +
+				dec2hex(0x80 | (dec & 0x3F), 2);
+		}
+		if (dec < 0x10000) {
+			return dec2hex(0xE0 | (dec >> 12), 2) + " " +
+				dec2hex(0x80 | ((dec >> 6)) & 0x3F, 2) + " " +
+				dec2hex(0x80 | (dec & 0x3F), 2);
+		}
+		if (dec < 0x110000) {
+			return dec2hex(0xF0 | (dec >> 18), 2) + " " +
+				dec2hex(0x80 | ((dec >> 12) & 0x3F), 2) + " " +
+				dec2hex(0x80 | ((dec >> 6) & 0x3F), 2) + " " +
+				dec2hex(0x80 | (dec & 0x3F), 2);			
+		}
+		return "unknown";
+	}
+
+	function dec2utf16(dec) {
+		if (dec < 0x10000) {
+			return dec2hex(dec, 4);
+		}
+		if (dec < 0x110000) {
+			dec = dec - 0x10000;
+			return dec2hex(0xD800 | (dec >> 10), 4) + " " +
+				dec2hex(0xDC00 | (dec & 0x3FF), 4);
+		}
+		return "unknown";
+	}
+
     function parse_unicode_data(app, data, status) {
         var i = 0;
         var chart  = { };
@@ -640,11 +686,11 @@
                 continue;
             }
             if(code < code_blocks[i].start){
-                return;
+                return null;
             }
             return code_blocks[i];
         }
-        return;
+        return null;
     }
 
 })(jQuery);
