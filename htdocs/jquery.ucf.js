@@ -341,7 +341,7 @@
         for(var i = 0; i < len; i++) {
             if(result.length > 10) { break; };
             code = code_list[i];
-            ch = code_chart[code];
+            ch   = code_chart[code];
             if(
                 ch.description.indexOf(target) >= 0
                 || (ch.alias && ch.alias.indexOf(target) >= 0)
@@ -375,7 +375,7 @@
         for(var i = 0; i < len; i++) {
             if(result.length > 10) { break; };
             code = code_list[i];
-            ch = code_chart[code];
+            ch   = code_chart[code];
             if(
                 pattern.test(ch.description)
                 || (ch.alias && pattern.test(ch.description))
@@ -423,7 +423,7 @@
 
     function examine_char(app, inp) {
         var $app = $(app);
-        var ch = inp.val();
+        var ch   = inp.val();
         if(ch == $app.data('last_char')) {
             return;
         }
@@ -435,7 +435,7 @@
         var code  = string_to_codepoint(ch);
         var hex   = dec2hex(code, 4);
         var block = codepoint_to_block(app, code);
-        ch      = code_chart[hex];
+        ch        = code_chart[hex];
         $app.find('a.char-link').attr('href', '?c=U+' + hex);
 
         var table = $('<table />');
@@ -588,39 +588,39 @@
         }, 'text' );
     }
 
-	function dec2utf8(dec) {
-		if (dec < 0x80) {
-			return dec2hex(dec,2);
-		}
-		if (dec < 0x800) {
-			return dec2hex(0xC0 | (dec >> 6), 2) + " " +
-				dec2hex(0x80 | (dec & 0x3F), 2);
-		}
-		if (dec < 0x10000) {
-			return dec2hex(0xE0 | (dec >> 12), 2) + " " +
-				dec2hex(0x80 | ((dec >> 6)) & 0x3F, 2) + " " +
-				dec2hex(0x80 | (dec & 0x3F), 2);
-		}
-		if (dec < 0x110000) {
-			return dec2hex(0xF0 | (dec >> 18), 2) + " " +
-				dec2hex(0x80 | ((dec >> 12) & 0x3F), 2) + " " +
-				dec2hex(0x80 | ((dec >> 6) & 0x3F), 2) + " " +
-				dec2hex(0x80 | (dec & 0x3F), 2);			
-		}
-		return "unknown";
-	}
+    function dec2utf8(dec) {
+        if(dec < 0x80) {
+            return dec2hex(dec,2);
+        }
+        if(dec < 0x800) {
+            return dec2hex(0xC0 | (dec >> 6), 2) + " "
+                + dec2hex(0x80 | (dec & 0x3F), 2);
+        }
+        if(dec < 0x10000) {
+            return dec2hex(0xE0 | (dec >> 12), 2) + " "
+                + dec2hex(0x80 | ((dec >> 6)) & 0x3F, 2) + " "
+                + dec2hex(0x80 | (dec & 0x3F), 2);
+        }
+        if(dec < 0x110000) {
+            return dec2hex(0xF0 | (dec >> 18), 2) + " "
+                + dec2hex(0x80 | ((dec >> 12) & 0x3F), 2) + " "
+                + dec2hex(0x80 | ((dec >> 6) & 0x3F), 2) + " "
+                + dec2hex(0x80 | (dec & 0x3F), 2);
+        }
+        return "unknown";
+    }
 
-	function dec2utf16(dec) {
-		if (dec < 0x10000) {
-			return dec2hex(dec, 4);
-		}
-		if (dec < 0x110000) {
-			dec = dec - 0x10000;
-			return dec2hex(0xD800 | (dec >> 10), 4) + " " +
-				dec2hex(0xDC00 | (dec & 0x3FF), 4);
-		}
-		return "unknown";
-	}
+    function dec2utf16(dec) {
+        if(dec < 0x10000) {
+            return dec2hex(dec, 4);
+        }
+        if (dec < 0x110000) {
+            dec = dec - 0x10000;
+            return dec2hex(0xD800 | (dec >> 10), 4) + " "
+                + dec2hex(0xDC00 | (dec & 0x3FF), 4);
+        }
+        return "unknown";
+    }
 
     function parse_unicode_data(app, data, status) {
         var i = 0;
