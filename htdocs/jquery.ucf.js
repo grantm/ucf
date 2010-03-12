@@ -308,18 +308,10 @@
             resizable:     false,
             closeOnEscape: true,
             width:         555,
-            height:        300,
-            //buttons:       {
-            //    "Close": function() { $(this).dialog("close"); },
-            //    "Next":  function() { change_chart_page(app, 1); },
-            //    "Prev":  function() { change_chart_page(app, -1); }
-            //}
+            height:        300
         });
 
-        var blocks = $('<select class="ucf-block-menu">').change(function() {
-            var block = code_blocks[$(this).val()];
-            set_code_chart_page(app, block.start_dec, null);
-        });
+        var blocks = $('<select class="ucf-block-menu">');
         for(var i = 0; i < code_blocks.length; i++) {
             blocks.append(
                 $('<option>').text(
@@ -327,6 +319,11 @@
                 ).attr('value', i)
             );
         }
+        blocks.change(function() {
+            var block = code_blocks[$(this).val()];
+            set_code_chart_page(app, block.start_dec & 0xFFF80, null, false);
+        });
+
         buttons.append(
             $('<button>').text('Close').button({
                 icons: { primary: 'ui-icon-circle-close' }
@@ -538,17 +535,27 @@
         var char_inp = $(app).find('input.char');
         var code = string_to_codepoint(char_inp.val());
         var rect = $(app)[0].getBoundingClientRect();
-        set_code_chart_page(app, null, code);
+        set_code_chart_page(app, null, code, true);
         $('#' + $(app).data('chart_dlg_id'))
             .dialog('option', 'position', [rect.left - 1, 248])
             .dialog('open');
     }
 
-    function set_code_chart_page(app, code, target_code) {
+    function set_code_chart_page(app, code, target_code, set_menu) {
+        var $app = $(app);
         if(code == null) {
             code  = target_code & 0xFFF80;
         }
-        $(app).data('code_chart_base', code);
+        $app.data('code_chart_base', code);
+
+        var dlg = $('#' + $(app).data('chart_dlg_id'))
+        dlg.dialog('option', 'title', 'Unicode Character Chart '
+            + dec2hex(code, 4) + ' - ' + dec2hex(code + 0x7F, 4)
+        );
+        if(set_menu) {
+            var block = codepoint_to_block(app, code);
+            $('select', dlg).val(block.index);
+        }
 
         var tbody = $('<tbody />');
         var i, j, row, cell, meta;
@@ -571,7 +578,7 @@
             }
             tbody.append(row);
         }
-        $('#' + $(app).data('chart_dlg_id') + ' table.ucf-code-chart')
+        $('#' + $app.data('chart_dlg_id') + ' table.ucf-code-chart')
             .empty()
             .append(tbody);
     }
@@ -592,7 +599,7 @@
             return;
         }
         code_base = code_base + (incr * 128);
-        set_code_chart_page(app, code_base, null);
+        set_code_chart_page(app, code_base, null, true);
     }
 
     function save_font(app, inp) {
@@ -670,7 +677,8 @@
                     'end_dec'  : hex2dec(row[2]),
                     'title'    : row[3],
                     'filename' : row[4],
-                    'pdf_url'  : row[5]
+                    'pdf_url'  : row[5],
+                    'index'    : blocks.length
                 };
                 blocks.push(block);
             }
@@ -715,7 +723,7 @@
             if(code > code_blocks[i].end_dec){
                 continue;
             }
-            if(code < code_blocks[i].start){
+            if(code < code_blocks[i].start_dec){
                 return null;
             }
             return code_blocks[i];
