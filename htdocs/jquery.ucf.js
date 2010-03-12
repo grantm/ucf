@@ -60,7 +60,6 @@
         form.append( char_info_pane(app, form) );
         form.append( char_search_field(app, form) );
         form.append( sample_char_links(app) );
-        form.append( build_code_chart_dialog(app) );
     }
 
     function start_loading_splash(app) {
@@ -88,10 +87,12 @@
     }
 
     function enable_ui(app) {
-        $('#' + $(app).data('splash_dlg_id'))
+        var $app = $(app);
+        $app.find('form').append( build_code_chart_dialog(app) );
+        $('#' + $app.data('splash_dlg_id'))
             .dialog('close');
-        $(app).slideDown(600, function() {
-            $(app).find('input.search').focus();
+        $app.slideDown(600, function() {
+            $app.find('input.search').focus();
         });
         process_querystring(app);
     }
@@ -288,13 +289,18 @@
 
     function build_code_chart_dialog(app) {
         var $app = $(app);
-        var table = $('<table class="ucf-code-chart"></table>');
-        table.delegate('td', 'click', function() { code_chart_click(this, app); });
 
-        var chart_menu = $('<div class="ucf-chart-menu" />');
+        var chart_menu = $('<div class="ucf-chart-dialog" />');
         $app.data('chart_dlg_id', gen_id('ucf-chart-dlg'));
         chart_menu.attr('id', $app.data('chart_dlg_id'));
-        chart_menu.append(table);
+
+        var wrap = $('<div class="ucf-chart-wrapper" />');
+        var table = $('<table class="ucf-code-chart"></table>');
+        table.delegate('td', 'click', function() { code_chart_click(this, app); });
+        wrap.append(table);
+
+        var buttons = $('<div class="ucf-chart-buttons" />');
+        chart_menu.append(wrap, buttons);
 
         chart_menu.dialog({
             autoOpen:      false,
@@ -302,13 +308,37 @@
             resizable:     false,
             closeOnEscape: true,
             width:         555,
-            height:        320,
-            buttons:       {
-                "Close": function() { $(this).dialog("close"); },
-                "Next":  function() { change_chart_page(app, 1); },
-                "Prev":  function() { change_chart_page(app, -1); }
-            }
+            height:        300,
+            //buttons:       {
+            //    "Close": function() { $(this).dialog("close"); },
+            //    "Next":  function() { change_chart_page(app, 1); },
+            //    "Prev":  function() { change_chart_page(app, -1); }
+            //}
         });
+
+        var blocks = $('<select class="ucf-block-menu">').change(function() {
+            var block = code_blocks[$(this).val()];
+            set_code_chart_page(app, block.start_dec, null);
+        });
+        for(var i = 0; i < code_blocks.length; i++) {
+            blocks.append(
+                $('<option>').text(
+                    code_blocks[i].start + ' ' + code_blocks[i].title
+                ).attr('value', i)
+            );
+        }
+        buttons.append(
+            $('<button>').text('Close').button({
+                icons: { primary: 'ui-icon-circle-close' }
+            }).click( function() { chart_menu.dialog("close"); }),
+            $('<button>').text('Next').button({
+                icons: { primary: 'ui-icon-circle-triangle-e' }
+            }).click( function() { change_chart_page(app, 1); }),
+            $('<button>').text('Prev').button({
+                icons: { primary: 'ui-icon-circle-triangle-w' }
+            }).click( function() { change_chart_page(app, -1); }),
+            blocks
+        );
     }
 
     function sample_char_links(app) {
