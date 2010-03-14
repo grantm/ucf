@@ -94,6 +94,7 @@
         $app.slideDown(600, function() {
             $app.find('input.search').focus();
         });
+        set_preview_char(app, '');
         process_querystring(app);
     }
 
@@ -254,9 +255,18 @@
         var inp = $('<input type="text" class="char needs-font" title="Type or paste a character" />');
         var span = $('<span class="char-buttons" />');
         span.append(
-            $('<button type="button" class="char-prev" title="Previous character">&#9666;</button>'),
-            $('<button type="button" class="char-menu" title="Show code chart">&#9662;</button>'),
-            $('<button type="button" class="char-next" title="Next character">&#9656;</button>'),
+            $('<button class="char-prev" title="Previous character" />')
+                .text('Prev')
+                .button({ icons: { primary: 'ui-icon-circle-triangle-w' } })
+                .click(function() { increment_code_point(app, inp, -1); }),
+            $('<button class="char-menu" title="Show code chart" />')
+                .text('Chart')
+                .button({ icons: { primary: 'ui-icon-circle-triangle-s' } })
+                .click(function() { display_chart_menu(app); }),
+            $('<button class="char-next" title="Next character" />')
+                .text('Next')
+                .button({ icons: { primary: 'ui-icon-circle-triangle-e' } })
+                .click(function() { increment_code_point(app, inp, 1); }),
             $('<a class="char-link" title="Link to this character">&#167;</a>')
         );
 
@@ -266,16 +276,6 @@
         inp.change( cb );
         inp.keypress(function(event) { setTimeout(cb, 50); });
         inp.mouseup(function(event) { setTimeout(cb, 50); });
-
-        panel1.find('button.char-prev').click(function() {
-            increment_code_point(app, inp, -1);
-        });
-        panel1.find('button.char-menu').click(function() {
-            display_chart_menu(app);
-        });
-        panel1.find('button.char-next').click(function() {
-            increment_code_point(app, inp, 1);
-        });
 
         var panel2 = $('<div class="char-props"></div>');
         var label2 = $('<div class="char-props-label">Character<br />Properties</div>');
@@ -429,13 +429,18 @@
     }
 
     function char_changed(app, inp) {
-        var txt = inp.val();
-        var len = txt.length;
+        var $app = $(app);
+        var txt  = inp.val();
+        var len  = txt.length;
         if(len == 0) {
-            $(app).find('form').addClass('empty');
+            $app.find('form').addClass('empty');
+            $app.find('button.char-prev').button('disable');
+            $app.find('button.char-next').button('disable');
         }
         else {
-            $(app).find('form').removeClass('empty');
+            $app.find('form').removeClass('empty');
+            $app.find('button.char-prev').button('enable');
+            $app.find('button.char-next').button('enable');
         }
         if(len > 1) {
             if((txt.charCodeAt(len - 2) & 0xF800) == 0xD800) {
@@ -554,7 +559,9 @@
         );
         if(set_menu) {
             var block = codepoint_to_block(app, code);
-            $('select', dlg).val(block.index);
+            if(block) {
+                $('select', dlg).val(block.index);
+            }
         }
 
         var tbody = $('<tbody />');

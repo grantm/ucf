@@ -187,7 +187,7 @@ form.ucf-app input.char {
   z-index: 2;
   color: #333333;
   background-color: transparent;
-  margin: 25px 25px 0 25px;
+  margin: 20px 25px 5px 25px;
   width: 250px;
   height: 160px;
   font-size: 130px;
@@ -216,22 +216,30 @@ form.ucf-app.empty div.char-wrap div.char-props-label {
 form.ucf-app span.char-buttons {
   position: relative;
   left: 25px;
-  visibility: hidden;
 }
 
-form.ucf-app div.char-wrap:hover span.char-buttons {
-  visibility: visible;
-}
-
-form.ucf-app span.char-buttons button {
+form.ucf-app span.char-buttons button.ui-button.ui-state-default {
+  font-weight: bold;
+  color: #666666 !important;
+  font-size: 12px;
+  padding: 0 0 0 0;
   margin-bottom: 6px;
-  margin-right: 1px;
-  width: 84px;
+  margin-right: 2px;
+  width: 83px;
   height: 25px
 }
 
-form.ucf-app.empty span.char-buttons button {
-  visibility: hidden;
+form.ucf-app span.char-buttons button.ui-button span.ui-button-icon-primary {
+  margin: -8px 0 0 4px;
+}
+
+form.ucf-app span.char-buttons button.disabled {
+  background-color: yellow;
+}
+
+form.ucf-app span.char-buttons button span.ui-button-text {
+  position: relative;
+  top: -2px;
 }
 
 form.ucf-app.empty span.char-buttons a.char-link {
