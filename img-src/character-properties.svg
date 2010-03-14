@@ -76,31 +76,46 @@
        height="269"
        width="370"
        sodipodi:absref="/home/grant/Desktop/character-properties.png"
-       xlink:href="character-properties.png" />
+       xlink:href="character-properties.png"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385827;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
        d="M 523.36096,245.36525 C 519.9468,251.63904 515.36455,256.45934 508.3582,260.84745 C 501.35186,265.23557 479.19961,274.70359 469.78059,274.82177"
        id="path3168"
-       sodipodi:nodetypes="czc" />
+       sodipodi:nodetypes="czc"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="opacity:1;fill:#ff9b08;fill-opacity:1;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385825;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="M 472.22919,270.98789 L 462.91402,277.68398 L 473.93903,277.67107 C 472.48005,275.56845 471.65457,274.102 472.22919,270.98789 z"
        id="path3180"
        sodipodi:nodetypes="cccc"
        inkscape:transform-center-x="-6.1050223"
-       inkscape:transform-center-y="-2.5138327" />
+       inkscape:transform-center-y="-2.5138327"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        sodipodi:nodetypes="cc"
        id="path3182"
        d="M 398.17673,389.49862 C 364.0947,373.93272 373.78542,318.34401 414.26831,298.17432"
-       style="fill:none;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385801;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+       style="fill:none;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385801;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        inkscape:transform-center-y="-5.5906477"
        inkscape:transform-center-x="4.9446277"
        sodipodi:nodetypes="cccc"
        id="path3186"
        d="M 388.29815,386.90533 L 398.9556,391.15137 L 393.01009,381.86687 C 392.02344,384.22826 391.23191,385.71331 388.29815,386.90533 z"
-       style="opacity:1;fill:#ff9b08;fill-opacity:1;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385825;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+       style="opacity:1;fill:#ff9b08;fill-opacity:1;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385825;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        d="M 541.55137,233.42732 A 13.646521,13.646521 0 1 1 514.25833,233.42732 A 13.646521,13.646521 0 1 1 541.55137,233.42732 z"
        sodipodi:ry="13.646521"
@@ -110,13 +125,19 @@
        id="path3188"
        style="opacity:1;fill:#ff9b08;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:3.0999999;stroke-linecap:round;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:12.4, 12.4;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        sodipodi:type="arc"
-       transform="translate(-148.75,108)" />
+       transform="translate(-148.75,108)"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <text
        id="text3190"
        y="349.80563"
        x="370.81137"
        style="font-size:23.97472191px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial;-inkscape-font-specification:Arial"
-       xml:space="preserve"><tspan
+       xml:space="preserve"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;font-family:Arial Black;-inkscape-font-specification:'Arial Black, Bold'"
          y="349.80563"
          x="370.81137"
@@ -126,14 +147,20 @@
        style="fill:none;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385801;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        d="M 556.04132,430.73504 C 527.16324,451.37811 484.71247,455.96406 441.88472,428.25334"
        id="path3194"
-       sodipodi:nodetypes="cc" />
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:#ff9b08;fill-opacity:1;fill-rule:evenodd;stroke:#ff9b08;stroke-width:3.83385825;stroke-linecap:butt;stroke-linejoin:miter;marker:none;marker-start:none;marker-mid:none;marker-end:none;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
        d="M 552.51727,437.0197 L 558.98289,427.5431 L 548.62622,431.32337 C 550.71598,432.80071 551.99293,433.89673 552.51727,437.0197 z"
        id="path3196"
        sodipodi:nodetypes="cccc"
        inkscape:transform-center-x="0.5606441"
-       inkscape:transform-center-y="1.131805" />
+       inkscape:transform-center-y="1.131805"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        transform="translate(-47.042894,210.76775)"
        sodipodi:type="arc"
@@ -143,13 +170,19 @@
        sodipodi:cy="233.42732"
        sodipodi:rx="13.646521"
        sodipodi:ry="13.646521"
-       d="M 541.55137,233.42732 A 13.646521,13.646521 0 1 1 514.25833,233.42732 A 13.646521,13.646521 0 1 1 541.55137,233.42732 z" />
+       d="M 541.55137,233.42732 A 13.646521,13.646521 0 1 1 514.25833,233.42732 A 13.646521,13.646521 0 1 1 541.55137,233.42732 z"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
        style="font-size:23.97472191px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial;-inkscape-font-specification:Arial"
        x="472.51846"
        y="452.57336"
-       id="text3206"><tspan
+       id="text3206"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan3208"
          x="472.51846"
@@ -164,13 +197,19 @@
        sodipodi:rx="13.646521"
        sodipodi:ry="13.646521"
        d="M 541.55137,233.42732 A 13.646521,13.646521 0 1 1 514.25833,233.42732 A 13.646521,13.646521 0 1 1 541.55137,233.42732 z"
-       transform="translate(-0.9393398,6)" />
+       transform="translate(-0.9393398,6)"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
        style="font-size:27.44322395px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;font-family:Arial;-inkscape-font-specification:Arial"
        x="517.28064"
        y="249.33081"
-       id="text2394"><tspan
+       id="text2394"
+       inkscape:export-filename="/home/grant/projects/ucf/htdocs/images/char-props.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan2396"
          x="517.28064"
