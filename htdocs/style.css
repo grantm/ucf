@@ -277,7 +277,7 @@ form.ucf-app div.sample-wrap:hover ul {
 }
 
 form.ucf-app div.sample-wrap ul li {
-  margin: none;
+  margin: 0;
   padding: 0 0.3em;
   list-style: none;
   display: inline;
