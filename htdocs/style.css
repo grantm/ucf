@@ -114,6 +114,24 @@ div#ucf-help a:hover {
   text-decoration: underline;
 }
 
+div#ucf-help table.search-types {
+  border-collapse: collapse;
+}
+
+div#ucf-help table.search-types th {
+  white-space: nowrap;
+  color: #eeeeee;
+  background-color: #666666;
+  border: 1px solid #eeeeee;
+  padding: 3px 5px;
+}
+
+div#ucf-help table.search-types td {
+  vertical-align: top;
+  border: 1px solid #cccccc;
+  padding: 3px 5px;
+}
+
 form.ucf-app div.search-wrap {
   margin: 0 0 1.6em 0;
   position: relative;
@@ -447,7 +465,7 @@ div.ucf-tab-help:hover {
   font-size: 140%;
   text-align: left;
   padding: 0;
-  margin: 1.0em 0 0.2em 0;
+  margin: 1.4em 0 0.2em 0;
 }
 
 #ucf-help p {

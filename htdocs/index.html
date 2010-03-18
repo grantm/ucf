@@ -84,26 +84,55 @@
 
       <p><img src="images/char-search.png" alt="picture of character search" /></p>
 
-      <p>Unfortunately this is not an exhaustive search since the data file
-      does not include a description for every character.  The software also
-      does not currently provide access to more than 10 search results - this
-      will be addressed in a later release (you may be able to work around this
-      limitation by refining your search).</p>
+      <p>A number of different types of searches are possible:</p>
 
-      <p>In addition to the straight text match, you can also do a <b>regular
-      expression</b> search of the character descriptions.  If your search
-      query begins and ends with the forward slash character ('/'), then the
-      search will use regular expression rules. For example this search:</p>
+      <table class="search-types">
+        <tr>
+          <th>Search Type</th>
+          <th>Example</th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <td>Text match</td>
+          <td><a href="?q=degree">degree</a></td>
+          <td>Find characters with the word 'degree' in the description. Not case sensitive</td>
+        </tr>
+        <tr>
+          <td rowspan="2">Regular expression</td>
+          <td><a href="?q=/colou?r/">/colou?r/</a></td>
+          <td>Match descriptions which contain 'color' or 'colour'</td>
+        </tr>
+        <tr>
+          <td><a href="?q=/\bcap\b/">/\bcap\b/</a></td>
+          <td>Match descriptions which contain the word 'cap' but not words like capital or escape</td>
+        </tr>
+        <tr>
+          <td>Hex code</td>
+          <td><a href="?q=20AC">20AC</a></td>
+          <td>Exact match for a character code in hex</td>
+        </tr>
+        <tr>
+          <td>Decimal code</td>
+          <td><a href="?q=8364">8364</a></td>
+          <td>Exact match for a character code in decimal</td>
+        </tr>
+        <tr>
+          <td>Numeric entity</td>
+          <td><a href="?q=%26%23233;">&amp;#233;</a></td>
+          <td>HTML/XML-style numeric character entity</td>
+        </tr>
+        <tr>
+          <td>Named entity</td>
+          <td><a href="?q=%26eacute;">&amp;eacute;</a></td>
+          <td>(X)HTML-style named character entity – these can be case sensitive and should usually be entered in lower case.</td>
+        </tr>
+      </table>
 
-      <pre>/\bcap\b/</pre>
-
-      <p>will match all characters with the word 'cap' in the description but
-      will not match words such as '<b>cap</b>ital' or 'es<b>cap</b>e'.</p>
-
-      <p>You can also type a character code directly into the search box. You
-      could type a hex code (e.g.: '20AC') or a decimal code (e.g.: '8364') or
-      an HTML/XML-style numeric character entity (e.g.: &amp;#160;) or named
-      character entity (e.g.: &amp;nbsp;).
+      <p>Unfortunately the character description searchs are not exhaustive
+      since the data file does not include a description for every character.
+      The software also does not currently provide access to more than 10
+      search results - this will be addressed in a later release (you may be
+      able to work around this limitation by refining your search).</p>
 
       <h1>Browse the Code Charts</h1>
 
