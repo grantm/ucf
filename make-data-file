@@ -93,4 +93,17 @@ while(<$fh>) {
     }
 }
 
+# Append the HTML character entities
+
+print $out "HTML\tamp\t0026\n";
+print $out "HTML\tlt\t003C\n";
+foreach my $dtd_file (glob($FindBin::Bin . '/unicode-source-data/*.ent')) {
+    open $fh, '<', $dtd_file or die "open($dtd_file): $!";
+    while(<$fh>) {
+        if(my($name, $code) = $_ =~ m{<!ENTITY\s+(\w+)\s+"&#(\d+);">}) {
+            $code = sprintf('%04X', $code);
+            print $out "HTML\t$name\t$code\n";
+        }
+    }
+}
 print "Done.\n";

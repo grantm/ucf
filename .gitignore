@@ -1,4 +1,5 @@
 /unicode-source-data/*.txt
 /unicode-source-data/*.html
+/unicode-source-data/*.ent
 /htdocs/char-data.txt
 /mem-log

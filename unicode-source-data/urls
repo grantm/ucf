@@ -1,4 +1,8 @@
 wget http://www.unicode.org/Public/UNIDATA/UnicodeData.txt
 wget -O pdf-index.html http://www.unicode.org/charts/PDF/
 wget http://www.unicode.org/Public/UNIDATA/Blocks.txt
-wget http://www.unicode.org/Public/5.2.0/ucdxml/ucd.nounihan.flat.zip
+#wget http://www.unicode.org/Public/5.2.0/ucdxml/ucd.nounihan.flat.zip
+
+wget http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent
+wget http://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent
+wget http://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent

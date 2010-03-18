@@ -34,7 +34,7 @@
 
     // Data shared across all functions
 
-    var code_chart, code_list, code_blocks;
+    var code_chart, code_list, code_blocks, html_ent, html_name;
     var unique_ids = [];
 
     function gen_id(str) {
@@ -361,9 +361,9 @@
     }
 
     function execute_search(target, app, response, inp) {
-        target     = target.toUpperCase();
         var result = [ ];
         add_exact_matches(result, target);
+        target     = target.toUpperCase();
         var len    = code_list.length;
         var code, ch;
         for(var i = 0; i < len; i++) {
@@ -399,6 +399,20 @@
             ch  = code_chart[hex];
             if(ch) {
                 add_result(result, hex, ch);
+            }
+        }
+        if(html_ent[target]) {
+            hex = html_ent[target];
+            ch  = code_chart[hex];
+            if(ch) {
+                add_result(result, hex, ch, '[&' + target + ';]');
+            }
+        }
+        if(html_ent[target.toLowerCase()]) {
+            hex = html_ent[target.toLowerCase()];
+            ch  = code_chart[hex];
+            if(ch) {
+                add_result(result, hex, ch, '[&' + target.toLowerCase() + ';]');
             }
         }
     }
@@ -506,10 +520,14 @@
                 $('<tr />').append( $('<th />').text('Description'), td )
             );
         }
+        var entity = '&#' + code + ';';
+        if(html_name[hex]) {
+            entity = entity + ' or &' + html_name[hex] + ';';
+        }
         table.append(
             $('<tr />').append(
                 $('<th />').text('HTML entity'),
-                $('<td />').text('&#' + code + ';')
+                $('<td />').text(entity)
             )
         );
         table.append(
@@ -685,9 +703,11 @@
 
     function parse_unicode_data(app, data, status) {
         var i = 0;
-        var chart  = { };
-        var codes  = [ ];
-        var blocks = [ ];
+        code_chart  = { };
+        code_list   = [ ];
+        code_blocks = [ ];
+        html_ent    = { };
+        html_name   = { };
         var j, str, row, code, block;
         while(i < data.length) {
             j = data.indexOf("\n", i);
@@ -702,25 +722,26 @@
                     'title'    : row[3],
                     'filename' : row[4],
                     'pdf_url'  : row[5],
-                    'index'    : blocks.length
+                    'index'    : code_blocks.length
                 };
-                blocks.push(block);
+                code_blocks.push(block);
+            }
+            else if(row[0] == 'HTML') {
+                html_ent[row[1]]  = row[2];    // Map name to code eg: nbsp => 00A0
+                html_name[row[2]] = row[1];    // Map code to name eg: 0233 => eacute
             }
             else {
                 code = row.shift();
-                chart[code] = {
+                code_chart[code] = {
                     'description': row[0]
                 };
                 if(row[1] && row[1].length > 0) {
-                    chart[code].alias = row[1];
+                    code_chart[code].alias = row[1];
                 }
-                codes.push(code);
+                code_list.push(code);
             }
             i = j + 1;
         }
-        code_list   = codes;
-        code_blocks = blocks;
-        code_chart  = chart;
         enable_ui(app);
     }
 
