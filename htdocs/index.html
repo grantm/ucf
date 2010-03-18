@@ -93,7 +93,16 @@
       <p>In addition to the straight text match, you can also do a <b>regular
       expression</b> search of the character descriptions.  If your search
       query begins and ends with the forward slash character ('/'), then the
-      search will use regular expression rules.</p>
+      search will use regular expression rules. For example this search:</p>
+
+      <pre>/\bcap\b/</pre>
+
+      <p>will match all characters with the word 'cap' in the description but
+      will not match words such as '<b>cap</b>ital' or 'es<b>cap</b>e'.</p>
+
+      <p>You can also type a character code directly into the search box. You
+      could type a hex code (e.g.: '20AC') or a decimal code (e.g.: '8364') or
+      an HTML/XML-style numeric entity (e.g.: &amp;#160;).
 
       <h1>Browse the Code Charts</h1>
 

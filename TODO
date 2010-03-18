@@ -1,4 +1,3 @@
-* search: match numeric (dec or hex) character codes or numeric entities
 * search: match HTML named entities
 * display JS surrogate pair chars for > xFFFF
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)

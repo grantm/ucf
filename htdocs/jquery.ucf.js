@@ -1,6 +1,6 @@
 /*
  * Unicode Character Finder
- * Copyright (c) 2010 Grant McLean
+ * Copyright (c) 2010 Grant McLean <grant@mclean.net.nz>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -363,8 +363,9 @@
     function execute_search(target, app, response, inp) {
         target     = target.toUpperCase();
         var result = [ ];
+        add_exact_matches(result, target);
         var len    = code_list.length;
-        var code, ch, character, div;
+        var code, ch;
         for(var i = 0; i < len; i++) {
             if(result.length > 10) { break; };
             code = code_list[i];
@@ -373,19 +374,7 @@
                 ch.description.indexOf(target) >= 0
                 || (ch.alias && ch.alias.indexOf(target) >= 0)
             ) {
-                character = codepoint_to_string(hex2dec(code));
-                div = $('<div />').text(ch.description);
-                if(ch.alias) {
-                    div.append( $('<span class="code-alias" />').text(ch.alias) );
-                }
-                result.push({
-                    'code': code,
-                    'character': character,
-                    'label': '<div class="code-point">U+' + code + '</div>'
-                             + '<div class="code-sample">&#160;' + character
-                             + '</div><div class="code-descr">' + div.html()
-                             + '</div>'
-                });
+                add_result(result, code, ch);
             }
         }
         if(result.length == 0) {
@@ -394,11 +383,31 @@
         response(result);
     }
 
+    function add_exact_matches(result, target) {
+        var dec, hex, ch;
+        if(target.match(/^&#(\d+);?$/) || target.match(/^(\d+)$/)) {
+            dec = parseInt(RegExp.$1);
+            hex = dec2hex(dec, 4);
+            ch  = code_chart[hex];
+            if(ch) {
+                add_result(result, hex, ch, '[Decimal: ' + dec + ']');
+            }
+        }
+        if(target.match(/^&#x([0-9a-f]+);?$/i) || target.match(/^(?:U[+])?([0-9a-f]+)$/i)) {
+            dec = hex2dec(RegExp.$1);
+            hex = dec2hex(dec, 4);
+            ch  = code_chart[hex];
+            if(ch) {
+                add_result(result, hex, ch);
+            }
+        }
+    }
+
     function execute_regex_search(target, app, response, inp) {
         var pattern = new RegExp(target, 'i');
         var result = [ ];
         var len    = code_list.length;
-        var code, ch, character, div;
+        var code, ch;
         for(var i = 0; i < len; i++) {
             if(result.length > 10) { break; };
             code = code_list[i];
@@ -407,25 +416,33 @@
                 pattern.test(ch.description)
                 || (ch.alias && pattern.test(ch.description))
             ) {
-                character = codepoint_to_string(hex2dec(code));
-                div = $('<div />').text(ch.description);
-                if(ch.alias) {
-                    div.append( $('<span class="code-alias" />').text(ch.alias) );
-                }
-                result.push({
-                    'code': code,
-                    'character': character,
-                    'label': '<div class="code-point">U+' + code + '</div>'
-                             + '<div class="code-sample">&#160;' + character
-                             + '</div><div class="code-descr">' + div.html()
-                             + '</div>'
-                });
+                add_result(result, code, ch);
             }
         }
         if(result.length == 0) {
             inp.removeClass('busy');
         }
         response(result);
+    }
+
+    function add_result(result, code, ch, extra) {
+        var character = codepoint_to_string(hex2dec(code));
+        var descr = ch.description;
+        if(extra) {
+            descr = extra + ' ' + descr;
+        }
+        var div = $('<div />').text(descr);
+        if(ch.alias) {
+            div.append( $('<span class="code-alias" />').text(ch.alias) );
+        }
+        result.push({
+            'code': code,
+            'character': character,
+            'label': '<div class="code-point">U+' + code + '</div>'
+                     + '<div class="code-sample">&#160;' + character
+                     + '</div><div class="code-descr">' + div.html()
+                     + '</div>'
+        });
     }
 
     function char_changed(app, inp) {
