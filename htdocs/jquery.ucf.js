@@ -408,7 +408,7 @@
                 add_result(result, hex, ch, '[&' + target + ';]');
             }
         }
-        if(html_ent[target.toLowerCase()]) {
+        else if(html_ent[target.toLowerCase()]) {
             hex = html_ent[target.toLowerCase()];
             ch  = code_chart[hex];
             if(ch) {
