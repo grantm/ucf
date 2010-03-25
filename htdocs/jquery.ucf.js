@@ -29,7 +29,6 @@
     };
 
     $.fn.ucf.defaults = {
-        sample_chars: [ 169, 233, 256, 257, 8364, 8451, 9733, 9731, 119558 ]
     };
 
     // Data shared across all functions
@@ -59,7 +58,9 @@
 
         form.append( char_info_pane(app, form) );
         form.append( char_search_field(app, form) );
-        form.append( sample_char_links(app) );
+        if($(app).data('options').sample_chars) {
+            form.append( sample_char_links(app) );
+        }
     }
 
     function start_loading_splash(app) {
