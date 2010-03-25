@@ -258,7 +258,7 @@
             $('<button class="char-prev" title="Previous character" />')
                 .text('Prev')
                 .button({ icons: { primary: 'ui-icon-circle-triangle-w' } })
-                .click(function() { increment_code_point(app, inp, -1); }),
+                .click(function() { increment_code_point(app, -1); }),
             $('<button class="char-menu" title="Show code chart" />')
                 .text('Chart')
                 .button({ icons: { primary: 'ui-icon-circle-triangle-s' } })
@@ -266,7 +266,7 @@
             $('<button class="char-next" title="Next character" />')
                 .text('Next')
                 .button({ icons: { primary: 'ui-icon-circle-triangle-e' } })
-                .click(function() { increment_code_point(app, inp, 1); }),
+                .click(function() { increment_code_point(app, 1); }),
             $('<a class="char-link" title="Link to this character">&#167;</a>')
         );
 
@@ -277,7 +277,7 @@
         inp.keypress(function(event) { setTimeout(cb, 50); });
         inp.mouseup(function(event) { setTimeout(cb, 50); });
         inp.mousewheel(function(event, delta) {
-            scroll_char(event, delta, app, inp);
+            scroll_char(event, delta, app);
             return false;
         });
 
@@ -564,7 +564,7 @@
         $app.find('div.char-info').empty().append(table);
     }
 
-    function increment_code_point(app, inp, inc) {
+    function increment_code_point(app, inc) {
         var ch = $(app).data('last_char');
         if(!ch) { return; }
         var code = string_to_codepoint(ch) + inc;
@@ -577,9 +577,9 @@
         set_preview_char(app, codepoint_to_string(code));
     }
 
-    function scroll_char(event, delta, app, inp) {
+    function scroll_char(event, delta, app) {
         if(!event.ctrlKey) {
-            increment_code_point(app, inp, delta < 0 ? 1 : -1);
+            increment_code_point(app, delta < 0 ? 1 : -1);
             return;
         }
         var ch = $(app).data('last_char');
