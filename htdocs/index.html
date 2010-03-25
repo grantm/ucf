@@ -15,7 +15,10 @@
   <script type="text/javascript" src="jquery.bgiframe.min.js"></script>
   <script type="text/javascript">
     jQuery(function () {
-        jQuery('#my-ucf').ucf({ "help_selector": "#ucf-help" });
+        jQuery('#my-ucf').ucf({
+            help_selector: "#ucf-help",
+            sample_chars: [ 169, 233, 256, 257, 8364, 8451, 9733, 9731, 119558 ]
+        });
     });
   </script>
   <!--[if lt IE 7]><link rel="stylesheet" type="text/css" href="nasty-ie-hacks.css"><![endif]-->
