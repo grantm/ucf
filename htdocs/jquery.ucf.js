@@ -405,6 +405,9 @@
                 add_result(result, hex, ch);
             }
         }
+        if(target.match(/^(?:&#?)?(\w+);?$/)) {
+            target = RegExp.$1;
+        }
         if(html_ent[target]) {
             hex = html_ent[target];
             ch  = code_chart[hex];
