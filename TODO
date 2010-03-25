@@ -2,8 +2,6 @@
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
 * accept encoded hex bytes
 * display search results in a persistent, scrolling list
-* make next/prev buttons repeat when held down
-* support scroll wheel in char-input box
 * enumerate installed fonts for autocomplete
 * save font selection in cookie
 

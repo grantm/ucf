@@ -276,6 +276,10 @@
         inp.change( cb );
         inp.keypress(function(event) { setTimeout(cb, 50); });
         inp.mouseup(function(event) { setTimeout(cb, 50); });
+        inp.mousewheel(function(event, delta) {
+            increment_code_point(app, inp, -1 * delta);
+            return false;
+        });
 
         var panel2 = $('<div class="char-props"></div>');
         var label2 = $('<div class="char-props-label">Character<br />Properties</div>');
