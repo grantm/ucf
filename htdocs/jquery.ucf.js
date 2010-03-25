@@ -277,7 +277,7 @@
         inp.keypress(function(event) { setTimeout(cb, 50); });
         inp.mouseup(function(event) { setTimeout(cb, 50); });
         inp.mousewheel(function(event, delta) {
-            increment_code_point(app, inp, -1 * delta);
+            scroll_char(event, delta, app, inp);
             return false;
         });
 
@@ -501,7 +501,7 @@
         $app.data('last_char', ch);
         var code  = string_to_codepoint(ch);
         var hex   = dec2hex(code, 4);
-        var block = codepoint_to_block(app, code);
+        var block = codepoint_to_block(code);
         ch        = code_chart[hex];
         $app.find('a.char-link').attr('href', '?c=U+' + hex);
 
@@ -574,6 +574,21 @@
         set_preview_char(app, codepoint_to_string(code));
     }
 
+    function scroll_char(event, delta, app, inp) {
+        if(!event.ctrlKey) {
+            increment_code_point(app, inp, delta < 0 ? 1 : -1);
+            return;
+        }
+        var ch = $(app).data('last_char');
+        if(!ch) { return; }
+        var code = string_to_codepoint(ch);
+        var block = codepoint_to_block(code);
+        var i = block.index + (delta < 0 ? 1 : -1);
+        if(!code_blocks[i]) { return; }
+        set_preview_char(app, codepoint_to_string(code_blocks[i].start_dec));
+        return;
+    }
+
     function display_chart_menu(app) {
         window.scrollTo(0,0);
         var char_inp = $(app).find('input.char');
@@ -597,7 +612,7 @@
             + dec2hex(code, 4) + ' - ' + dec2hex(code + 0x7F, 4)
         );
         if(set_menu) {
-            var block = codepoint_to_block(app, code);
+            var block = codepoint_to_block(code);
             if(block) {
                 $('select', dlg).val(block.index);
             }
@@ -767,7 +782,7 @@
         return ((hi - 0xD800) * 0x400) + (lo - 0xDC00) + 0x10000;
     }
 
-    function codepoint_to_block(app, code) {
+    function codepoint_to_block(code) {
         for(i = 0; i < code_blocks.length; i++) {
             if(code > code_blocks[i].end_dec){
                 continue;
