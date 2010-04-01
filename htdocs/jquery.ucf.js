@@ -367,7 +367,8 @@
 
     function execute_search(target, app, response, inp) {
         var result = [ ];
-        add_exact_matches(result, target);
+        var seen   = { };
+        add_exact_matches(result, seen, target);
         target     = target.toUpperCase();
         var len    = code_list.length;
         var code, ch;
@@ -379,7 +380,7 @@
                 ch.description.indexOf(target) >= 0
                 || (ch.alias && ch.alias.indexOf(target) >= 0)
             ) {
-                add_result(result, code, ch);
+                add_result(result, seen, code, ch);
             }
         }
         if(result.length == 0) {
@@ -388,14 +389,14 @@
         response(result);
     }
 
-    function add_exact_matches(result, target) {
+    function add_exact_matches(result, seen, target) {
         var dec, hex, ch;
         if(target.match(/^&#(\d+);?$/) || target.match(/^(\d+)$/)) {
             dec = parseInt(RegExp.$1);
             hex = dec2hex(dec, 4);
             ch  = code_chart[hex];
             if(ch) {
-                add_result(result, hex, ch, '[Decimal: ' + dec + ']');
+                add_result(result, seen, hex, ch, '[Decimal: ' + dec + ']');
             }
         }
         if(target.match(/^&#x([0-9a-f]+);?$/i) || target.match(/^(?:U[+])?([0-9a-f]+)$/i)) {
@@ -403,7 +404,7 @@
             hex = dec2hex(dec, 4);
             ch  = code_chart[hex];
             if(ch) {
-                add_result(result, hex, ch);
+                add_result(result, seen, hex, ch);
             }
         }
         if(target.match(/^(?:&#?)?(\w+);?$/)) {
@@ -413,14 +414,14 @@
             hex = html_ent[target];
             ch  = code_chart[hex];
             if(ch) {
-                add_result(result, hex, ch, '[&' + target + ';]');
+                add_result(result, seen, hex, ch, '[&' + target + ';]');
             }
         }
         else if(html_ent[target.toLowerCase()]) {
             hex = html_ent[target.toLowerCase()];
             ch  = code_chart[hex];
             if(ch) {
-                add_result(result, hex, ch, '[&' + target.toLowerCase() + ';]');
+                add_result(result, seen, hex, ch, '[&' + target.toLowerCase() + ';]');
             }
         }
     }
@@ -428,6 +429,7 @@
     function execute_regex_search(target, app, response, inp) {
         var pattern = new RegExp(target, 'i');
         var result = [ ];
+        var seen   = { };
         var len    = code_list.length;
         var code, ch;
         for(var i = 0; i < len; i++) {
@@ -438,7 +440,7 @@
                 pattern.test(ch.description)
                 || (ch.alias && pattern.test(ch.description))
             ) {
-                add_result(result, code, ch);
+                add_result(result, seen, code, ch);
             }
         }
         if(result.length == 0) {
@@ -447,7 +449,10 @@
         response(result);
     }
 
-    function add_result(result, code, ch, extra) {
+    function add_result(result, seen, code, ch, extra) {
+        if(seen[code]) {
+            return;
+        }
         var character = codepoint_to_string(hex2dec(code));
         var descr = ch.description;
         if(extra) {
@@ -465,6 +470,7 @@
                      + '</div><div class="code-descr">' + div.html()
                      + '</div>'
         });
+        seen[code] = true;
     }
 
     function char_changed(app, inp) {
