@@ -1,0 +1,147 @@
+#!/usr/bin/perl
+##############################################################################
+#
+# Script for munging Unicode character data into a form suitable for UCF
+#
+# Assumes an unzipped local copy of:
+#
+#   * http://www.unicode.org/Public/5.2.0/ucdxml/ucd.nounihan.flat.zip
+#
+
+use strict;
+use warnings;
+
+use Pod::Usage;
+use Getopt::Long qw(GetOptions);
+
+use FindBin;
+use XML::SAX::ParserFactory;
+
+my $data_file = $FindBin::Bin . '/htdocs/char-data.txt-new';
+
+my $src_file  = $FindBin::Bin . '/unicode-source-data/ucd.nounihan.flat.xml';
+
+my $pdf_base  = 'http://www.unicode.org/charts/PDF';
+
+
+# Handle command-line arguments
+
+my(%opt, %args);
+
+if(!GetOptions(\%opt, 'help|?', 'attr|a=s', 'char|c=s')) {
+    pod2usage(-exitval => 1,  -verbose => 0);
+}
+
+pod2usage(-exitstatus => 0, -verbose => 2) if $opt{help};
+
+if($opt{char}) {
+    $args{char} = uc($opt{char});
+}
+elsif($opt{attr}) {
+    $args{attr} = $opt{attr};
+}
+else {
+    open my $out, '>', $data_file or die "open(>$data_file): $!";
+    $args{out_fh} = $out;
+}
+
+my $handler = UCFHandler->new(%args);
+my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
+
+$parser->parse_uri($src_file);
+
+exit;
+
+package UCFHandler;
+
+use Data::Dumper;
+
+sub new {
+    my $class = shift;
+    return bless { @_ }, $class;
+}
+
+sub start_element {
+    my($self, $data) = @_;
+
+    my %attr = map { $_->{LocalName} => $_->{Value} }
+               values %{ $data->{Attributes} };
+    if($data->{Name} eq 'char') {
+        if(my $out = $self->{out_fh}) {
+            return unless $attr{cp};
+            $attr{na}  ||= '<control>' if $attr{gc} eq 'Cc';
+            $attr{na1} ||= '';
+            my $na = $attr{na};
+            if($na =~ s/ WITH / /) {
+                $attr{na1} = '' if $attr{na1} eq $na;
+            }
+            $attr{na} =~ s/IDEOGRAPH-#/IDEOGRAPH-$attr{cp}/;
+            print "$attr{cp}\t$attr{na}\t$attr{na1}\n";
+        }
+        elsif(my $target = $self->{char}) {
+            return unless $attr{cp} eq $target;
+            print dump_attr(\%attr), "\n";
+            exit;
+        }
+        elsif(my $key = $self->{attr}) {
+            return unless $attr{cp};
+            my $val = defined $attr{$key} ? $attr{$key} : '<undef>';
+            print "$attr{cp}:$key=$val\n";
+        }
+    }
+}
+
+sub dump_attr {
+    my($attr) = @_;
+
+    return join "\n",
+        $attr->{cp},
+        map { "  $_:$attr->{$_}" }
+        grep { $_ ne 'cp' } sort keys %$attr;
+}
+
+1;
+
+__END__
+
+=head1 NAME
+
+make-data-file - generate data file for Unicode Character Finder
+
+=head1 SYNOPSIS
+
+  make-data-file [options] <files>
+
+  Options:
+
+   --char <num>  hex codepoint number of character to be dumped
+   --help        detailed help message
+
+=head1 DESCRIPTION
+
+This script generates the data file used by the Unicode Character Finder.
+It processes the XML Unicode Character Data file and produces a plain text
+(tab delimited) data file as output.
+
+=head1 OPTIONS
+
+=over 4
+
+=item B<< --attr <code> >> (B<-a>)
+
+Instead of writing out a data file, display the value of the specified
+attribute for each character, character on STDOUT.
+
+=item B<< --char <hex-num> >> (B<-c>)
+
+Instead of writing out a data file, dump the attributes of the specified
+character on STDOUT.
+
+=item B<--help> (B<-?>)
+
+Display this documentation.
+
+=back
+
+=cut
+
