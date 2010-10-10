@@ -4,6 +4,7 @@
 * display search results in a persistent, scrolling list
 * enumerate installed fonts for autocomplete
 * save font selection in cookie
+* any lessons to learn from Uniview? http://people.w3.org/rishida/scripts/uniview/
 
 * Anomalous displays:
   * Search for: link vs /link/
