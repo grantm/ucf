@@ -329,6 +329,11 @@
             set_code_chart_page(app, block.start_dec & 0xFFF80, null, false);
         });
 
+        table.mousewheel(function(event, delta) {
+            change_chart_page(app, -1 * delta)
+            return false;
+        });
+
         buttons.append(
             $('<button>').text('Close').button({
                 icons: { primary: 'ui-icon-circle-close' }
