@@ -3,32 +3,51 @@
 #
 # Script for munging Unicode character data into a form suitable for UCF
 #
-# Assumes an unzipped local copy of:
+# Uses local copies of:
 #
-#   * http://www.unicode.org/Public/5.2.0/ucdxml/ucd.nounihan.flat.zip
+#   http://www.unicode.org/Public/UCD/latest/ucdxml/ucd.nounihan.grouped.zip
+#   http://www.unicode.org/Public/UCD/latest/ucdxml/ucd.unihan.grouped.zip
+#
+# Use --download option to get these files.
+#
+# Use --help option for more info.
 #
 
+use 5.014;
 use strict;
 use warnings;
+use autodie;
 
 use Pod::Usage;
-use Getopt::Long qw(GetOptions);
+use Getopt::Long  qw(GetOptions);
+use LWP::Simple   qw(mirror RC_OK RC_NOT_MODIFIED);
+use Archive::Zip  qw(:ERROR_CODES :CONSTANTS);
+use Archive::Zip::MemberRead qw();
 
 use FindBin;
 use XML::SAX::ParserFactory;
 
-my $data_file = $FindBin::Bin . '/htdocs/char-data.txt-new';
+my $url_latest_source_dir = 'http://www.unicode.org/Public/UCD/latest/ucdxml';
+my $url_pdf_base          = 'http://www.unicode.org/charts/PDF';
 
-my $src_file  = $FindBin::Bin . '/unicode-source-data/ucd.nounihan.flat.xml';
+my $local_data_dir        = $FindBin::Bin . '/unicode-source-data';
 
-my $pdf_base  = 'http://www.unicode.org/charts/PDF';
+my $source_file_nounihan  = 'ucd.nounihan.grouped.zip';
+my $source_file_all       = 'ucd.all.grouped.zip';
+
+my $output_file_nounihan  = $FindBin::Bin . '/htdocs/char-data-nounihan.txt';
+my $output_file_all       = $FindBin::Bin . '/htdocs/char-data-all.txt';
 
 
 # Handle command-line arguments
 
 my(%opt, %args);
 
-if(!GetOptions(\%opt, 'help|?', 'attr|a=s', 'char|c=s')) {
+if(!GetOptions(\%opt,
+    'download|d',
+    'char|c=s',
+    'help|?',
+)) {
     pod2usage(-exitval => 1,  -verbose => 0);
 }
 
@@ -40,17 +59,99 @@ if($opt{char}) {
 elsif($opt{attr}) {
     $args{attr} = $opt{attr};
 }
-else {
-    open my $out, '>', $data_file or die "open(>$data_file): $!";
-    $args{out_fh} = $out;
-}
 
-my $handler = UCFHandler->new(%args);
-my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
 
-$parser->parse_uri($src_file);
+translate_data($source_file_nounihan, $output_file_nounihan);
 
 exit;
+
+sub translate_data {
+    my($zip_file, $output_filename) = @_;
+
+    my $xml_ref = unzip_xml($zip_file);
+
+    if(!%args) {
+        open my $out, '>', $output_filename;
+        $args{out_fh} = $out;
+    }
+    $args{url_pdf_base} = $url_pdf_base;
+
+    my $handler = UCFHandler->new(%args);
+    my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
+
+    $parser->parse_string($$xml_ref);
+    append_html_entities($args{out_fh});
+}
+
+
+sub unzip_xml {
+    my($zip_file) = @_;
+
+    my $local_zip_name  = get_zip_file($zip_file);
+
+    my $zip = Archive::Zip->new();
+    if($zip->read($local_zip_name) != AZ_OK) {
+        die "Error reading $local_zip_name";
+    }
+    my @members = $zip->membersMatching('[.]xml$');
+    if(@members == 0) {
+        die "Can't find an XML file in $local_zip_name";
+    }
+    elsif(@members > 1) {
+        die "Can't identify the correct XML file in $local_zip_name";
+    }
+
+    my($xml_member) = @members;
+    print "Unzipping " . $xml_member->fileName . "\n";
+    my $fh = $xml_member->readFileHandle;
+    my $buffer;
+    my $result = $fh->read($buffer, $xml_member->uncompressedSize);
+    return \$buffer;
+}
+
+
+sub get_zip_file {
+    my($zip_file) = @_;
+    my $url             = $url_latest_source_dir . '/' . $zip_file;
+    my $local_zip_name  = $local_data_dir        . '/' . $zip_file;
+
+    if($opt{download}) {
+        print "Downloading\nFrom: $url\nTo:   $local_zip_name\n";
+        my $rc = mirror($url, $local_zip_name);
+        if($rc == RC_NOT_MODIFIED) {
+            print "Local copy already up to date.\n";
+        }
+        elsif($rc != RC_OK) {
+            die "Download of $url failed: status = $rc";
+        }
+    }
+
+    if(! -e $local_zip_name) {
+        my $message = "File does not exist:\n  $local_zip_name\n";
+        $message .= "Use --download to get the file\n";
+        die $message;
+    }
+
+    return $local_zip_name;
+}
+
+
+sub append_html_entities {
+    my($out) = @_;
+
+    print $out "HTML\tamp\t0026\n";
+    print $out "HTML\tlt\t003C\n";
+    foreach my $dtd_file (sort glob("$local_data_dir/*.ent")) {
+        open my $fh, '<', $dtd_file or die "open($dtd_file): $!";
+        while(<$fh>) {
+            if(my($name, $code) = $_ =~ m{<!ENTITY\s+(\w+)\s+"&#(\d+);">}) {
+                $code = sprintf('%04X', $code);
+                print $out "HTML\t$name\t$code\n";
+            }
+        }
+    }
+
+}
 
 package UCFHandler;
 
@@ -61,33 +162,160 @@ sub new {
     return bless { @_ }, $class;
 }
 
+sub url_pdf_base {
+    return shift->{url_pdf_base};
+}
+
+sub group_name_template {
+    my $self = shift;
+    $self->{group_name_template} = shift if @_;
+    return $self->{group_name_template};
+}
+
+sub group_is_control_char {
+    my $self = shift;
+    $self->{group_is_control_char} = shift if @_;
+    return $self->{group_is_control_char};
+}
+
+sub is_control_char {
+    my $self = shift;
+    if(my $attr = $self->char_attr) {
+        if(my $gc = $attr->{gc}) {
+            return $gc eq 'Cc';
+        }
+    }
+    return $self->group_is_control_char;
+}
+
+sub char_attr {
+    my $self = shift;
+    $self->{char_attr} = shift if @_;
+    return $self->{char_attr};
+}
+
+sub add_alias {
+    my $self = shift;
+    my $attr = $self->char_attr || return;
+    my $aliases = $attr->{aliases};
+    my $new = shift // return;
+    return if $new eq '';
+    foreach my $name ($attr->{name}, @$aliases) {
+        return if $name eq $new;
+        my $no_with = $name =~ s/ WITH / /r;
+        return if $no_with eq $new;
+    }
+    push @$aliases, $new;
+}
+
+sub _delegate {
+    my($self, $event, $data) = @_;
+
+    my $name = $data->{LocalName};
+    $name =~ s/-/_/g;
+    my $method = $event . '_' . $name;
+    if($self->can($method)) {
+        $self->$method($data);
+    }
+}
+
+sub _attr {
+    my($self, $data) = @_;
+    return {
+        map { $_->{LocalName} => $_->{Value} }
+            values %{ $data->{Attributes} }
+    };
+}
+
 sub start_element {
     my($self, $data) = @_;
+    return $self->_delegate('start_element', $data);
+}
 
-    my %attr = map { $_->{LocalName} => $_->{Value} }
-               values %{ $data->{Attributes} };
-    if($data->{Name} eq 'char') {
-        if(my $out = $self->{out_fh}) {
-            return unless $attr{cp};
-            $attr{na}  ||= '<control>' if $attr{gc} eq 'Cc';
-            $attr{na1} ||= '';
-            my $na = $attr{na};
-            if($na =~ s/ WITH / /) {
-                $attr{na1} = '' if $attr{na1} eq $na;
+sub end_element {
+    my($self, $data) = @_;
+    return $self->_delegate('end_element', $data);
+}
+
+sub start_element_group {
+    my($self, $data) = @_;
+    my $attr = $self->_attr($data);
+    $self->group_is_control_char(($attr->{gc} // '') eq 'Cc' ? 1 : 0);
+    my $group_name_template;
+    if(my $name = $attr->{na}) {
+        if($name =~ s/#/%s/) {
+            $group_name_template = $name;
+        }
+    }
+    $self->group_name_template($group_name_template);
+}
+
+sub start_element_char {
+    my($self, $data) = @_;
+    my $attr = $self->_attr($data);
+    $attr->{aliases} = [];
+    $self->char_attr($attr);
+    if($self->is_control_char) {
+        $attr->{name} = '<control>';
+        $self->add_alias($attr->{na});
+    }
+    else {
+        $attr->{name} = $attr->{na} // $attr->{na1};
+        if(!$attr->{name} && $attr->{cp}) {
+            if(my $tmpl = $self->group_name_template) {
+                $attr->{name} = sprintf($tmpl, $attr->{cp});
             }
-            $attr{na} =~ s/IDEOGRAPH-#/IDEOGRAPH-$attr{cp}/;
-            print "$attr{cp}\t$attr{na}\t$attr{na1}\n";
         }
-        elsif(my $target = $self->{char}) {
-            return unless $attr{cp} eq $target;
-            print dump_attr(\%attr), "\n";
-            exit;
+    }
+    return unless $attr->{name};
+    $self->add_alias($attr->{na1});
+    $attr->{is_control} = $self->is_control_char ? 'Yes' : 'No';
+}
+
+sub start_element_name_alias {
+    my($self, $data) = @_;
+    my $attr = $self->_attr($data);
+    my $alias = $attr->{alias} // return;
+    if(my $type = $attr->{type}) {
+        if(lc($type) eq 'correction') {
+            $alias .= ' (correction)';
         }
-        elsif(my $key = $self->{attr}) {
-            return unless $attr{cp};
-            my $val = defined $attr{$key} ? $attr{$key} : '<undef>';
-            print "$attr{cp}:$key=$val\n";
-        }
+    }
+    $self->add_alias($alias);
+}
+
+sub end_element_char {
+    my($self, $data) = @_;
+    my $attr = $self->char_attr;
+    my $cp   = $attr->{cp}   or return;
+    my $name = $attr->{name} or return;
+    my $aliases = '';
+    if(@{ $attr->{aliases} }) {
+        #$aliases .= "\t";
+        $aliases .= join('; ', @{ $attr->{aliases} });
+    }
+    if(my $out = $self->{out_fh}) {
+        print $out "$cp\t$name\t$aliases\n";
+    }
+    elsif(my $target = $self->{char}) {
+        return unless $attr->{cp} eq $target;
+        print "$cp\t$name\t$aliases\n";
+        print dump_attr($attr), "\n";
+        exit;
+    }
+    #say "char\n", dump_attr($attr);
+}
+
+sub start_element_block {
+    my($self, $data) = @_;
+    my $attr = $self->_attr($data);
+    my $first = $attr->{'first-cp'} or return;
+    my $last = $attr->{'last-cp'} or return;
+    my $name = $attr->{'name'} or return;
+    my $file = "U${first}.pdf";
+    my $url = $self->url_pdf_base . '/' . $file;
+    if(my $out = $self->{out_fh}) {
+        print $out "BLK\t$first\t$last\t$name\t$file\t$url\n";
     }
 }
 
@@ -95,8 +323,8 @@ sub dump_attr {
     my($attr) = @_;
 
     return join "\n",
-        $attr->{cp},
-        map { "  $_:$attr->{$_}" }
+        $attr->{cp} ? $attr->{cp} : (),
+        map { "  $_: $attr->{$_}" }
         grep { $_ ne 'cp' } sort keys %$attr;
 }
 
@@ -114,8 +342,9 @@ make-data-file - generate data file for Unicode Character Finder
 
   Options:
 
-   --char <num>  hex codepoint number of character to be dumped
-   --help        detailed help message
+   --download     get a fresh copy of source data if required
+   --char <num>   hex codepoint number of character to be dumped
+   --help         detailed help message
 
 =head1 DESCRIPTION
 
@@ -127,17 +356,17 @@ It processes the XML Unicode Character Data file and produces a plain text
 
 =over 4
 
-=item B<< --attr <code> >> (B<-a>)
+=item B<< --download >> (alias: B<-d>)
 
-Instead of writing out a data file, display the value of the specified
-attribute for each character, character on STDOUT.
+Download latest source data .zip files from the Unicode Consortium web site
+and store in a local directory.
 
-=item B<< --char <hex-num> >> (B<-c>)
+=item B<< --char <hex-num> >> (alias: B<-c>)
 
 Instead of writing out a data file, dump the attributes of the specified
 character on STDOUT.
 
-=item B<--help> (B<-?>)
+=item B<--help> (alias: B<-?>)
 
 Display this documentation.
 
