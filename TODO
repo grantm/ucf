@@ -1,7 +1,18 @@
 * adaptive encoding for codepoint number
+* add gzipping of data file
+* update highlighted character in code chart
+* include undefined characters in code chart (but with class for undefined?)
 * handle reserved ranges
 * D800 = U+0NAN
 * kdefinition
+* add support for Unihan codepoints
+  * update script to generate two data files
+  * checkbox to switch to different data file
+  * persistent cookie to remember checkbox preference
+  * hint in character properties section to check box for han chars
+  * URL parameter to enable?
+* welcome pointers for (paste a character, search by name, get help)
+* allow search results to persist
 * display JS surrogate pair chars for > xFFFF
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
 * accept encoded hex bytes
