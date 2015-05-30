@@ -287,8 +287,11 @@ sub start_element_name_alias {
 sub end_element_char {
     my($self, $data) = @_;
     my $attr = $self->char_attr;
-    my $cp   = $attr->{cp}   or return;
-    my $name = $attr->{name} or return;
+    return unless $attr->{cp};
+    return unless $attr->{name};
+    $self->add_unofficial_aliases;
+    my $cp   = $attr->{cp};
+    my $name = $attr->{name};
     my $aliases = '';
     if(@{ $attr->{aliases} }) {
         #$aliases .= "\t";
@@ -316,6 +319,23 @@ sub start_element_block {
     my $url = $self->url_pdf_base . '/' . $file;
     if(my $out = $self->{out_fh}) {
         print $out "BLK\t$first\t$last\t$name\t$file\t$url\n";
+    }
+}
+
+sub add_unofficial_aliases {
+    my($self) = @_;
+    my $attr = $self->char_attr;
+    my $aliases = $attr->{aliases};
+    my $all_names = join(' ', $attr->{name}, @$aliases);
+
+    if(
+            $all_names =~ /\bDIAERESIS\b/i
+        and $all_names !~ /\bUMLAUT\b/i
+        and $all_names !~ /\bGREEK\b/i
+    ) {
+        foreach ($attr->{name}, @$aliases) {
+            s/\b(DIAERESIS)\b/$1 (OR UMLAUT)/i && last;
+        }
     }
 }
 
