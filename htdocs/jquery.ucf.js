@@ -108,7 +108,7 @@
         }
         // c=999
         else if(args.c && args.c.match(/^(\d+){1,9}$/)) {
-            set_preview_char(app, codepoint_to_string( parseInt(RegExp.$1) ) );
+            set_preview_char(app, codepoint_to_string( parseInt(RegExp.$1, 10) ) );
         }
         // c=uXXXXuXXXX
         else if(args.c && args.c.match(/^u([0-9A-Fa-f]{4})u([0-9A-Fa-f]{4})$/)) {
@@ -398,7 +398,7 @@
     function add_exact_matches(result, seen, target) {
         var dec, hex, ch;
         if(target.match(/^&#(\d+);?$/) || target.match(/^(\d+)$/)) {
-            dec = parseInt(RegExp.$1);
+            dec = parseInt(RegExp.$1, 10);
             hex = dec2hex(dec, 4);
             ch  = code_chart[hex];
             if(ch) {
