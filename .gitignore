@@ -1,5 +1,3 @@
-/unicode-source-data/*.txt
-/unicode-source-data/*.html
-/unicode-source-data/*.ent
-/htdocs/char-data.txt
+/htdocs/char-data-nounihan.txt
+/unicode-source-data/ucd*.zip
 /mem-log

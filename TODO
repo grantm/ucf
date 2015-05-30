@@ -1,10 +1,14 @@
+* adaptive encoding for codepoint number
+* handle reserved ranges
+* D800 = U+0NAN
+* kdefinition
 * display JS surrogate pair chars for > xFFFF
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
 * accept encoded hex bytes
 * display search results in a persistent, scrolling list
 * enumerate installed fonts for autocomplete
 * save font selection in cookie
-* any lessons to learn from Uniview? http://people.w3.org/rishida/scripts/uniview/
+* any lessons to learn from Uniview? http://people.w3.org/rishida/uniview/
 
 * Anomalous displays:
   * Search for: link vs /link/

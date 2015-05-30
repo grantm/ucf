@@ -29,6 +29,7 @@
     };
 
     $.fn.ucf.defaults = {
+        data_file_no_unihan: 'char-data-nounihan.txt'
     };
 
     // Data shared across all functions
@@ -696,7 +697,8 @@
     }
 
     function load_unicode_data(app) {
-        $.get('./char-data.txt', null, function(data, status) {
+        var data_url = $(app).data('options').data_file_no_unihan;
+        $.get(data_url, null, function(data, status) {
             parse_unicode_data(app, data, status);
         }, 'text' );
     }
