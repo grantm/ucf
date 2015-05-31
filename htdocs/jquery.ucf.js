@@ -34,16 +34,19 @@
         return parseInt(hex, 16);
     }
 
-    function codepoint_to_string(i) {
-        if(i < 65536) {
-            return String.fromCharCode(i);
+    function codepoint_to_string(cp) {
+        if(cp < 65536) {
+            return String.fromCharCode(cp);
         }
-        var hi = Math.floor((i - 0x10000) / 0x400) + 0xD800;
-        var lo = ((i - 0x10000) % 0x400) + 0xDC00;
+        var hi = Math.floor((cp - 0x10000) / 0x400) + 0xD800;
+        var lo = ((cp - 0x10000) % 0x400) + 0xDC00;
         return String.fromCharCode(hi) + String.fromCharCode(lo);
     }
 
     function string_to_codepoint(str) {
+        if(str === '') {
+            return null;
+        }
         var hi = str.charCodeAt(0);
         if((hi & 0xF800) != 0xD800) {
             return hi;
@@ -103,6 +106,7 @@
         html_ent:     { },
         html_name:    { },
         unique_ids:   [ ],
+        max_codepoint:  0,
 
         build_ui: function () {
             this.$el.hide();
@@ -148,7 +152,7 @@
             this.$el.slideDown(600, function() {
                 app.$search_input.focus();
             });
-            this.set_preview_char('');
+            this.select_codepoint(null);
             this.process_querystring();
         },
 
@@ -156,17 +160,17 @@
             var args = jQuery.deparam(jQuery.param.querystring());
             // c=U+XXXX
             if(args.c && args.c.match(/^U[ +]([0-9A-Fa-f]{4,7})$/)) {
-                this.set_preview_char(codepoint_to_string( hex2dec(RegExp.$1) ) );
+                this.select_codepoint(hex2dec(RegExp.$1));
             }
             // c=999
             else if(args.c && args.c.match(/^(\d+){1,9}$/)) {
-                this.set_preview_char(codepoint_to_string( parseInt(RegExp.$1, 10) ) );
+                this.select_codepoint(parseInt(RegExp.$1, 10));
             }
             // c=uXXXXuXXXX
             else if(args.c && args.c.match(/^u([0-9A-Fa-f]{4})u([0-9A-Fa-f]{4})$/)) {
                 var str = String.fromCharCode( hex2dec(RegExp.$1) )
                         + String.fromCharCode( hex2dec(RegExp.$2) );
-                this.set_preview_char(str );
+                this.select_codepoint(string_to_codepoint(str));
             }
             // q=????
             else if(args.q) {
@@ -174,10 +178,107 @@
             }
         },
 
-        set_preview_char: function (new_char) {
-            var inp = $('input.char');
-            inp.val(new_char);
-            this.char_changed(inp);
+        select_codepoint: function (cp) {
+            if(this.curr_cp === cp) {
+                return;
+            }
+            this.curr_cp = cp;
+            this.set_character_preview();
+            this.show_character_detail();
+        },
+
+        set_character_preview: function () {
+            if(this.curr_cp === null) {
+                this.$preview_input.val('');
+                this.$form.addClass('empty');
+                this.$prev_char_btn.button('disable');
+                this.$next_char_btn.button('disable');
+            }
+            else {
+                this.$preview_input.val(codepoint_to_string(this.curr_cp));
+                this.$form.removeClass('empty');
+                this.$prev_char_btn.button('enable');
+                this.$next_char_btn.button('enable');
+            }
+        },
+
+        show_character_detail: function () {
+            var cp = this.curr_cp;
+            if(cp === null) {
+                return;
+            }
+            var hex   = dec2hex(cp, 4);
+            var block = this.block_from_codepoint(cp);
+            var ch    = this.code_chart[hex];
+            this.$char_link.attr('href', '?c=U+' + hex);
+
+            var $table = $('<table />').append(
+                $('<tr />').append(
+                    $('<th />').text('Code point'),
+                    $('<td />').text('U+' + hex)
+                )
+            );
+            if(ch && ch.description.length > 0) {
+                var $td = $('<td />').text(ch.description);
+                if(ch.alias) {
+                    $td.append(
+                        $('<br />'),
+                        $('<span class="alias"/>').text(ch.alias)
+                    );
+                }
+                $table.append(
+                    $('<tr />').append( $('<th />').text('Description'), $td )
+                );
+            }
+            var entity = '&#' + cp + ';';
+            if(this.html_name[hex]) {
+                entity = entity + ' or &' + this.html_name[hex] + ';';
+            }
+            $table.append(
+                $('<tr />').append(
+                    $('<th />').text('HTML entity'),
+                    $('<td />').text(entity)
+                ),
+                $('<tr />').append(
+                    $('<th />').text('UTF-8'),
+                    $('<td />').text(dec2utf8(cp))
+                ),
+                $('<tr />').append(
+                    $('<th />').text('UTF-16'),
+                    $('<td />').text(dec2utf16(cp))
+                )
+            );
+            if(block) {
+                var $pdf_link = $('<a />')
+                    .text(block.title)
+                    .attr('href', block.pdf_url)
+                    .attr('title', block.filename + ' at Unicode.org');
+                $table.append(
+                    $('<tr />').append(
+                        $('<th />').text('Character block'),
+                        $('<td />').append($pdf_link)
+                    )
+                );
+            }
+            this.$char_info.empty().append($table);
+        },
+
+        check_preview_input: function () {
+            var str = this.$preview_input.val();
+            var len = str.length;
+            if(len === 0) {
+                this.select_codepoint(null);
+            }
+            if(len > 1) {
+                if((str.charCodeAt(len - 2) & 0xF800) === 0xD800) {
+                    str = str.substr(len - 2, 2);
+                }
+                else {
+                    str = str.substr(len - 1, 1);
+                }
+                this.$preview_input.val(str);
+            }
+            this.select_codepoint(string_to_codepoint(str));
         },
 
         add_font_dialog: function () {
@@ -272,7 +373,7 @@
                     app.set_search_link();
                     if(target != '') {
                         var search_method = 'execute_search';
-                        if(target.charAt(0) == '/') {
+                        if(target.charAt(0) === '/') {
                             if(target.length < 3 || target.charAt(target.length - 1) != '/') {
                                 return;
                             }
@@ -292,7 +393,7 @@
                     return false;
                 },
                 select: function(e, ui) {
-                    app.set_preview_char(ui.item.character);
+                    app.select_codepoint(ui.item.cp);
                     window.scrollTo(0,0);
                     return false;
                 }
@@ -301,7 +402,7 @@
 
         set_search_link: function () {
             var str = this.$search_input.val();
-            if(str.length == 0) {
+            if(str.length === 0) {
                 this.$search_wrapper.addClass('empty');
             }
             else {
@@ -337,7 +438,7 @@
 
         build_preview_input: function () {
             var app = this;
-            var cb = function() { app.char_changed(); };
+            var cb = function() { app.check_preview_input(); };
             return this.$preview_input =
                 $('<input type="text" class="char needs-font" title="Type or paste a character" />')
                 .change( cb )
@@ -401,7 +502,7 @@
             $div.append($list);
 
             $list.find('li').click(function () {
-                app.set_preview_char($(this).text());
+                app.select_codepoint(string_to_codepoint( $(this).text() ));
             });
             return $div;
         },
@@ -502,7 +603,7 @@
                     this.add_result(result, seen, code, ch);
                 }
             }
-            if(result.length == 0) {
+            if(result.length === 0) {
                 this.$search_input.removeClass('busy');
             }
             response(result);
@@ -562,7 +663,7 @@
                     this.add_result(result, seen, code, ch);
                 }
             }
-            if(result.length == 0) {
+            if(result.length === 0) {
                 this.$search_input.removeClass('busy');
             }
             response(result);
@@ -572,7 +673,8 @@
             if(seen[code]) {
                 return;
             }
-            var character = codepoint_to_string(hex2dec(code));
+            var cp = hex2dec(code);
+            var character = codepoint_to_string(cp);
             var descr = ch.description;
             if(extra) {
                 descr = extra + ' ' + descr;
@@ -582,7 +684,7 @@
                 $div.append( $('<span class="code-alias" />').text(ch.alias) );
             }
             result.push({
-                'code': code,
+                'cp': cp,
                 'character': character,
                 'label': '<div class="code-point">U+' + code + '</div>'
                          + '<div class="code-sample">&#160;' + character
@@ -592,107 +694,20 @@
             seen[code] = true;
         },
 
-        char_changed: function () {
-            var txt = this.$preview_input.val();
-            var len = txt.length;
-            if(len == 0) {
-                this.$form.addClass('empty');
-                this.$prev_char_btn.button('disable');
-                this.$next_char_btn.button('disable');
-            }
-            else {
-                this.$form.removeClass('empty');
-                this.$prev_char_btn.button('enable');
-                this.$next_char_btn.button('enable');
-            }
-            if(len > 1) {
-                if((txt.charCodeAt(len - 2) & 0xF800) == 0xD800) {
-                    this.$preview_input.val(txt.substr(txt.length - 2, 2));
-                }
-                else {
-                    this.$preview_input.val(txt.substr(txt.length - 1, 1));
-                }
-            }
-            this.examine_char();
-        },
-
-        examine_char: function () {
-            var ch = this.$preview_input.val();
-            if(ch == this.last_char) {
-                return;
-            }
-            if(ch.length == 0) {
-                return;
-            }
-            this.last_char = ch;
-            var code  = string_to_codepoint(ch);
-            var hex   = dec2hex(code, 4);
-            var block = this.block_from_codepoint(code);
-            ch        = this.code_chart[hex];
-            this.$char_link.attr('href', '?c=U+' + hex);
-
-            var $table = $('<table />').append(
-                $('<tr />').append(
-                    $('<th />').text('Code point'),
-                    $('<td />').text('U+' + hex)
-                )
-            );
-            if(ch && ch.description.length > 0) {
-                var $td = $('<td />').text(ch.description);
-                if(ch.alias) {
-                    $td.append(
-                        $('<br />'),
-                        $('<span class="alias"/>').text(ch.alias)
-                    );
-                }
-                $table.append(
-                    $('<tr />').append( $('<th />').text('Description'), $td )
-                );
-            }
-            var entity = '&#' + code + ';';
-            if(this.html_name[hex]) {
-                entity = entity + ' or &' + this.html_name[hex] + ';';
-            }
-            $table.append(
-                $('<tr />').append(
-                    $('<th />').text('HTML entity'),
-                    $('<td />').text(entity)
-                ),
-                $('<tr />').append(
-                    $('<th />').text('UTF-8'),
-                    $('<td />').text(dec2utf8(code))
-                ),
-                $('<tr />').append(
-                    $('<th />').text('UTF-16'),
-                    $('<td />').text(dec2utf16(code))
-                )
-            );
-            if(block) {
-                var $pdf_link = $('<a />')
-                    .text(block.title)
-                    .attr('href', block.pdf_url)
-                    .attr('title', block.filename + ' at Unicode.org');
-                $table.append(
-                    $('<tr />').append(
-                        $('<th />').text('Character block'),
-                        $('<td />').append($pdf_link)
-                    )
-                );
-            }
-            this.$char_info.empty().append($table);
-        },
-
         increment_code_point: function (inc) {
-            var ch = this.last_char;
-            if(!ch) { return; }
-            var code = string_to_codepoint(ch) + inc;
+            var code = this.curr_cp + inc;
+            if(code === -1) {
+                this.select_codepoint(null);
+                return;
+            }
             var hex  = dec2hex(code, 4);
             while(!this.code_chart[hex]) {
                 code = code + inc;
                 if(code < 0) { return; }
+                if(code > this.max_codepoint) { return; }
                 hex = dec2hex(code, 4);
             }
-            this.set_preview_char(codepoint_to_string(code));
+            this.select_codepoint(code);
         },
 
         scroll_char: function (event, delta) {
@@ -700,14 +715,11 @@
                 this.increment_code_point(delta < 0 ? 1 : -1);
                 return;
             }
-            var ch = this.last_char;
-            if(!ch) { return; }
-            var code = string_to_codepoint(ch);
+            var code = this.curr_cp || 0;
             var block = this.block_from_codepoint(code);
             var i = block.index + (delta < 0 ? 1 : -1);
             if(!this.code_blocks[i]) { return; }
-            this.set_preview_char(codepoint_to_string(this.code_blocks[i].start_dec));
-            return;
+            this.select_codepoint(this.code_blocks[i].start_dec);
         },
 
         display_chart_dialog: function () {
@@ -720,18 +732,18 @@
                 .dialog('open');
         },
 
-        set_code_chart_page: function (code, target_code, set_menu) {
-            if(code == null) {
-                code  = target_code & 0xFFF80;
+        set_code_chart_page: function (base_code, target_code, set_menu) {
+            if(base_code === null) {
+                base_code = target_code & 0x1FFF80;
             }
-            this.code_chart_base = code;
+            this.code_chart_base = base_code;
 
             var $dlg = this.$chart_dialog
             $dlg.dialog('option', 'title', 'Unicode Character Chart '
-                + dec2hex(code, 4) + ' - ' + dec2hex(code + 0x7F, 4)
+                + dec2hex(base_code, 4) + ' - ' + dec2hex(base_code + 0x7F, 4)
             );
             if(set_menu) {
-                var block = this.block_from_codepoint(code);
+                var block = this.block_from_codepoint(base_code);
                 if(block) {
                     this.$blocks_menu.val(block.index);
                 }
@@ -739,6 +751,7 @@
 
             var $tbody = $('<tbody />');
             var i, j, $row, $cell, meta;
+            var code = base_code;
             for(i = 0; i < 8; i++) {
                 $row = $('<tr />');
                 for(j = 0; j < 16; j++) {
@@ -746,7 +759,7 @@
                     meta = this.code_chart[dec2hex(code, 4)];
                     if(meta) {
                         $cell.text(codepoint_to_string(code));
-                        if(code == target_code) {
+                        if(code === target_code) {
                             $cell.addClass('curr-char');
                         }
                     }
@@ -763,17 +776,16 @@
 
         code_chart_click: function (td) {
             var $td = $(td);
-            var code = this.code_chart_base;
-            $td.prevAll().each(function() { code++; });
-            $td.parent().prevAll().each(function() { code += 16; });
-            this.set_preview_char(codepoint_to_string(code));
             $td.parent().parent().find('td').removeClass('curr-char');
             $td.addClass('curr-char');
+            var col = $td.prevAll().length;
+            var row = $td.parent().prevAll().length;
+            this.select_codepoint(this.code_chart_base + row * 16 + col);
         },
 
         change_chart_page: function (incr) {
             var code_base = this.code_chart_base;
-            if(incr < 0  &&  code_base == 0) {
+            if(incr < 0  &&  code_base === 0) {
                 return;
             }
             code_base = code_base + (incr * 128);
@@ -827,6 +839,9 @@
                         offset = 1;
                     }
                     curr_cp += parseInt(offset, 10);
+                    if(curr_cp > this.max_codepoint) {
+                        this.max_codepoint = curr_cp;
+                    }
                     code = dec2hex(curr_cp, 4);
                     this.code_chart[code] = {
                         'description': row[0]
