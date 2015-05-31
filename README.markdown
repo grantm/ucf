@@ -12,7 +12,7 @@ need to generate the data file as described in the INSTALL file.
 Copyright and Licence
 ---------------------
 
-Copyright (C) 2010 Grant McLean
+Copyright (C) 2010-2015 Grant McLean
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the [GNU Affero General Public License][2].
