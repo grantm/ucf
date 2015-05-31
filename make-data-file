@@ -71,6 +71,7 @@ sub translate_data {
     my $xml_ref = unzip_xml($zip_file);
 
     if(!%args) {
+        print "Writing $output_filename\n";
         open my $out, '>', $output_filename;
         $args{out_fh} = $out;
     }
@@ -80,7 +81,12 @@ sub translate_data {
     my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
 
     $parser->parse_string($$xml_ref);
-    append_html_entities($args{out_fh});
+
+    if($args{out_fh}) {
+        append_html_entities($args{out_fh});
+        close($args{out_fh});
+        make_gzip_version($output_filename);
+    }
 }
 
 
@@ -139,18 +145,27 @@ sub get_zip_file {
 sub append_html_entities {
     my($out) = @_;
 
-    print $out "HTML\tamp\t0026\n";
-    print $out "HTML\tlt\t003C\n";
+    print $out "&amp\t0026\n";
+    print $out "&lt\t003C\n";
     foreach my $dtd_file (sort glob("$local_data_dir/*.ent")) {
         open my $fh, '<', $dtd_file or die "open($dtd_file): $!";
         while(<$fh>) {
             if(my($name, $code) = $_ =~ m{<!ENTITY\s+(\w+)\s+"&#(\d+);">}) {
                 $code = sprintf('%04X', $code);
-                print $out "HTML\t$name\t$code\n";
+                print $out "&$name\t$code\n";
             }
         }
     }
 
+}
+
+
+sub make_gzip_version {
+    my($base_file) = @_;
+    my $gz_file = $base_file . '.gz';
+
+    print "Compressing to $gz_file\n";
+    system("gzip --best < $base_file > $gz_file");
 }
 
 package UCFHandler;
@@ -159,11 +174,20 @@ use Data::Dumper;
 
 sub new {
     my $class = shift;
-    return bless { @_ }, $class;
+    return bless {
+        @_,
+        last_code_point => 0,
+    }, $class;
 }
 
 sub url_pdf_base {
     return shift->{url_pdf_base};
+}
+
+sub last_code_point {
+    my $self = shift;
+    $self->{last_code_point} = shift if @_;
+    return $self->{last_code_point};
 }
 
 sub group_name_template {
@@ -291,22 +315,24 @@ sub end_element_char {
     return unless $attr->{name};
     $self->add_unofficial_aliases;
     my $cp   = $attr->{cp};
+    my $dcp  = hex($cp);
     my $name = $attr->{name};
     my $aliases = '';
+    my $offset = $dcp - $self->last_code_point;
+    $offset = '' if $offset == 1;
     if(@{ $attr->{aliases} }) {
-        #$aliases .= "\t";
-        $aliases .= join('; ', @{ $attr->{aliases} });
+        $aliases = "\t" . join('; ', @{ $attr->{aliases} });
     }
     if(my $out = $self->{out_fh}) {
-        print $out "$cp\t$name\t$aliases\n";
+        print $out "$offset\t$name$aliases\n";
     }
     elsif(my $target = $self->{char}) {
         return unless $attr->{cp} eq $target;
-        print "$cp\t$name\t$aliases\n";
+        print "$cp\t$name$aliases\n";
         print dump_attr($attr), "\n";
         exit;
     }
-    #say "char\n", dump_attr($attr);
+    $self->last_code_point($dcp);
 }
 
 sub start_element_block {
@@ -318,7 +344,7 @@ sub start_element_block {
     my $file = "U${first}.pdf";
     my $url = $self->url_pdf_base . '/' . $file;
     if(my $out = $self->{out_fh}) {
-        print $out "BLK\t$first\t$last\t$name\t$file\t$url\n";
+        print $out "[$first\t$last\t$name\t$file\t$url\n";
     }
 }
 

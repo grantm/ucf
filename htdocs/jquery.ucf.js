@@ -744,30 +744,39 @@
         code_blocks = [ ];
         html_ent    = { };
         html_name   = { };
-        var j, str, row, code, block;
+        var j, str, line, row, code, block;
+        var curr_cp = 0;
         while(i < data.length) {
             j = data.indexOf("\n", i);
             if(j < 1) { break; }
-            row = data.substring(i, j).split("\t");
-            if(row[0] == 'BLK') {
+            line = data.substring(i, j);
+            row = line.split("\t");
+            if(line.match(/^\[/)) {
+                row[0] = row[0].replace(/^\[/, '');
                 block = {
-                    'start'    : row[1],
-                    'end'      : row[2],
-                    'start_dec': hex2dec(row[1]),
-                    'end_dec'  : hex2dec(row[2]),
-                    'title'    : row[3],
-                    'filename' : row[4],
-                    'pdf_url'  : row[5],
+                    'start'    : row[0],
+                    'end'      : row[1],
+                    'start_dec': hex2dec(row[0]),
+                    'end_dec'  : hex2dec(row[1]),
+                    'title'    : row[2],
+                    'filename' : row[3],
+                    'pdf_url'  : row[4],
                     'index'    : code_blocks.length
                 };
                 code_blocks.push(block);
             }
-            else if(row[0] == 'HTML') {
-                html_ent[row[1]]  = row[2];    // Map name to code eg: nbsp => 00A0
-                html_name[row[2]] = row[1];    // Map code to name eg: 0233 => eacute
+            else if(line.match(/^\&/)) {
+                row[0] = row[0].replace(/^\&/, '');
+                html_ent[row[0]]  = row[1];    // Map name to code eg: nbsp => 00A0
+                html_name[row[1]] = row[0];    // Map code to name eg: 0233 => eacute
             }
             else {
-                code = row.shift();
+                offset = row.shift();
+                if(offset === '') {
+                    offset = 1;
+                }
+                curr_cp += parseInt(offset, 10);
+                code = dec2hex(curr_cp, 4);
                 code_chart[code] = {
                     'description': row[0]
                 };

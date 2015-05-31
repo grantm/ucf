@@ -1,9 +1,8 @@
-* adaptive encoding for codepoint number
-* add gzipping of data file
+* refactor plugin to use object and methods
 * update highlighted character in code chart
 * include undefined characters in code chart (but with class for undefined?)
-* handle reserved ranges
-* D800 = U+0NAN
+* add hint text for characters in ranges: private use; reserved; unihan; surrogates
+* fix problem when scrolling through surrogate ranges e.g.: D800 = U+0NAN
 * kdefinition
 * add support for Unihan codepoints
   * update script to generate two data files
