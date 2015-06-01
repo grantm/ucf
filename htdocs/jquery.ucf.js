@@ -20,6 +20,8 @@
 
     "use strict";
 
+    var block_mask = 0xFFFF80
+
 
     /* Utility Functions
      * ================= */
@@ -564,7 +566,7 @@
             return this.$blocks_menu = $('<select class="ucf-block-menu">')
                 .change(function() {
                     var block = app.code_blocks[$(this).val()];
-                    var code_base = block.start_dec & 0xFFF80;
+                    var code_base = block.start_dec & block_mask;
                     app.set_code_chart_page(code_base);
                 });
         },
@@ -735,7 +737,7 @@
         },
 
         set_code_chart_page: function (base_code) {
-            base_code = base_code & 0x1FFF80;
+            base_code = base_code & block_mask;
             if(this.code_chart_base === base_code) {
                 return;
             }
@@ -762,7 +764,7 @@
                 $tbody.append($row);
             }
             this.$code_chart_table.empty().append($tbody);
-            if((this.curr_cp & 0x1FFF80) !== base_code) {
+            if((this.curr_cp & block_mask) !== base_code) {
                 this.select_block_name(base_code);
             }
         },
@@ -799,7 +801,7 @@
             }
             code_base = code_base + (incr * 128);
             this.set_code_chart_page(code_base, true);
-            if((this.curr_cp & 0x1FFF80) === code_base) {
+            if((this.curr_cp & block_mask) === code_base) {
                 this.highlight_code_chart_char();
             }
         },
