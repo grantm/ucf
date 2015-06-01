@@ -1,4 +1,3 @@
-* include undefined characters in code chart (but with class for undefined?)
 * add hint text for characters in ranges: private use; reserved; unihan; surrogates
 * fix problem when scrolling through surrogate ranges e.g.: D800 = U+0NAN
 * kdefinition

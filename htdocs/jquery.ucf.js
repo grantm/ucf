@@ -752,12 +752,8 @@
             for(i = 0; i < 8; i++) {
                 $row = $('<tr />');
                 for(j = 0; j < 16; j++) {
-                    $cell = $('<td />');
-                    meta = this.code_chart[dec2hex(code, 4)];
-                    if(meta) {
-                        $cell.text(codepoint_to_string(code));
-                    }
-                    else {
+                    $cell = $('<td />').text(codepoint_to_string(code));
+                    if(!this.code_chart[dec2hex(code, 4)]) {
                         $cell.addClass('reserved');
                     }
                     $row.append($cell);

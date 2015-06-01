@@ -417,6 +417,7 @@ table.ucf-code-chart td {
 
 table.ucf-code-chart td.reserved {
   background-color: transparent;
+  opacity : 0.3;
 }
 
 table.ucf-code-chart td.curr-char {
