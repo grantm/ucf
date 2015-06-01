@@ -185,6 +185,7 @@
             this.curr_cp = cp;
             this.set_character_preview();
             this.show_character_detail();
+            this.highlight_code_chart_char();
         },
 
         set_character_preview: function () {
@@ -528,7 +529,7 @@
             this.$code_chart_table = $('<table class="ucf-code-chart" />')
                 .delegate('td', 'click', function() { app.code_chart_click(this); })
                 .mousewheel(function(event, delta) {
-                    app.change_chart_page(-1 * delta)
+                    app.increment_chart_page(-1 * delta)
                     event.preventDefault();
                 });
             return $('<div class="ucf-chart-wrapper" />')
@@ -546,12 +547,12 @@
                 $('<button>').text('Next').button({
                     icons: { primary: 'ui-icon-circle-triangle-e' }
                 }).click( function() {
-                    app.change_chart_page(1);
+                    app.increment_chart_page(1);
                 }),
                 $('<button>').text('Prev').button({
                     icons: { primary: 'ui-icon-circle-triangle-w' }
                 }).click( function() {
-                    app.change_chart_page(-1);
+                    app.increment_chart_page(-1);
                 }),
                 this.build_blocks_menu()
             );
@@ -563,7 +564,7 @@
                 .change(function() {
                     var block = app.code_blocks[$(this).val()];
                     var code_base = block.start_dec & 0xFFF80;
-                    app.set_code_chart_page(code_base, null, false);
+                    app.set_code_chart_page(code_base, false);
                 });
         },
 
@@ -726,15 +727,16 @@
             window.scrollTo(0,0);
             var code = string_to_codepoint(this.$preview_input.val());
             var rect = this.$el[0].getBoundingClientRect();
-            this.set_code_chart_page(null, code, true);
+            this.set_code_chart_page(code, true);
             this.$chart_dialog
                 .dialog('option', 'position', [rect.left - 1, 248])
                 .dialog('open');
         },
 
-        set_code_chart_page: function (base_code, target_code, set_menu) {
-            if(base_code === null) {
-                base_code = target_code & 0x1FFF80;
+        set_code_chart_page: function (base_code, set_menu) {
+            base_code = base_code & 0x1FFF80;
+            if(this.code_chart_base === base_code) {
+                return;
             }
             this.code_chart_base = base_code;
 
@@ -759,9 +761,6 @@
                     meta = this.code_chart[dec2hex(code, 4)];
                     if(meta) {
                         $cell.text(codepoint_to_string(code));
-                        if(code === target_code) {
-                            $cell.addClass('curr-char');
-                        }
                     }
                     else {
                         $cell.addClass('reserved');
@@ -774,22 +773,31 @@
             this.$code_chart_table.empty().append($tbody);
         },
 
+        highlight_code_chart_char: function () {
+            this.set_code_chart_page(this.curr_cp, true);
+            if(this.curr_cp !== null) {
+                this.$code_chart_table.find('td').removeClass('curr-char');
+                var col = (this.curr_cp & 15) + 1;
+                var row = ((this.curr_cp >> 4) & 7) + 1;
+                var selector = 'tr:nth-child(' + row + ') td:nth-child(' + col + ')';
+                this.$code_chart_table.find(selector).addClass('curr-char');
+            }
+        },
+
         code_chart_click: function (td) {
             var $td = $(td);
-            $td.parent().parent().find('td').removeClass('curr-char');
-            $td.addClass('curr-char');
             var col = $td.prevAll().length;
             var row = $td.parent().prevAll().length;
             this.select_codepoint(this.code_chart_base + row * 16 + col);
         },
 
-        change_chart_page: function (incr) {
+        increment_chart_page: function (incr) {
             var code_base = this.code_chart_base;
             if(incr < 0  &&  code_base === 0) {
                 return;
             }
             code_base = code_base + (incr * 128);
-            this.set_code_chart_page(code_base, null, true);
+            this.set_code_chart_page(code_base, true);
         },
 
         save_font: function (new_font) {
