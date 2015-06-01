@@ -564,7 +564,7 @@
                 .change(function() {
                     var block = app.code_blocks[$(this).val()];
                     var code_base = block.start_dec & 0xFFF80;
-                    app.set_code_chart_page(code_base, false);
+                    app.set_code_chart_page(code_base);
                 });
         },
 
@@ -727,13 +727,13 @@
             window.scrollTo(0,0);
             var code = string_to_codepoint(this.$preview_input.val());
             var rect = this.$el[0].getBoundingClientRect();
-            this.set_code_chart_page(code, true);
+            this.set_code_chart_page(code);
             this.$chart_dialog
                 .dialog('option', 'position', [rect.left - 1, 248])
                 .dialog('open');
         },
 
-        set_code_chart_page: function (base_code, set_menu) {
+        set_code_chart_page: function (base_code) {
             base_code = base_code & 0x1FFF80;
             if(this.code_chart_base === base_code) {
                 return;
@@ -744,12 +744,6 @@
             $dlg.dialog('option', 'title', 'Unicode Character Chart '
                 + dec2hex(base_code, 4) + ' - ' + dec2hex(base_code + 0x7F, 4)
             );
-            if(set_menu) {
-                var block = this.block_from_codepoint(base_code);
-                if(block) {
-                    this.$blocks_menu.val(block.index);
-                }
-            }
 
             var $tbody = $('<tbody />');
             var i, j, $row, $cell, meta;
@@ -782,6 +776,10 @@
                 var selector = 'tr:nth-child(' + row + ') td:nth-child(' + col + ')';
                 this.$code_chart_table.find(selector).addClass('curr-char');
             }
+            var block = this.block_from_codepoint(this.curr_cp);
+            if(block && this.$blocks_menu.val() !== block.index) {
+                this.$blocks_menu.val(block.index);
+            }
         },
 
         code_chart_click: function (td) {
@@ -798,6 +796,9 @@
             }
             code_base = code_base + (incr * 128);
             this.set_code_chart_page(code_base, true);
+            if((this.curr_cp & 0x1FFF80) === code_base) {
+                this.highlight_code_chart_char();
+            }
         },
 
         save_font: function (new_font) {
