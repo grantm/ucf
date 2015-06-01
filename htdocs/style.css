@@ -400,10 +400,12 @@ div.ucf-chart-buttons button.ui-button span.ui-button-icon-primary {
 table.ucf-code-chart {
   border-collapse: collapse;
   font-family: Liberation Sans, Arial, sans-serif;
+  background-image: url(images/reserved-bg.png);
 }
 
 table.ucf-code-chart td {
   border: 1px solid #cccccc;
+  background-color: #eeeeee;
   padding: 1px 0 0 0;
   font-size: 10px;
   font-size: 17px;
@@ -414,7 +416,7 @@ table.ucf-code-chart td {
 }
 
 table.ucf-code-chart td.reserved {
-  background-color: #eeeeee;
+  background-color: transparent;
 }
 
 table.ucf-code-chart td.curr-char {
