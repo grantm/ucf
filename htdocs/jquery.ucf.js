@@ -186,6 +186,7 @@
             this.set_character_preview();
             this.show_character_detail();
             this.highlight_code_chart_char();
+            this.select_block_name(this.curr_cp);
         },
 
         set_character_preview: function () {
@@ -765,6 +766,9 @@
                 $tbody.append($row);
             }
             this.$code_chart_table.empty().append($tbody);
+            if((this.curr_cp & 0x1FFF80) !== base_code) {
+                this.select_block_name(base_code);
+            }
         },
 
         highlight_code_chart_char: function () {
@@ -776,7 +780,10 @@
                 var selector = 'tr:nth-child(' + row + ') td:nth-child(' + col + ')';
                 this.$code_chart_table.find(selector).addClass('curr-char');
             }
-            var block = this.block_from_codepoint(this.curr_cp);
+        },
+
+        select_block_name: function (cp) {
+            var block = this.block_from_codepoint(cp);
             if(block && this.$blocks_menu.val() !== block.index) {
                 this.$blocks_menu.val(block.index);
             }
