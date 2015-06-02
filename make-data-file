@@ -383,7 +383,7 @@ sub end_element_char {
     if(@{ $attr->{aliases} }) {
         $aliases = "\t" . join('; ', @{ $attr->{aliases} });
     }
-    my $prefix = '"';
+    my $prefix = $name =~ /^[+"%#^*!\[&]/ ? '"' : '';
     $self->output("$offset$prefix$name$aliases");
     if(my $target = $self->{char}) {
         return unless $attr->{cp} eq $target;

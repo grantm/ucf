@@ -1,4 +1,3 @@
-* remove redundant prefixes in data
 * merge adjacent blocks
 * kdefinition
 * add support for Unihan codepoints
