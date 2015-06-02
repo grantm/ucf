@@ -1,4 +1,6 @@
-* add hint text for characters in ranges: private use; reserved; unihan; surrogates
+* remove redundant prefixes in data
+* merge adjacent blocks
+* fix setting of code chart block selection
 * fix problem when scrolling through surrogate ranges e.g.: D800 = U+0NAN
 * kdefinition
 * add support for Unihan codepoints
@@ -7,6 +9,9 @@
   * persistent cookie to remember checkbox preference
   * hint in character properties section to check box for han chars
   * URL parameter to enable?
+* upgrade jQuery and jQueryUI
+* slim down CSS
+* fix opening animation
 * welcome pointers for (paste a character, search by name, get help)
 * allow search results to persist
 * display JS surrogate pair chars for > xFFFF
@@ -21,3 +26,9 @@
   * Search for: link vs /link/
   * Hangul Syllable AC00, First displayed, but rest not because no descriptions
   * Combining chars (eg: 0300) not visible in chart
+
+* unassigned       http://localhost/~grant/ucf/?c=U+0378
+* noncharacter     http://localhost/~grant/ucf/?c=U+FDD0
+* surrogate        http://localhost/~grant/ucf/?c=U+D801
+* pua              http://localhost/~grant/ucf/?c=U+E39D
+

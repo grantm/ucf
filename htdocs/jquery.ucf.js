@@ -21,6 +21,7 @@
     "use strict";
 
     var block_mask = 0xFFFF80
+    var preview_reset_list = 'unassigned noncharacter surrogate pua';
 
 
     /* Utility Functions
@@ -102,13 +103,14 @@
     }
 
     UnicodeCharacterFinder.prototype = {
-        code_chart:   { },
-        code_list:    [ ],
-        code_blocks:  [ ],
-        html_ent:     { },
-        html_name:    { },
-        unique_ids:   [ ],
-        max_codepoint:  0,
+        code_chart:       { },
+        code_list:        [ ],
+        reserved_ranges:  [ ],
+        code_blocks:      [ ],
+        html_ent:         { },
+        html_name:        { },
+        unique_ids:       [ ],
+        max_codepoint:    0,
 
         build_ui: function () {
             this.$el.hide();
@@ -185,6 +187,7 @@
                 return;
             }
             this.curr_cp = cp;
+            this.curr_ch = this.lookup_char(cp);
             this.set_character_preview();
             this.show_character_detail();
             this.highlight_code_chart_char();
@@ -192,18 +195,87 @@
         },
 
         set_character_preview: function () {
-            if(this.curr_cp === null) {
+            var cp = this.curr_cp;
+            var ch = this.curr_ch;
+            this.$form.removeClass('empty');
+            this.$preview_input.removeClass(preview_reset_list);
+            if(cp === null) {
                 this.$preview_input.val('');
                 this.$form.addClass('empty');
                 this.$prev_char_btn.button('disable');
                 this.$next_char_btn.button('disable');
             }
+            else if(ch.reserved) {
+                var str = ch.show ? codepoint_to_string(cp) : '';
+                this.$preview_input.val(str);
+                this.$preview_input.addClass(ch.reserved);
+            }
             else {
-                this.$preview_input.val(codepoint_to_string(this.curr_cp));
-                this.$form.removeClass('empty');
+                this.$preview_input.val(codepoint_to_string(cp));
                 this.$prev_char_btn.button('enable');
                 this.$next_char_btn.button('enable');
             }
+        },
+
+        lookup_char: function (cp) {
+            if(cp === null) {
+                return { };
+            }
+            var hex = dec2hex(cp, 4);
+            if(this.code_chart[hex]) {
+                return this.code_chart[hex];
+            }
+            return this.lookup_reserved_char(cp);
+        },
+
+        lookup_reserved_char: function (cp) {
+            var range = this.lookup_reserved_range(cp);
+            if(!range) {
+                return null;
+            }
+            if(range.type === 'templated') {
+                var desc = range.template.replace(/#/, hex2dec(cp, 4));
+                return {
+                    description: desc
+                };
+            }
+            var ch = { reserved: range.type };
+            switch(range.type) {
+                case 'unassigned':
+                    ch.description = "This codepoint is reserved as 'unassigned'";
+                    ch.show = true;
+                    ch.unassigned = true;
+                    break;
+                case 'noncharacter':
+                    ch.description = "This codepoint is defined as a <noncharacter>";
+                    ch.show = false;
+                    ch.noncharacter = true;
+                    break;
+                case 'surrogate':
+                    ch.description = "This codepoint is defined as a 'surrogate', it has no meaning unless combined with another codepoint";
+                    ch.surrogate = true;
+                    ch.show = false;
+                    break;
+                case 'pua':
+                    ch.description = "This codepoint is in a Private Use Area (PUA)";
+                    ch.show = true;
+                    ch.pua = true;
+                    break;
+            }
+            return ch;
+        },
+
+        lookup_reserved_range: function (cp) {
+            for(var i = 0; i < this.reserved_ranges.length; i++) {
+                if(cp > this.reserved_ranges[i].last_cp){
+                    continue;
+                }
+                if(cp < this.reserved_ranges[i].first_cp){
+                    return null;
+                }
+                return this.reserved_ranges[i];
+            }
+            return null;
         },
 
         show_character_detail: function () {
@@ -213,7 +285,7 @@
             }
             var hex   = dec2hex(cp, 4);
             var block = this.block_from_codepoint(cp);
-            var ch    = this.code_chart[hex];
+            var ch    = this.curr_ch;
             this.$char_link.attr('href', '?c=U+' + hex);
 
             var $table = $('<table />').append(
@@ -234,15 +306,19 @@
                     $('<tr />').append( $('<th />').text('Description'), $td )
                 );
             }
-            var entity = '&#' + cp + ';';
-            if(this.html_name[hex]) {
-                entity = entity + ' or &' + this.html_name[hex] + ';';
+            if(!ch.reserved || ch.pua) {
+                var entity = '&#' + cp + ';';
+                if(this.html_name[hex]) {
+                    entity = entity + ' or &' + this.html_name[hex] + ';';
+                }
+                $table.append(
+                    $('<tr />').append(
+                        $('<th />').text('HTML entity'),
+                        $('<td />').text(entity)
+                    )
+                );
             }
             $table.append(
-                $('<tr />').append(
-                    $('<th />').text('HTML entity'),
-                    $('<td />').text(entity)
-                ),
                 $('<tr />').append(
                     $('<th />').text('UTF-8'),
                     $('<td />').text(dec2utf8(cp))
@@ -267,10 +343,13 @@
             this.$char_info.empty().append($table);
         },
 
-        check_preview_input: function () {
+        check_preview_input: function (click_only) {
             var str = this.$preview_input.val();
             var len = str.length;
             if(len === 0) {
+                if(click_only) {
+                    return;
+                }
                 this.select_codepoint(null);
             }
             if(len > 1) {
@@ -442,12 +521,13 @@
 
         build_preview_input: function () {
             var app = this;
-            var cb = function() { app.check_preview_input(); };
+            var cb1 = function() { app.check_preview_input(); };
+            var cb2 = function() { app.check_preview_input(true); };
             return this.$preview_input =
                 $('<input type="text" class="char needs-font" title="Type or paste a character" />')
-                .change( cb )
-                .keypress(function() { setTimeout(cb, 50); })
-                .mouseup(function() { setTimeout(cb, 50); })
+                .change( cb1 )
+                .keypress(function() { setTimeout(cb1, 50); })
+                .mouseup(function() { setTimeout(cb2, 50); })
                 .mousewheel(function(event, delta) {
                     app.scroll_char(event, delta);
                     event.preventDefault();
@@ -728,9 +808,8 @@
 
         display_chart_dialog: function () {
             window.scrollTo(0,0);
-            var code = string_to_codepoint(this.$preview_input.val());
             var rect = this.$el[0].getBoundingClientRect();
-            this.set_code_chart_page(code);
+            this.set_code_chart_page(this.curr_cp);
             this.$chart_dialog
                 .dialog('option', 'position', [rect.left - 1, 248])
                 .dialog('open');
@@ -750,16 +829,29 @@
 
             var $tbody = $('<tbody />');
             var i, j, $row, $cell, meta;
-            var code = base_code;
+            var cp = base_code;
             for(i = 0; i < 8; i++) {
                 $row = $('<tr />');
                 for(j = 0; j < 16; j++) {
-                    $cell = $('<td />').text(codepoint_to_string(code));
-                    if(!this.code_chart[dec2hex(code, 4)]) {
-                        $cell.addClass('reserved');
+                    $cell = $('<td />');
+                    var ch = this.lookup_char(cp);
+                    var show_char = true;
+                    var char_class = null;
+                    if(!ch) {
+                        char_class = 'unassigned';
+                    }
+                    else if(ch.reserved) {
+                        char_class = ch.reserved;
+                        show_char  = ch.show;
+                    }
+                    if(char_class) {
+                        $cell.addClass(char_class);
+                    }
+                    if(show_char) {
+                        $cell.text(codepoint_to_string(cp));
                     }
                     $row.append($cell);
-                    code++;
+                    cp++;
                 }
                 $tbody.append($row);
             }
@@ -821,49 +913,128 @@
 
         parse_unicode_data: function (data, status, handler) {
             var i = 0;
-            var j, str, line, row, offset, code, block;
+            var j, str, line, field, offset, type, code, range_end, block;
             var curr_cp = 0;
             while(i < data.length) {
                 j = data.indexOf("\n", i);
                 if(j < 1) { break; }
                 line = data.substring(i, j);
-                row = line.split("\t");
+                field = line.split("\t");
+
+                // [ line describes a block
                 if(line.match(/^\[/)) {
-                    row[0] = row[0].replace(/^\[/, '');
+                    field[0] = field[0].replace(/^\[/, '');
                     block = {
-                        'start'    : row[0],
-                        'end'      : row[1],
-                        'start_dec': hex2dec(row[0]),
-                        'end_dec'  : hex2dec(row[1]),
-                        'title'    : row[2],
-                        'filename' : row[3],
-                        'pdf_url'  : row[4],
+                        'start'    : field[0],
+                        'end'      : field[1],
+                        'start_dec': hex2dec(field[0]),
+                        'end_dec'  : hex2dec(field[1]),
+                        'title'    : field[2],
+                        'filename' : field[3],
+                        'pdf_url'  : field[4],
                         'index'    : this.code_blocks.length
                     };
                     this.code_blocks.push(block);
                 }
+
+                // & line describes an HTML character entity
                 else if(line.match(/^\&/)) {
-                    row[0] = row[0].replace(/^\&/, '');
-                    this.html_ent[row[0]]  = row[1];    // Map name to code eg: nbsp => 00A0
-                    this.html_name[row[1]] = row[0];    // Map code to name eg: 0233 => eacute
+                    field[0] = field[0].replace(/^\&/, '');
+                    this.html_ent[field[0]]  = field[1];    // Map name to code eg: nbsp => 00A0
+                    this.html_name[field[1]] = field[0];    // Map code to name eg: 0233 => eacute
                 }
+
+                // There may be an offset before the type prefix on these lines
                 else {
-                    offset = row.shift();
-                    if(offset === '') {
-                        offset = 1;
+                    offset = 1;
+                    if(field[0].match(/^[+](\d+)/)) {
+                        offset = parseInt(RegExp.$1, 10);
+                        field[0] = field[0].replace(/^[+]\d+/, '');
                     }
-                    curr_cp += parseInt(offset, 10);
+                    curr_cp += offset;
                     if(curr_cp > this.max_codepoint) {
                         this.max_codepoint = curr_cp;
                     }
                     code = dec2hex(curr_cp, 4);
-                    this.code_chart[code] = {
-                        'description': row[0]
-                    };
-                    if(row[1] && row[1].length > 0) {
-                        this.code_chart[code].alias = row[1];
+
+                    type = '"';
+                    if(field[0].match(/^(["#%^!*])/)) {
+                        type = RegExp.$1;
+                        field[0] = field[0].replace(/^["#%^!*]/, '');
                     }
-                    this.code_list.push(code);
+
+                    switch(type) {
+
+                        // " line describes a character
+                        case '"':
+                            this.code_chart[code] = {
+                                'description': field[0]
+                            };
+                            if(field[1] && field[1].length > 0) {
+                                this.code_chart[code].alias = field[1];
+                            }
+                            this.code_list.push(code);
+                            break;
+
+                        // % line describes a reserved range
+                        case '%':
+                            range_end = curr_cp + parseInt(field[0], 10) - 1;
+                            this.reserved_ranges.push({
+                                type: 'unassigned',
+                                first_cp: curr_cp,
+                                last_cp: range_end
+                            });
+                            curr_cp = range_end;
+                            break;
+
+                        // # line describes a templated character range
+                        case '#':
+                            range_end = curr_cp + parseInt(field[0], 10) - 1;
+                            this.reserved_ranges.push({
+                                type: 'templated',
+                                first_cp: curr_cp,
+                                last_cp: range_end,
+                                template: field[1]
+                            });
+                            curr_cp = range_end;
+                            break;
+
+                        // # line describes a surrogate codepoint range
+                        case '^':
+                            range_end = curr_cp + parseInt(field[0], 10) - 1;
+                            this.reserved_ranges.push({
+                                type: 'surrogate',
+                                first_cp: curr_cp,
+                                last_cp: range_end
+                            });
+                            curr_cp = range_end;
+                            break;
+
+                        // * line describes a private use range (PUA)
+                        case '*':
+                            range_end = curr_cp + parseInt(field[0], 10) - 1;
+                            this.reserved_ranges.push({
+                                type: 'pua',
+                                first_cp: curr_cp,
+                                last_cp: range_end
+                            });
+                            curr_cp = range_end;
+                            break;
+
+                        // ! line describes a non-character
+                        case '!':
+                            range_end = curr_cp + parseInt(field[0], 10) - 1;
+                            this.reserved_ranges.push({
+                                type: 'noncharacter',
+                                first_cp: curr_cp,
+                                last_cp: range_end
+                            });
+                            curr_cp = range_end;
+                            break;
+
+                        default:
+                            throw "No handler for type: '" + type + "'";
+                    }
                 }
                 i = j + 1;
             }

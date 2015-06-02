@@ -176,6 +176,22 @@ form.ucf-app div.char-wrap div.char-preview {
   width: 300px;
 }
 
+form.ucf-app div.char-preview input.unassigned {
+  background-image: url(images/reserved-bg.png);
+}
+
+form.ucf-app div.char-preview input.noncharacter {
+  background-color: #aaaaaa;
+}
+
+form.ucf-app div.char-preview input.surrogate {
+  background-color: #77aa77;
+}
+
+form.ucf-app div.char-preview input.pua {
+  background-color: #fafad7;
+}
+
 form.ucf-app div.char-wrap div.char-props {
   float: left;
   position: relative;
@@ -415,9 +431,21 @@ table.ucf-code-chart td {
   height: 26px;
 }
 
-table.ucf-code-chart td.reserved {
+table.ucf-code-chart td.unassigned {
   background-color: transparent;
   opacity : 0.3;
+}
+
+table.ucf-code-chart td.noncharacter {
+  background-color: #aaaaaa;
+}
+
+table.ucf-code-chart td.surrogate {
+  background-color: #77aa77;
+}
+
+table.ucf-code-chart td.pua {
+  background-color: #fafad7;
 }
 
 table.ucf-code-chart td.curr-char {

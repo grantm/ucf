@@ -10,7 +10,8 @@
 #
 # Use --download option to get these files.
 #
-# Use --help option for more info.
+# Use --help option for info on command line options and details of the output
+# file format.
 #
 
 use 5.014;
@@ -180,6 +181,12 @@ sub new {
     }, $class;
 }
 
+sub output {
+    my($self, $line) = @_;
+    my $out = $self->{out_fh} or return;
+    print $out "$line\n";
+}
+
 sub url_pdf_base {
     return shift->{url_pdf_base};
 }
@@ -188,6 +195,16 @@ sub last_code_point {
     my $self = shift;
     $self->{last_code_point} = shift if @_;
     return $self->{last_code_point};
+}
+
+sub offset {
+    my($self, $this_cp) = @_;
+    my $last_cp = $self->last_code_point;
+    if($last_cp > $this_cp) {
+        die sprintf('Codepoint %04X out of sequence', $this_cp);
+    }
+    my $offset = $this_cp - $last_cp;
+    return $offset == 1 ? '' : "+$offset";
 }
 
 sub group_name_template {
@@ -200,6 +217,12 @@ sub group_is_control_char {
     my $self = shift;
     $self->{group_is_control_char} = shift if @_;
     return $self->{group_is_control_char};
+}
+
+sub group_is_pua {
+    my $self = shift;
+    $self->{group_is_pua} = shift if @_;
+    return $self->{group_is_pua};
 }
 
 sub is_control_char {
@@ -265,13 +288,8 @@ sub start_element_group {
     my($self, $data) = @_;
     my $attr = $self->_attr($data);
     $self->group_is_control_char(($attr->{gc} // '') eq 'Cc' ? 1 : 0);
-    my $group_name_template;
-    if(my $name = $attr->{na}) {
-        if($name =~ s/#/%s/) {
-            $group_name_template = $name;
-        }
-    }
-    $self->group_name_template($group_name_template);
+    $self->group_name_template($attr->{na});
+    $self->group_is_pua(($attr->{blk} // '') =~ /PUA/ ? 1 : 0);
 }
 
 sub start_element_char {
@@ -285,13 +303,18 @@ sub start_element_char {
     }
     else {
         $attr->{name} = $attr->{na} // $attr->{na1};
-        if(!$attr->{name} && $attr->{cp}) {
+        if(!$attr->{name}) {
             if(my $tmpl = $self->group_name_template) {
-                $attr->{name} = sprintf($tmpl, $attr->{cp});
+                return $self->special_range($attr, '#', '<char na="#">', $tmpl);
             }
         }
     }
-    return unless $attr->{name};
+    if(!$attr->{name}) {
+        if(($attr->{blk} || '') =~ /PUA/ or $self->group_is_pua) {
+            $self->special_range($attr, '*', '<char blk="PUA">');
+        }
+        return;
+    }
     $self->add_alias($attr->{na1});
     $attr->{is_control} = $self->is_control_char ? 'Yes' : 'No';
 }
@@ -308,25 +331,61 @@ sub start_element_name_alias {
     $self->add_alias($alias);
 }
 
+sub start_element_reserved {
+    my($self, $data) = @_;
+    my $attr = $self->_attr($data);
+    $self->special_range($attr, '%', '<reserved>');
+}
+
+sub start_element_noncharacter {
+    my($self, $data) = @_;
+    my $attr = $self->_attr($data);
+    $self->special_range($attr, '!', '<noncharacter>');
+}
+
+sub start_element_surrogate {
+    my($self, $data) = @_;
+    my $attr = $self->_attr($data);
+    $self->special_range($attr, '^', '<surrogate>');
+}
+
+sub special_range {
+    my($self, $attr, $prefix, $type, @extra) = @_;
+    my $cps = $attr->{'first-cp'} // $attr->{cp};
+    my $cpe = $attr->{'last-cp'}  // $attr->{cp};
+    die "Can't determine $type range from:\n" . dump_attr($attr) . "\n"
+        unless($cps && $cpe);
+    my $dcps = hex($cps);
+    my $dcpe = hex($cpe);
+    my $offset = $self->offset($dcps);
+    my $extent = $dcpe - $dcps + 1;
+    my $extra = (@extra) ? join("\t", '', @extra) : '';
+    $self->output("$offset$prefix$extent$extra");
+    $self->last_code_point($dcpe);
+}
+
 sub end_element_char {
     my($self, $data) = @_;
     my $attr = $self->char_attr;
-    return unless $attr->{cp};
+    if(!$attr->{cp}) {
+        if($attr->{name} and $attr->{name} =~ /#/) {
+            $self->special_range($attr, '#', '<char na="#">', $attr->{name});
+        }
+        return;
+    }
     return unless $attr->{name};
     $self->add_unofficial_aliases;
     my $cp   = $attr->{cp};
     my $dcp  = hex($cp);
     my $name = $attr->{name};
     my $aliases = '';
-    my $offset = $dcp - $self->last_code_point;
-    $offset = '' if $offset == 1;
+    my $offset = $self->offset($dcp);
     if(@{ $attr->{aliases} }) {
         $aliases = "\t" . join('; ', @{ $attr->{aliases} });
     }
-    if(my $out = $self->{out_fh}) {
-        print $out "$offset\t$name$aliases\n";
-    }
-    elsif(my $target = $self->{char}) {
+    my $prefix = '"';
+    $self->output("$offset$prefix$name$aliases");
+    if(my $target = $self->{char}) {
         return unless $attr->{cp} eq $target;
         print "$cp\t$name$aliases\n";
         print dump_attr($attr), "\n";
@@ -343,9 +402,7 @@ sub start_element_block {
     my $name = $attr->{'name'} or return;
     my $file = "U${first}.pdf";
     my $url = $self->url_pdf_base . '/' . $file;
-    if(my $out = $self->{out_fh}) {
-        print $out "[$first\t$last\t$name\t$file\t$url\n";
-    }
+    $self->output("[$first\t$last\t$name\t$file\t$url");
 }
 
 sub add_unofficial_aliases {
@@ -394,9 +451,10 @@ make-data-file - generate data file for Unicode Character Finder
 
 =head1 DESCRIPTION
 
-This script generates the data file used by the Unicode Character Finder.
-It processes the XML Unicode Character Data file and produces a plain text
-(tab delimited) data file as output.
+This script generates the data file used by the Unicode Character Finder.  It
+processes the XML Unicode Character Data file and produces a plain text (tab
+separated) data file as output.  The format of the output file is described
+below.
 
 =head1 OPTIONS
 
@@ -418,5 +476,163 @@ Display this documentation.
 
 =back
 
+=head1 OUTPUT FILE FORMAT
+
+The role of this script is to read the Unicode Character Database XML and
+output a much smaller, plain-text file listing all the characters and block
+ranges with a tiny subset of the attributes from the original data.
+
+The format of the file is a series of lines which describe:
+
+=over 4
+
+=item Characters
+
+one codepoint or a range of codepoints per line
+
+=item Character blocks
+
+one block per line
+
+=item HTML entities
+
+mapping one entity name to one codepoint per line
+
+=back
+
+Lines describing characters start with an offset and are followed by a type
+prefix character then tab-separated fields.
+
+The offset starts with a '+' and is followed by one or more digits.  For
+example '+10' would imply that the fields that follow describe the character
+with a codepoint value 10 more that the one described on the previous line.
+The codepoint counter is assumed to be zero initially so the first line would
+start with +0 to define character U+0000.  If the offset field is not present,
+a value of '+1' is implied.
+
+After the offset is a single punctuation character which identifies the type of
+record the remaining fields define.  If this type prefix is missing, a prefix
+of '"' is implied.  The type prefixes and the meaning of the fields that follow
+are:
+
+=head2 '"' A character
+
+=over 4
+
+=item *
+
+description
+
+=item *
+
+aliases
+
+=back
+
+=head2 '#' A range of characters with templated descriptions
+
+=over 4
+
+=item *
+
+number of codepoints in the range
+
+=item *
+
+the description template, in which '#' with be replaced with codepoint
+
+=back
+
+=head2 '%' A reserved character range
+
+=over 4
+
+=item *
+
+number of codepoints in the range
+
+=back
+
+=head2 '^' A range of surrogate codepoints
+
+=over 4
+
+=item *
+
+number of codepoints in the range
+
+=back
+
+=head2 '!' A range of non-characters
+
+=over 4
+
+=item *
+
+number of codepoints in the range
+
+=back
+
+=head2 '*' A range of "private use" characters (a PUA)
+
+=over 4
+
+=item *
+
+number of codepoints in the range
+
+=back
+
+=head2 '[' A block description
+
+=over 4
+
+=item *
+
+codepoint of first character
+
+=item *
+
+codepoint of last character
+
+=item *
+
+block name
+
+=item *
+
+PDF filename
+
+=item *
+
+PDF URL
+
+=back
+
+=head2 '&' An HTML character entity mapping
+
+=over 4
+
+=item *
+
+entity name
+
+=item *
+
+codepoint number
+
+=back
+
+The '[' and '&' lines do not include or imply an offset.
+
 =cut
+
+=head1 AUTHOR AND COPYRIGHT
+
+Copyright (c) 2010-2015 Grant McLean <grant@mclean.net.nz>
+
+This program is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
 
