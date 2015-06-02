@@ -1,7 +1,5 @@
 * remove redundant prefixes in data
 * merge adjacent blocks
-* fix setting of code chart block selection
-* fix problem when scrolling through surrogate ranges e.g.: D800 = U+0NAN
 * kdefinition
 * add support for Unihan codepoints
   * update script to generate two data files

@@ -856,7 +856,10 @@
                 $tbody.append($row);
             }
             this.$code_chart_table.empty().append($tbody);
-            if((this.curr_cp & block_mask) !== base_code) {
+            if((this.curr_cp & block_mask) === base_code) {
+                this.select_block_name(this.curr_cp);
+            }
+            else {
                 this.select_block_name(base_code);
             }
         },
