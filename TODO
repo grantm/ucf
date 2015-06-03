@@ -1,3 +1,4 @@
+* fix scrolling through PUA
 * add support for Unihan codepoints
   * update script to generate two data files
   * kdefinition
@@ -5,7 +6,6 @@
   * persistent cookie to remember checkbox preference
   * hint in character properties section to check box for han chars
   * URL parameter to enable?
-* upgrade jQuery and jQueryUI
 * slim down CSS
 * fix opening animation
 * welcome pointers for (paste a character, search by name, get help)

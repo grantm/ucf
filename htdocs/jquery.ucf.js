@@ -161,7 +161,7 @@
         },
 
         process_querystring: function () {
-            var args = jQuery.deparam(jQuery.param.querystring());
+            var args = queryString.parse(location.search);
             // c=U+XXXX
             if(args.c && args.c.match(/^U[ +]([0-9A-Fa-f]{4,7})$/)) {
                 this.select_codepoint(hex2dec(RegExp.$1));
@@ -490,7 +490,7 @@
             }
             else {
                 this.$search_wrapper.removeClass('empty');
-                var link = jQuery.param.querystring('?', { q: str });
+                var link = '?' + queryString.stringify({ q: str });
                 this.$search_link.attr('href', link);
             }
         },
