@@ -184,6 +184,24 @@ sub new {
 sub output {
     my($self, $line) = @_;
     my $out = $self->{out_fh} or return;
+    if(my($this_type) = $line =~ /^([#%^!])/) {
+        if(my $deferred = delete $self->{deferred}) {
+            my($last_type) = $deferred =~ /^([#%^!])/;
+            if($this_type eq $last_type) {
+                my($this_extent) = $line =~ m{^(?:[+]\d+)?[#%^!](\d+)};
+                $line = $deferred;
+                $line =~ s{^((?:[+]\d+)?[#%^!])(\d+)}{$1 . ($2 + $this_extent)}e;
+            }
+            else {
+                print $out "$deferred\n";
+            }
+        }
+        $self->{deferred} = $line;
+        return;
+    }
+    elsif(my $deferred = delete $self->{deferred}) {
+        print $out "$deferred\n";
+    }
     print $out "$line\n";
 }
 

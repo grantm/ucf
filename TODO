@@ -1,7 +1,6 @@
-* merge adjacent blocks
-* kdefinition
 * add support for Unihan codepoints
   * update script to generate two data files
+  * kdefinition
   * checkbox to switch to different data file
   * persistent cookie to remember checkbox preference
   * hint in character properties section to check box for han chars
