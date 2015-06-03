@@ -602,9 +602,10 @@
                 title:         "Unicode Character Chart",
                 resizable:     false,
                 closeOnEscape: true,
-                width:         555,
-                height:        300
-            });
+                width:         575,
+                height:        310,
+            })
+            .dialog( "option", "position", { my: "center center", at: "center center", of: "body" } );
         },
 
         build_code_chart_table: function () {

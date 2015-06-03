@@ -1,3 +1,4 @@
+* fix search (to not use autocomplete?)
 * fix scrolling through PUA
 * add support for Unihan codepoints
   * update script to generate two data files
