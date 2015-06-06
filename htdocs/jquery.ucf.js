@@ -732,7 +732,8 @@
                     .click(function() { app.increment_code_point(1); });
             this.$char_link =
                 $('<a class="char-link" title="Link to this character" />')
-                    .html('&#167;');
+                    .html('&#167;')
+                    .click(function(e) { e.preventDefault(); });
             return $('<span class="char-buttons" />').append(
                 this.$prev_char_btn,
                 this.$char_menu_btn,

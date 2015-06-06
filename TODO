@@ -1,7 +1,7 @@
-* fix search (to not use autocomplete?)
 * fix scrolling through PUA
 * integrate HTML entities inline with character data as &... aliases
 * add up/down/enter key bindings for search results
+* use history API to change URL on char/search links, without reloading
 * add support for Unihan codepoints
   * update script to generate two data files
   * kdefinition
