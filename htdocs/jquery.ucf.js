@@ -176,7 +176,8 @@
             }
             // q=????
             else if(args.q) {
-                this.$search_input.val(args.q).autocomplete('search');
+                this.$search_input.val(args.q);
+                this.trigger_search();
             }
         },
 
