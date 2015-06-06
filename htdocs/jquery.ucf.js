@@ -80,6 +80,52 @@
         return "unknown";
     }
 
+    function utf8hex2dec(str) {
+        str = str.toUpperCase().replace(/\s+/g, '');
+        if(!str.match(/^(?:[0-9A-F]{2})+$/g)) { return null; }
+        var hex = str.match(/([0-9A-F]{2})/g);
+        var dec, i, j;
+        var bytes = [];
+        for(i = 0; i < hex.length; i++) {
+            bytes.push(parseInt(hex[i], 16));
+        }
+        dec = bytes.shift();
+        i = 0;
+        if(dec > 127) {
+            if((dec & 0xE0) === 0xC0) {
+                dec = dec & 0x1F;
+                i = 1;
+            }
+            else if((dec & 0xF0) === 0xE0) {
+                dec = dec & 0x0F;
+                i = 2;
+            }
+            else if((dec & 0xF8) === 0xF0) {
+                dec = dec & 0x07;
+                i = 3;
+            }
+            else if((dec & 0xFC) === 0xF8) {
+                dec = dec & 0x03;
+                i = 4;
+            }
+            else {
+                return null;
+            }
+        }
+        while(i > 0) {
+            if(bytes.length === 0) {
+                return null;
+            }
+            j = bytes.shift();
+            if((j & 0xC0) !== 0x80) {
+                return null;
+            }
+            dec = (dec << 6) + (j & 0x3F);
+            i--;
+        }
+        return dec;
+    }
+
     function dec2utf16(dec) {
         if(dec < 0x10000) {
             return dec2hex(dec, 4);
@@ -650,6 +696,13 @@
                 ch = this.lookup_char(cp);
                 if(ch) {
                     matches.push([ch, '']);
+                }
+            }
+            cp = utf8hex2dec(query);
+            if(cp && cp > 127) {
+                ch = this.lookup_char(cp);
+                if(ch) {
+                    matches.push([ch, 'UTF8 Hex: ' + dec2utf8(cp)]);
                 }
             }
             if(query.match(/^(?:&#?)?(\w+);?$/)) {
