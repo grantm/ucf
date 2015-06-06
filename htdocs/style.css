@@ -11,7 +11,7 @@ html, body {
   height: auto !important;
   height: 100%;
   margin: 0 auto -70px;
-  padding-bottom: 320px;
+  padding-bottom: 40px;
 }
 
 .footer, .push {
@@ -149,7 +149,7 @@ form.ucf-app div.search-wrap input.search.busy {
   background: #eeeeee url(images/throbber.gif) no-repeat scroll center right;
 }
 
-form.ucf-app div.search-wrap.empty a.search-link {
+form.ucf-app div.search-wrap.state-empty a.search-link {
   visibility: hidden;
 }
 
@@ -291,7 +291,9 @@ form.ucf-app span.char-buttons a.char-link:hover {
 }
 
 form.ucf-app div.sample-wrap {
+  display: none;
   color: #cccccc;
+  margin-top: 1.0em;
 }
 
 form.ucf-app div.sample-wrap:hover {
@@ -312,9 +314,15 @@ form.ucf-app div.sample-wrap:hover ul {
 
 form.ucf-app div.sample-wrap ul li {
   margin: 0;
-  padding: 0 0.3em;
+  padding: 0.4em 0.6em;
   list-style: none;
   display: inline;
+  border-radius: 4px;
+}
+
+form.ucf-app div.sample-wrap ul li:hover {
+  background-color: #eeeeee;
+  cursor: pointer;
 }
 
 form.ucf-app.empty div.char-info table {
@@ -353,7 +361,12 @@ form.ucf-app div.char-info table td {
   padding-left: 8px;
 }
 
-/* -------------------- for auto complete list ------------------------- */
+/* -------------------- for search results list ------------------------- */
+
+form.ucf-app .result-items li {
+  background-color: #ffffff;
+  font-size: 1.1em;
+}
 
 form.ucf-app div.code-point {
   float: left;
@@ -377,6 +390,44 @@ form.ucf-app span.code-alias {
   font-weight: normal;
   padding-left: 0.6em;
 }
+
+form.ucf-app .search-footer {
+  padding: 10px 0;
+  text-align: center;
+  background-color: #eeeeee;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+}
+
+form.ucf-app .search-footer .throbber {
+  background-repeat: no-repeat;
+  background-image: url(images/throbber.gif);
+  background-position: right center;
+  padding-right: 22px;
+}
+
+form.ucf-app .search-wrap.state-partial .search-footer:hover {
+  cursor: pointer;
+  background-color: #d7d7d7;
+}
+
+form.ucf-app .search-wrap .search-footer .complete {
+  font-style: italic;
+  color: #888888;
+}
+
+form.ucf-app .search-wrap.state-empty .search-footer,
+form.ucf-app .search-wrap .search-footer .throbber,
+form.ucf-app .search-wrap .search-footer .partial,
+form.ucf-app .search-wrap .search-footer .complete {
+  display: none;
+}
+
+form.ucf-app .search-wrap.state-empty .sample-wrap  { display: block; }
+
+form.ucf-app .search-wrap.state-searching .throbber { display: inline; }
+form.ucf-app .search-wrap.state-partial   .partial  { display: inline; }
+form.ucf-app .search-wrap.state-complete  .complete { display: inline; }
 
 div.ucf-chart-dialog {
   position: relative;

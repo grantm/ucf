@@ -121,7 +121,6 @@
             this.add_help_dialog();
             this.add_code_chart_dialog();
             this.add_form_elements();
-            this.add_sample_chars();
             this.$el.append(this.$form);
         },
 
@@ -422,13 +421,14 @@
         },
 
         char_search_field: function () {
-            this.$search_wrapper = $('<div class="search-wrap empty" />')
+            this.$search_wrapper = $('<div />').addClass("search-wrap state-empty")
                 .append(
                     $('<label />').text('Search character descriptions:'),
                     this.build_search_link(),
                     this.build_search_input(),
                     this.build_search_results()
                 );
+            this.add_sample_chars()
             this.init_search_input();
             return this.$search_wrapper;
         },
@@ -436,10 +436,7 @@
         build_search_link: function () {
             var app = this;
             return this.$search_link =
-                $('<a class="search-link" title="Link to this search" />')
-                    .html('&#167;')
-                    .keyup(function() { app.set_search_link(); })
-                    .blur( function() { app.set_search_link(); });
+                $('<a class="search-link" title="Link to this search" >&#167;</a>');
         },
 
         build_search_input: function () {
@@ -449,11 +446,22 @@
 
         build_search_results: function () {
             var app = this;
-            return this.$search_results =
-                $('<ul />').addClass('results ui-menu')
+            this.$search_results =
+                $('<ul />').addClass('result-items ui-menu')
                     .on('click', 'li', function() {
                         app.select_codepoint( $(this).data('codepoint') );
                     });
+            var $div = $('<div />').addClass('search-results').append(
+                this.$search_results,
+                $('<div />').addClass('search-footer').append(
+                    $('<span />').addClass('throbber').text('Searching ...'),
+                    $('<span />').addClass('partial').text('More ...'),
+                    $('<span />').addClass('complete').text('Search complete')
+                ).click(function() {
+                    app.find_more_results();
+                })
+            );
+            return $div;
         },
 
         init_search_input: function () {
@@ -466,6 +474,7 @@
 
         trigger_search: function () {
             var app = this;
+            this.set_search_link();
             if(app.search_pending) {
                 clearTimeout(app.search_pending);
             }
@@ -485,6 +494,7 @@
             }
             this.$search_results.empty(); // TODO: clear_results method ?
             if(query === '') {
+                this.set_search_state('empty');
                 delete this.search;
                 return;
             }
@@ -512,8 +522,10 @@
                 return;
             }
             if(this.search.done) {
+                this.set_search_state('complete');
                 return;
             }
+            this.set_search_state('searching');
             for(var i = 0; i < 10; i++) {
                 var ch = this.next_match();
                 if(!ch) {
@@ -537,6 +549,12 @@
                             $desc
                         )
                 );
+            }
+            if(this.search.done) {
+                this.set_search_state('complete');
+            }
+            else {
+                this.set_search_state('partial');
             }
         },
 
@@ -616,14 +634,13 @@ console.log("exact hex match:", ch);
 
         set_search_link: function () {
             var str = this.$search_input.val();
-            if(str.length === 0) {
-                this.$search_wrapper.addClass('empty');
-            }
-            else {
-                this.$search_wrapper.removeClass('empty');
-                var link = '?' + queryString.stringify({ q: str });
-                this.$search_link.attr('href', link);
-            }
+            var link = '?' + queryString.stringify({ q: str });
+            this.$search_link.attr('href', link);
+        },
+
+        set_search_state: function (state) {
+            this.$search_wrapper.removeClass('state-empty state-searching state-partial state-complete');
+            this.$search_wrapper.addClass('state-' + state);
         },
 
         add_form_elements: function () {
@@ -695,7 +712,7 @@ console.log("exact hex match:", ch);
 
         add_sample_chars: function () {
             if(this.opt.sample_chars) {
-                this.$form.append( this.sample_char_links() );
+                this.$search_wrapper.append( this.sample_char_links() );
             }
         },
 
