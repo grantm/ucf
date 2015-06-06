@@ -1,5 +1,5 @@
 * add up/down/enter key bindings for search results
-* use history API to change URL on char/search links, without reloading
+* add proper handling for popstate (back button);
 * add support for Unihan codepoints
   * update script to generate two data files
   * kdefinition

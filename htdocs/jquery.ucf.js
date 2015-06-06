@@ -438,9 +438,15 @@
         },
 
         build_search_link: function () {
+            var app = this;
             return this.$search_link =
                 $('<a class="search-link" title="Link to this search" >&#167;</a>')
-                    .click(function(e) { e.preventDefault(); });
+                    .click(function(e) { app.push_to_link(e, this.href); });
+        },
+
+        push_to_link: function (e, url) {
+            window.history.pushState({}, this.opt.title, url);
+            e.preventDefault();
         },
 
         build_search_reset: function () {
@@ -735,7 +741,7 @@
             this.$char_link =
                 $('<a class="char-link" title="Link to this character" />')
                     .html('&#167;')
-                    .click(function(e) { e.preventDefault(); });
+                    .click(function(e) { app.push_to_link(e, this.href); });
             return $('<span class="char-buttons" />').append(
                 this.$prev_char_btn,
                 this.$char_menu_btn,
@@ -1153,6 +1159,7 @@
     };
 
     $.fn.ucf.defaults = {
+        title:                'Unicode Character Finder',
         search_delay:         800,
         data_file_no_unihan:  'char-data-nounihan.txt'
     };
