@@ -112,7 +112,6 @@
         max_codepoint:    0,
 
         build_ui: function () {
-            this.$el.hide();
             this.start_loading_splash();
 
             this.load_unicode_data( this.enable_ui ); // callback when done
@@ -151,9 +150,7 @@
             var app = this;
             this.populate_code_blocks_menu();
             this.$splash_dialog.dialog('close');
-            this.$el.slideDown(600, function() {
-                app.$search_input.focus();
-            });
+            this.$el.addClass('ready');
             this.select_codepoint(null);
             this.process_querystring();
         },

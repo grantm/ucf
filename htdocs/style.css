@@ -95,6 +95,12 @@ div.ucf-splash-dlg p span.ui-icon {
   padding: 0;
   position: relative;
   font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.9s;
+}
+
+#my-ucf.ready {
+  opacity: 1;
 }
 
 .ucf-app a,

@@ -7,8 +7,6 @@
   * persistent cookie to remember checkbox preference
   * hint in character properties section to check box for han chars
   * URL parameter to enable?
-* slim down CSS
-* fix opening animation
 * welcome pointers for (paste a character, search by name, get help)
 * allow search results to persist
 * display JS surrogate pair chars for > xFFFF
