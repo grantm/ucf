@@ -416,7 +416,7 @@
                         resizable:     true,
                         closeOnEscape: true,
                         modal:         true,
-                        width:         600,
+                        width:         700,
                         height:        400,
                         buttons:       {
                             "Close": function() { $(this).dialog("close"); }
