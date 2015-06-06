@@ -107,8 +107,7 @@
         code_list:        [ ],
         reserved_ranges:  [ ],
         code_blocks:      [ ],
-        html_ent:         { },
-        html_name:        { },
+        html_entities:    [ ],
         unique_ids:       [ ],
         max_codepoint:    0,
 
@@ -239,7 +238,7 @@
                     description: desc
                 };
             }
-            var ch = { reserved: range.type };
+            var ch = { 'cp': cp, 'reserved': range.type };
             switch(range.type) {
                 case 'unassigned':
                     ch.description = "This codepoint is reserved as 'unassigned'";
@@ -308,8 +307,8 @@
             }
             if(!ch.reserved || ch.pua) {
                 var entity = '&#' + cp + ';';
-                if(this.html_name[hex]) {
-                    entity = entity + ' or &' + this.html_name[hex] + ';';
+                if(ch.entity_name) {
+                    entity = entity + ' or &' + ch.entity_name + ';';
                 }
                 $table.append(
                     $('<tr />').append(
@@ -427,7 +426,8 @@
                 .append(
                     $('<label />').text('Search character descriptions:'),
                     this.build_search_link(),
-                    this.build_search_input()
+                    this.build_search_input(),
+                    this.build_search_results()
                 );
             this.init_search_input();
             return this.$search_wrapper;
@@ -443,44 +443,175 @@
         },
 
         build_search_input: function () {
-            return this.$search_input = $('<input type="text" class="search" />')
+            return this.$search_input = $('<input type="text" />')
+                .addClass("search ui-autocomplete-input");
+        },
+
+        build_search_results: function () {
+            var app = this;
+            return this.$search_results =
+                $('<ul />').addClass('results ui-menu')
+                    .on('click', 'li', function() {
+                        app.select_codepoint( $(this).data('codepoint') );
+                    });
         },
 
         init_search_input: function () {
             var app = this;
-            this.$search_input.autocomplete({
-                delay: 900,
-                minLength: 1,
-                source: function(request, response) {
-                    var target = request.term;
-                    app.set_search_link();
-                    if(target != '') {
-                        var search_method = 'execute_search';
-                        if(target.charAt(0) === '/') {
-                            if(target.length < 3 || target.charAt(target.length - 1) != '/') {
-                                return;
-                            }
-                            target = target.substr(1, target.length - 2);
-                            search_method = 'execute_regex_search';
-                        }
-                        app.$search_input.addClass('busy');
-                        setTimeout(function() {
-                            app[search_method](target, response);
-                        }, 2 );
-                    }
+            this.$search_input.on(
+                "keydown keypress input paste",
+                function() { app.trigger_search(); }
+            );
+        },
+
+        trigger_search: function () {
+            var app = this;
+            if(app.search_pending) {
+                clearTimeout(app.search_pending);
+            }
+            app.search_pending = setTimeout(
+                function() {
+                    delete app.search_pending;
+                    app.start_search();
                 },
-                open: function(e, ui) {
-                    app.$search_input.removeClass('busy');
-                },
-                focus: function(e, ui) {
-                    return false;
-                },
-                select: function(e, ui) {
-                    app.select_codepoint(ui.item.cp);
-                    window.scrollTo(0,0);
-                    return false;
+                this.opt.search_delay || 800
+            );
+        },
+
+        start_search: function () {
+            var query = this.$search_input.val();
+            if(this.search && this.search.query === query) {
+                return;
+            }
+            this.$search_results.empty(); // TODO: clear_results method ?
+            if(query === '') {
+                delete this.search;
+                return;
+            }
+            this.search = {
+                "query":  query,
+                "index":  0,
+                "seen":   {}
+            };
+            if(query.charAt(0) === '/') {
+                if(query.length < 3 || query.charAt(query.length - 1) !== '/') {
+                    return;
                 }
-            });
+                query = query.substr(1, query.length - 2);
+                this.search.regex = new RegExp(query, 'i');
+            }
+            else {
+                this.search.uquery = query.toUpperCase();
+                this.search.exact_matches = this.exact_matches();
+            }
+            this.find_more_results();
+        },
+
+        find_more_results: function () {
+            if(!this.search) {
+                return;
+            }
+            if(this.search.done) {
+                return;
+            }
+            for(var i = 0; i < 10; i++) {
+                var ch = this.next_match();
+                if(!ch) {
+                    break;
+                }
+                var character = codepoint_to_string(ch.cp);
+                var code = dec2hex(ch.cp, 4);
+                var $desc = $('<div />').addClass('code-descr').text(ch.description);
+                if(ch.alias) {
+                    $desc.append( $('<span class="code-alias" />').text(ch.alias) );
+                }
+                if(ch.prefix) {
+                    $desc.prepend( $('<span class="prefix" />').text(ch.prefix) );
+                }
+                this.$search_results.append(
+                    $('<li>').addClass('ui-menu-item').attr('role', 'menuitem')
+                        .data('codepoint', ch.cp)
+                        .append(
+                            $('<div />').addClass('code-point').text('U+' + code),
+                            $('<div />').addClass('code-sample').text("\u00A0" + character),
+                            $desc
+                        )
+                );
+            }
+        },
+
+        next_match: function () {
+            var s = this.search;
+            var m, code, ch, prefix;
+            if(s.exact_matches.length > 0) {
+                m = s.exact_matches.shift();
+                prefix =  m[1] === '' ? '' : '[' + m[1] + '] ';
+                ch = $.extend({}, m[0], {'prefix': prefix});
+                s.seen[ch.cp] = true;
+                return ch;
+            }
+            while(s.index < this.code_list.length) {
+                code = this.code_list[s.index];
+                ch   = this.code_chart[code];
+                s.index++;
+                if(s.seen[ch.cp]) {
+                    continue;
+                }
+                if(s.regex) {
+                    if(
+                        s.regex.test(ch.description)
+                        || (ch.alias && s.regex.test(ch.description))
+                    ) {
+                        return ch;
+                    }
+                }
+                else {
+                    if(
+                        ch.description.indexOf(s.uquery) >= 0
+                        || (ch.alias && ch.alias.indexOf(s.uquery) >= 0)
+                    ) {
+                        return ch;
+                    }
+                }
+            }
+            s.done = true;
+            return null;
+        },
+
+        exact_matches: function () {
+            var cp, hex, ch;
+            var matches = [];
+            var query = this.search.query;
+            var uquery = this.search.uquery;
+            if(query.match(/^&#(\d+);?$/) || query.match(/^(\d+)$/)) {
+                cp = parseInt(RegExp.$1, 10);
+                ch = this.lookup_char(cp);
+                if(ch) {
+                    matches.push([ch, 'Decimal: ' + cp]);
+                }
+            }
+            if(query.match(/^&#x([0-9a-f]+);?$/i) || query.match(/^(?:U[+])?([0-9a-f]+)$/i)) {
+                cp = hex2dec(RegExp.$1);
+                ch = this.lookup_char(cp);
+console.log("exact hex match:", ch);
+                if(ch) {
+                    matches.push([ch, '']);
+                }
+            }
+            if(query.match(/^(?:&#?)?(\w+);?$/)) {
+                query = RegExp.$1;
+            }
+            for(var i = 0; i < this.html_entities.length; i++) {
+                var ent = this.html_entities[i];
+                if(ent.name === query) {
+                    matches.unshift([this.lookup_char(ent.cp), '&' + ent.name + ';']);
+                }
+                else if(ent.uname === uquery) {
+                    matches.push([this.lookup_char(ent.cp), '&' + ent.name + ';']);
+                }
+            }
+
+            return matches;
         },
 
         set_search_link: function () {
@@ -670,115 +801,6 @@
             }
         },
 
-        execute_search: function (target, response) {
-            var result = [ ];
-            var seen   = { };
-            this.add_exact_matches(result, seen, target);
-            target     = target.toUpperCase();
-            var len    = this.code_list.length;
-            var code, ch;
-            for(var i = 0; i < len; i++) {
-                if(result.length > 10) { break; };
-                code = this.code_list[i];
-                ch   = this.code_chart[code];
-                if(
-                    ch.description.indexOf(target) >= 0
-                    || (ch.alias && ch.alias.indexOf(target) >= 0)
-                ) {
-                    this.add_result(result, seen, code, ch);
-                }
-            }
-            if(result.length === 0) {
-                this.$search_input.removeClass('busy');
-            }
-            response(result);
-        },
-
-        add_exact_matches: function (result, seen, target) {
-            var dec, hex, ch;
-            if(target.match(/^&#(\d+);?$/) || target.match(/^(\d+)$/)) {
-                dec = parseInt(RegExp.$1, 10);
-                hex = dec2hex(dec, 4);
-                ch  = this.code_chart[hex];
-                if(ch) {
-                    this.add_result(result, seen, hex, ch, '[Decimal: ' + dec + ']');
-                }
-            }
-            if(target.match(/^&#x([0-9a-f]+);?$/i) || target.match(/^(?:U[+])?([0-9a-f]+)$/i)) {
-                dec = hex2dec(RegExp.$1);
-                hex = dec2hex(dec, 4);
-                ch  = this.code_chart[hex];
-                if(ch) {
-                    this.add_result(result, seen, hex, ch);
-                }
-            }
-            if(target.match(/^(?:&#?)?(\w+);?$/)) {
-                target = RegExp.$1;
-            }
-            if(this.html_ent[target]) {
-                hex = this.html_ent[target];
-                ch  = this.code_chart[hex];
-                if(ch) {
-                    this.add_result(result, seen, hex, ch, '[&' + target + ';]');
-                }
-            }
-            else if(this.html_ent[target.toLowerCase()]) {
-                hex = this.html_ent[target.toLowerCase()];
-                ch  = this.code_chart[hex];
-                if(ch) {
-                    this.add_result(result, seen, hex, ch, '[&' + target.toLowerCase() + ';]');
-                }
-            }
-        },
-
-        execute_regex_search: function (target, response) {
-            var pattern = new RegExp(target, 'i');
-            var result = [ ];
-            var seen   = { };
-            var len    = this.code_list.length;
-            var code, ch;
-            for(var i = 0; i < len; i++) {
-                if(result.length > 10) { break; };
-                code = this.code_list[i];
-                ch   = this.code_chart[code];
-                if(
-                    pattern.test(ch.description)
-                    || (ch.alias && pattern.test(ch.description))
-                ) {
-                    this.add_result(result, seen, code, ch);
-                }
-            }
-            if(result.length === 0) {
-                this.$search_input.removeClass('busy');
-            }
-            response(result);
-        },
-
-        add_result: function (result, seen, code, ch, extra) {
-            if(seen[code]) {
-                return;
-            }
-            var cp = hex2dec(code);
-            var character = codepoint_to_string(cp);
-            var descr = ch.description;
-            if(extra) {
-                descr = extra + ' ' + descr;
-            }
-            var $div = $('<div />').text(descr);
-            if(ch.alias) {
-                $div.append( $('<span class="code-alias" />').text(ch.alias) );
-            }
-            result.push({
-                'cp': cp,
-                'character': character,
-                'label': '<div class="code-point">U+' + code + '</div>'
-                         + '<div class="code-sample">&#160;' + character
-                         + '</div><div class="code-descr">' + $div.html()
-                         + '</div>'
-            });
-            seen[code] = true;
-        },
-
         increment_code_point: function (inc) {
             var code = this.curr_cp + inc;
             if(code === -1) {
@@ -944,8 +966,13 @@
                 // & line describes an HTML character entity
                 else if(line.match(/^\&/)) {
                     field[0] = field[0].replace(/^\&/, '');
-                    this.html_ent[field[0]]  = field[1];    // Map name to code eg: nbsp => 00A0
-                    this.html_name[field[1]] = field[0];    // Map code to name eg: 0233 => eacute
+                    var cp = hex2dec(field[1]);
+                    this.html_entities.push({
+                        'name':   field[0],
+                        'uname':  field[0].toUpperCase(),
+                        'cp':     cp
+                    });
+                    this.code_chart[field[1]].entity_name = field[0];
                 }
 
                 // There may be an offset before the type prefix on these lines
@@ -972,7 +999,8 @@
                         // " line describes a character
                         case '"':
                             this.code_chart[code] = {
-                                'description': field[0]
+                                description:  field[0],
+                                cp:           curr_cp
                             };
                             if(field[1] && field[1].length > 0) {
                                 this.code_chart[code].alias = field[1];
@@ -984,9 +1012,9 @@
                         case '%':
                             range_end = curr_cp + parseInt(field[0], 10) - 1;
                             this.reserved_ranges.push({
-                                type: 'unassigned',
+                                type:     'unassigned',
                                 first_cp: curr_cp,
-                                last_cp: range_end
+                                last_cp:  range_end
                             });
                             curr_cp = range_end;
                             break;
@@ -995,9 +1023,9 @@
                         case '#':
                             range_end = curr_cp + parseInt(field[0], 10) - 1;
                             this.reserved_ranges.push({
-                                type: 'templated',
+                                type:     'templated',
                                 first_cp: curr_cp,
-                                last_cp: range_end,
+                                last_cp:  range_end,
                                 template: field[1]
                             });
                             curr_cp = range_end;
@@ -1007,9 +1035,9 @@
                         case '^':
                             range_end = curr_cp + parseInt(field[0], 10) - 1;
                             this.reserved_ranges.push({
-                                type: 'surrogate',
+                                type:     'surrogate',
                                 first_cp: curr_cp,
-                                last_cp: range_end
+                                last_cp:  range_end
                             });
                             curr_cp = range_end;
                             break;
@@ -1018,9 +1046,9 @@
                         case '*':
                             range_end = curr_cp + parseInt(field[0], 10) - 1;
                             this.reserved_ranges.push({
-                                type: 'pua',
+                                type:     'pua',
                                 first_cp: curr_cp,
-                                last_cp: range_end
+                                last_cp:  range_end
                             });
                             curr_cp = range_end;
                             break;
@@ -1029,9 +1057,9 @@
                         case '!':
                             range_end = curr_cp + parseInt(field[0], 10) - 1;
                             this.reserved_ranges.push({
-                                type: 'noncharacter',
+                                type:     'noncharacter',
                                 first_cp: curr_cp,
-                                last_cp: range_end
+                                last_cp:  range_end
                             });
                             curr_cp = range_end;
                             break;
@@ -1074,7 +1102,8 @@
     };
 
     $.fn.ucf.defaults = {
-        data_file_no_unihan: 'char-data-nounihan.txt'
+        search_delay:         800,
+        data_file_no_unihan:  'char-data-nounihan.txt'
     };
 
 })(jQuery);
