@@ -1,5 +1,4 @@
 * add up/down/enter key bindings for search results
-* add proper handling for popstate (back button);
 * add support for Unihan codepoints
   * update script to generate two data files
   * kdefinition

@@ -153,6 +153,11 @@
             this.$el.addClass('ready');
             this.select_codepoint(null);
             this.process_querystring();
+            $(window).on('popstate', function() {
+                app.select_codepoint(null)
+                app.reset_search();
+                app.process_querystring();
+            });
         },
 
         process_querystring: function () {
