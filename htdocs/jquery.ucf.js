@@ -450,7 +450,7 @@
             this.$search_results =
                 $('<ul />').addClass('result-items ui-autocomplete ui-menu  ui-widget ui-widget-content')
                     .on('click', 'li', function() {
-                        app.select_codepoint( $(this).data('codepoint') );
+                        app.select_search_item(this);
                     });
             var $div = $('<div />').addClass('search-results').append(
                 this.$search_results,
@@ -612,7 +612,6 @@
             if(query.match(/^&#x([0-9a-f]+);?$/i) || query.match(/^(?:U[+])?([0-9a-f]+)$/i)) {
                 cp = hex2dec(RegExp.$1);
                 ch = this.lookup_char(cp);
-console.log("exact hex match:", ch);
                 if(ch) {
                     matches.push([ch, '']);
                 }
@@ -631,6 +630,14 @@ console.log("exact hex match:", ch);
             }
 
             return matches;
+        },
+
+        select_search_item: function (item) {
+            var $item = $(item);
+            this.select_codepoint( $item.data('codepoint') );
+            this.$search_results.find('li.selected').removeClass('selected');
+            $item.addClass('selected');
+            window.scrollTo(0,0);
         },
 
         set_search_link: function () {

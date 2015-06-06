@@ -379,9 +379,19 @@ form.ucf-app .result-items li {
   padding: 4px;
 }
 
+form.ucf-app .result-items li.selected,
 form.ucf-app .result-items li:hover {
   border: 1px solid #fbcb09;
   background: #fdf5ce url("jquery-ui-1.11.4.custom/images/ui-bg_glass_100_fdf5ce_1x400.png") 50% 50% repeat-x;
+  color: #c77405;
+}
+
+form.ucf-app .result-items:hover li.selected {
+  background-image: none;
+  color: #FF9B08;
+}
+
+form.ucf-app .result-items:hover li.selected:hover {
   color: #c77405;
 }
 
