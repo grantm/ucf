@@ -395,6 +395,7 @@ form.ucf-app .result-items li {
   font-weight: bold;
   border: 1px solid transparent;
   padding: 4px;
+  clear: both;
 }
 
 form.ucf-app .result-items li.selected,
@@ -434,12 +435,6 @@ form.ucf-app span.code-alias {
   font-style: italic;
   font-weight: normal;
   padding-left: 0.6em;
-}
-
-form.ucf-app span.code-alias:after {
-  content: '';
-  display: block;
-  clear: left;
 }
 
 form.ucf-app .search-footer {
