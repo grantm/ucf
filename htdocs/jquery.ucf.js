@@ -485,6 +485,7 @@
         },
 
         reset_search: function () {
+            this.search = null;
             this.clear_search_results();
             this.$search_input.val('').focus();
             this.set_search_state('empty');
