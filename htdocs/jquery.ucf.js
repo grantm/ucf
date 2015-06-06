@@ -532,6 +532,7 @@
                 }
                 query = query.substr(1, query.length - 2);
                 this.search.regex = new RegExp(query, 'i');
+                this.search.exact_matches = [];
             }
             else {
                 this.search.uquery = query.toUpperCase();
