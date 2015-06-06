@@ -7,7 +7,6 @@
   * hint in character properties section to check box for han chars
   * URL parameter to enable?
 * welcome pointers for (paste a character, search by name, get help)
-* allow search results to persist
 * display JS surrogate pair chars for > xFFFF
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
 * accept encoded hex bytes
