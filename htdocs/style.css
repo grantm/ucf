@@ -391,6 +391,12 @@ form.ucf-app span.code-alias {
   padding-left: 0.6em;
 }
 
+form.ucf-app span.code-alias:after {
+  content: '';
+  display: block;
+  clear: left;
+}
+
 form.ucf-app .search-footer {
   padding: 10px 0;
   text-align: center;
