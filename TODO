@@ -1,4 +1,3 @@
-* integrate HTML entities inline with character data as &... aliases
 * add up/down/enter key bindings for search results
 * use history API to change URL on char/search links, without reloading
 * add support for Unihan codepoints

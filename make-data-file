@@ -77,17 +77,12 @@ sub translate_data {
         $args{out_fh} = $out;
     }
     $args{url_pdf_base} = $url_pdf_base;
+    $args{entity_map} = load_entities_files();
 
     my $handler = UCFHandler->new(%args);
     my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
 
     $parser->parse_string($$xml_ref);
-
-    if($args{out_fh}) {
-        append_html_entities($args{out_fh});
-        close($args{out_fh});
-        make_gzip_version($output_filename);
-    }
 }
 
 
@@ -143,21 +138,23 @@ sub get_zip_file {
 }
 
 
-sub append_html_entities {
+sub load_entities_files {
     my($out) = @_;
 
-    print $out "&amp\t0026\n";
-    print $out "&lt\t003C\n";
+    my %map = (
+        '0026'  => '&amp;',
+        '003C'  => '&lt;',
+    );
     foreach my $dtd_file (sort glob("$local_data_dir/*.ent")) {
         open my $fh, '<', $dtd_file or die "open($dtd_file): $!";
         while(<$fh>) {
             if(my($name, $code) = $_ =~ m{<!ENTITY\s+(\w+)\s+"&#(\d+);">}) {
                 $code = sprintf('%04X', $code);
-                print $out "&$name\t$code\n";
+                $map{$code} = "&${name};";
             }
         }
     }
-
+    return \%map;
 }
 
 
@@ -207,6 +204,14 @@ sub output {
 
 sub url_pdf_base {
     return shift->{url_pdf_base};
+}
+
+sub entity_for_cp {
+    my($self, $cp) = @_;
+    if(my $cp = $self->{entity_map}->{$cp}) {
+        return $cp;
+    }
+    return;
 }
 
 sub last_code_point {
@@ -399,8 +404,12 @@ sub end_element_char {
     my $aliases = '';
     my $offset = $self->offset($dcp);
     if(@{ $attr->{aliases} }) {
-        $aliases = "\t" . join('; ', @{ $attr->{aliases} });
+        $aliases = join('; ', @{ $attr->{aliases} });
     }
+    if(my $ent = $self->entity_for_cp($cp)) {
+        $aliases = $ent . $aliases;
+    }
+    $aliases = "\t" . $aliases if $aliases ne '';
     my $prefix = $name =~ /^[+"%#^*!\[&]/ ? '"' : '';
     $self->output("$offset$prefix$name$aliases");
     if(my $target = $self->{char}) {
@@ -543,7 +552,7 @@ description
 
 =item *
 
-aliases
+aliases (may be prefixed by '&name;' if there is a named HTML character entity)
 
 =back
 
@@ -627,21 +636,7 @@ PDF URL
 
 =back
 
-=head2 '&' An HTML character entity mapping
-
-=over 4
-
-=item *
-
-entity name
-
-=item *
-
-codepoint number
-
-=back
-
-The '[' and '&' lines do not include or imply an offset.
+The '[' lines do not include or imply an offset.
 
 =cut
 

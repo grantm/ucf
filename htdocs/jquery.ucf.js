@@ -995,7 +995,7 @@
 
         parse_unicode_data: function (data, status, handler) {
             var i = 0;
-            var j, str, line, field, offset, type, code, range_end, block;
+            var j, str, line, field, offset, type, code, ent_name, range_end, block;
             var curr_cp = 0;
             while(i < data.length) {
                 j = data.indexOf("\n", i);
@@ -1017,18 +1017,6 @@
                         'index'    : this.code_blocks.length
                     };
                     this.code_blocks.push(block);
-                }
-
-                // & line describes an HTML character entity
-                else if(line.match(/^\&/)) {
-                    field[0] = field[0].replace(/^\&/, '');
-                    var cp = hex2dec(field[1]);
-                    this.html_entities.push({
-                        'name':   field[0],
-                        'uname':  field[0].toUpperCase(),
-                        'cp':     cp
-                    });
-                    this.code_chart[field[1]].entity_name = field[0];
                 }
 
                 // There may be an offset before the type prefix on these lines
@@ -1058,6 +1046,16 @@
                                 description:  field[0],
                                 cp:           curr_cp
                             };
+                            if(field[1] && field[1].match(/^&(\w+);/)) {
+                                var ent_name = RegExp.$1;
+                                this.html_entities.push({
+                                    'name':   ent_name,
+                                    'uname':  ent_name.toUpperCase(),
+                                    'cp':     curr_cp
+                                });
+                                this.code_chart[code].entity_name = ent_name;
+                                field[1] = field[1].replace(/^&\w+;/, '')
+                            }
                             if(field[1] && field[1].length > 0) {
                                 this.code_chart[code].alias = field[1];
                             }
