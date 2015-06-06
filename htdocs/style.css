@@ -139,6 +139,24 @@ form.ucf-app div.search-wrap {
   z-index: 1;
 }
 
+form.ucf-app div.search-wrap .search-reset {
+  position: absolute;
+  right: 10px;
+  top: 1.3em;
+  padding: 6px 8px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #ff9b08;
+}
+
+form.ucf-app div.search-wrap .search-reset:hover {
+  color: #C77405;
+}
+
+form.ucf-app div.search-wrap.state-empty .search-reset {
+  display: none;
+}
+
 form.ucf-app div.search-wrap input.search {
   width: 686px;
   font-size: 120%;

@@ -426,6 +426,7 @@
                 .append(
                     $('<label />').text('Search character descriptions:'),
                     this.build_search_link(),
+                    this.build_search_reset(),
                     this.build_search_input(),
                     this.build_search_results()
                 );
@@ -435,9 +436,19 @@
         },
 
         build_search_link: function () {
-            var app = this;
             return this.$search_link =
-                $('<a class="search-link" title="Link to this search" >&#167;</a>');
+                $('<a class="search-link" title="Link to this search" >&#167;</a>')
+                    .click(function(e) { e.preventDefault(); });
+        },
+
+        build_search_reset: function () {
+            var app = this;
+            return $('<span>&#9003;</span>')
+                .addClass("search-reset ui-widget")
+                .attr('title', 'Clear the current search')
+                .click(function () {
+                    app.reset_search();
+                });
         },
 
         build_search_input: function () {
@@ -473,6 +484,16 @@
             );
         },
 
+        reset_search: function () {
+            this.clear_search_results();
+            this.$search_input.val('');
+            this.set_search_state('empty');
+        },
+
+        clear_search_results: function () {
+            this.$search_results.empty();
+        },
+
         trigger_search: function () {
             var app = this;
             this.set_search_link();
@@ -493,7 +514,7 @@
             if(this.search && this.search.query === query) {
                 return;
             }
-            this.$search_results.empty(); // TODO: clear_results method ?
+            this.clear_search_results();
             if(query === '') {
                 this.set_search_state('empty');
                 delete this.search;
