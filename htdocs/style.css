@@ -97,19 +97,19 @@ div.ucf-splash-dlg p span.ui-icon {
   font-size: 16px;
 }
 
-form.ucf-app a,
+.ucf-app a,
 div#ucf-help a {
   color: #ff9b08;
   font-weight: bold;
   text-decoration: none;
 }
 
-form.ucf-app a:visited,
+.ucf-app a:visited,
 div#ucf-help a:visited {
   color: #ff9b08;
 }
 
-form.ucf-app a:hover,
+.ucf-app a:hover,
 div#ucf-help a:hover {
   text-decoration: underline;
 }
@@ -132,14 +132,14 @@ div#ucf-help table.search-types td {
   padding: 3px 5px;
 }
 
-form.ucf-app div.search-wrap {
+.ucf-app .search-wrap {
   margin: 0 0 1.6em 0;
   position: relative;
   clear: both;
   z-index: 1;
 }
 
-form.ucf-app div.search-wrap .search-reset {
+.ucf-app .search-wrap .search-reset {
   position: absolute;
   right: 10px;
   top: 1.3em;
@@ -149,38 +149,34 @@ form.ucf-app div.search-wrap .search-reset {
   color: #ff9b08;
 }
 
-form.ucf-app div.search-wrap .search-reset:hover {
+.ucf-app .search-wrap .search-reset:hover {
   color: #C77405;
 }
 
-form.ucf-app div.search-wrap.state-empty .search-reset {
+.ucf-app .search-wrap.state-empty .search-reset {
   display: none;
 }
 
-form.ucf-app div.search-wrap input.search {
+.ucf-app .search-wrap input.search {
   width: 686px;
   font-size: 120%;
   padding: 5px;
 }
 
-form.ucf-app div.search-wrap input.search.busy {
-  background: #eeeeee url(images/throbber.gif) no-repeat scroll center right;
-}
-
-form.ucf-app div.search-wrap.state-empty a.search-link {
+.ucf-app .search-wrap.state-empty a.search-link {
   visibility: hidden;
 }
 
-form.ucf-app div.search-wrap a.search-link {
+.ucf-app .search-wrap a.search-link {
   padding: 0 6px;
   color: #bbbbbb;
 }
 
-form.ucf-app div.search-wrap a.search-link:hover {
+.ucf-app .search-wrap a.search-link:hover {
   color: #ff9b08;
 }
 
-form.ucf-app div.char-wrap {
+.ucf-app .char-wrap {
   background-color: #eeeeee;
   float: left;
   width: 100%;
@@ -188,35 +184,35 @@ form.ucf-app div.char-wrap {
   z-index: 2;
 }
 
-form.ucf-app div.char-wrap div.char-preview {
+.ucf-app .char-wrap .char-preview {
   float: left;
   position: relative;
   width: 300px;
 }
 
-form.ucf-app div.char-preview input.unassigned {
+.ucf-app .char-preview input.unassigned {
   background-image: url(images/reserved-bg.png);
 }
 
-form.ucf-app div.char-preview input.noncharacter {
+.ucf-app .char-preview input.noncharacter {
   background-color: #aaaaaa;
 }
 
-form.ucf-app div.char-preview input.surrogate {
+.ucf-app .char-preview input.surrogate {
   background-color: #77aa77;
 }
 
-form.ucf-app div.char-preview input.pua {
+.ucf-app .char-preview input.pua {
   background-color: #fafad7;
 }
 
-form.ucf-app div.char-wrap div.char-props {
+.ucf-app .char-wrap .char-props {
   float: left;
   position: relative;
   width: 400px;
 }
 
-form.ucf-app div.char-wrap div.char-preview-label {
+.ucf-app .char-wrap .char-preview-label {
   position: absolute;
   top: 25px;
   left: 25px;
@@ -230,11 +226,11 @@ form.ucf-app div.char-wrap div.char-preview-label {
   visibility: hidden;
 }
 
-form.ucf-app.empty div.char-wrap div.char-preview-label {
+.ucf-app.empty .char-wrap .char-preview-label {
   visibility: visible;
 }
 
-form.ucf-app input.char {
+.ucf-app input.char {
   position: relative;
   z-index: 2;
   color: #333333;
@@ -247,7 +243,7 @@ form.ucf-app input.char {
   border: 2px solid #bbbbbb;
 }
 
-form.ucf-app div.char-wrap div.char-props-label {
+.ucf-app .char-wrap .char-props-label {
   position: absolute;
   top: 25px;
   left: 25px;
@@ -261,16 +257,16 @@ form.ucf-app div.char-wrap div.char-props-label {
   visibility: hidden;
 }
 
-form.ucf-app.empty div.char-wrap div.char-props-label {
+.ucf-app.empty .char-wrap .char-props-label {
   visibility: visible;
 }
 
-form.ucf-app span.char-buttons {
+.ucf-app .char-buttons {
   position: relative;
   left: 25px;
 }
 
-form.ucf-app span.char-buttons button.ui-button.ui-state-default {
+.ucf-app .char-buttons button.ui-button.ui-state-default {
   font-weight: bold;
   color: #666666 !important;
   font-size: 12px;
@@ -281,44 +277,44 @@ form.ucf-app span.char-buttons button.ui-button.ui-state-default {
   height: 25px
 }
 
-form.ucf-app span.char-buttons button.ui-button span.ui-button-icon-primary {
+.ucf-app .char-buttons button.ui-button span.ui-button-icon-primary {
   margin: -8px 0 0 4px;
 }
 
-form.ucf-app span.char-buttons button.disabled {
+.ucf-app .char-buttons button.disabled {
   background-color: yellow;
 }
 
-form.ucf-app span.char-buttons button span.ui-button-text {
+.ucf-app .char-buttons button span.ui-button-text {
   position: relative;
   top: -2px;
 }
 
-form.ucf-app.empty span.char-buttons a.char-link {
+.ucf-app.empty .char-buttons a.char-link {
   visibility: hidden;
 }
 
-form.ucf-app span.char-buttons a.char-link {
+.ucf-app .char-buttons a.char-link {
   font-size: 18px;
   padding: 0 4px;
   color: #bbbbbb;
 }
 
-form.ucf-app span.char-buttons a.char-link:hover {
+.ucf-app .char-buttons a.char-link:hover {
   color: #ff9b08;
 }
 
-form.ucf-app div.sample-wrap {
+.ucf-app .sample-wrap {
   display: none;
   color: #cccccc;
   margin-top: 1.0em;
 }
 
-form.ucf-app div.sample-wrap:hover {
+.ucf-app .sample-wrap:hover {
   color: #444444;
 }
 
-form.ucf-app div.sample-wrap ul {
+.ucf-app .sample-wrap ul {
   visibility: hidden;
   margin: 0 0 0 1em;
   padding: 0;
@@ -326,11 +322,11 @@ form.ucf-app div.sample-wrap ul {
   display: inline;
 }
 
-form.ucf-app div.sample-wrap:hover ul {
+.ucf-app .sample-wrap:hover ul {
   visibility: visible;
 }
 
-form.ucf-app div.sample-wrap ul li {
+.ucf-app .sample-wrap ul li {
   margin: 0;
   padding: 0.4em 0.6em;
   list-style: none;
@@ -338,17 +334,17 @@ form.ucf-app div.sample-wrap ul li {
   border-radius: 4px;
 }
 
-form.ucf-app div.sample-wrap ul li:hover {
+.ucf-app .sample-wrap ul li:hover {
   background-color: #eeeeee;
   cursor: pointer;
 }
 
-form.ucf-app.empty div.char-info table {
+.ucf-app.empty .char-info table {
   float: left;
   visibility: hidden;
 }
 
-form.ucf-app div.char-info table {
+.ucf-app .char-info table {
   margin: 22px 0 0 0;
   width: 375px;
   border-collapse: collapse;
@@ -356,24 +352,24 @@ form.ucf-app div.char-info table {
   color: #333333;
 }
 
-form.ucf-app div.char-info table th {
+.ucf-app .char-info table th {
   text-align: left;
   vertical-align: top;
 }
 
-form.ucf-app div.char-info span.alias {
+.ucf-app .char-info span.alias {
   font-size: 90%;
   font-style: italic;
   color: #666666;
 }
 
-form.ucf-app div.char-info table th,
-form.ucf-app div.char-info table td {
+.ucf-app .char-info table th,
+.ucf-app .char-info table td {
   border: 4px solid #eeeeee;
   padding: 3px;
 }
 
-form.ucf-app div.char-info table td {
+.ucf-app .char-info table td {
   width: 236px;
   background-color: #fcfcfc;
   padding-left: 8px;
@@ -381,15 +377,15 @@ form.ucf-app div.char-info table td {
 
 /* -------------------- for search results list ------------------------- */
 
-form.ucf-app .search-results .result-items {
+.ucf-app .search-results .result-items {
   position: relative;
 }
 
-form.ucf-app .search-wrap.state-empty .result-items {
+.ucf-app .search-wrap.state-empty .result-items {
   display: none;
 }
 
-form.ucf-app .result-items li {
+.ucf-app .result-items li {
   font-size: 1.1em;
   color: #FF9B08;
   font-weight: bold;
@@ -398,46 +394,46 @@ form.ucf-app .result-items li {
   clear: both;
 }
 
-form.ucf-app .result-items li.selected,
-form.ucf-app .result-items li:hover {
+.ucf-app .result-items li.selected,
+.ucf-app .result-items li:hover {
   border: 1px solid #fbcb09;
   background: #fdf5ce url("jquery-ui-1.11.4.custom/images/ui-bg_glass_100_fdf5ce_1x400.png") 50% 50% repeat-x;
   color: #c77405;
 }
 
-form.ucf-app .result-items:hover li.selected {
+.ucf-app .result-items:hover li.selected {
   background-image: none;
   color: #FF9B08;
 }
 
-form.ucf-app .result-items:hover li.selected:hover {
+.ucf-app .result-items:hover li.selected:hover {
   color: #c77405;
 }
 
-form.ucf-app div.code-point {
+.ucf-app .code-point {
   float: left;
   width: 4.2em;
 }
 
-form.ucf-app div.code-sample {
+.ucf-app .code-sample {
   float: left;
   font-weight: bold;
   width: 1.5em;
   text-align: center;
 }
 
-form.ucf-app div.code-descr {
+.ucf-app .code-descr {
   margin-left: 6.4em;
 }
 
-form.ucf-app span.code-alias {
+.ucf-app .code-alias {
   font-size: 92%;
   font-style: italic;
   font-weight: normal;
   padding-left: 0.6em;
 }
 
-form.ucf-app .search-footer {
+.ucf-app .search-footer {
   padding: 10px 0;
   text-align: center;
   background-color: #eeeeee;
@@ -445,40 +441,40 @@ form.ucf-app .search-footer {
   border-bottom-right-radius: 16px;
 }
 
-form.ucf-app .search-footer .throbber {
+.ucf-app .search-footer .throbber {
   background-repeat: no-repeat;
   background-image: url(images/throbber.gif);
   background-position: right center;
   padding-right: 22px;
 }
 
-form.ucf-app .search-footer .throbber {
+.ucf-app .search-footer .throbber {
   font-weight: bold;
 }
 
-form.ucf-app .search-wrap.state-partial .search-footer:hover {
+.ucf-app .search-wrap.state-partial .search-footer:hover {
   cursor: pointer;
   background-color: #FF9B08;
   color: #ffffff;
 }
 
-form.ucf-app .search-wrap .search-footer .complete {
+.ucf-app .search-wrap .search-footer .complete {
   font-style: italic;
   color: #888888;
 }
 
-form.ucf-app .search-wrap.state-empty .search-footer,
-form.ucf-app .search-wrap .search-footer .throbber,
-form.ucf-app .search-wrap .search-footer .partial,
-form.ucf-app .search-wrap .search-footer .complete {
+.ucf-app .search-wrap.state-empty .search-footer,
+.ucf-app .search-wrap .search-footer .throbber,
+.ucf-app .search-wrap .search-footer .partial,
+.ucf-app .search-wrap .search-footer .complete {
   display: none;
 }
 
-form.ucf-app .search-wrap.state-empty .sample-wrap  { display: block; }
+.ucf-app .search-wrap.state-empty .sample-wrap  { display: block; }
 
-form.ucf-app .search-wrap.state-searching .throbber { display: inline; }
-form.ucf-app .search-wrap.state-partial   .partial  { display: inline; }
-form.ucf-app .search-wrap.state-complete  .complete { display: inline; }
+.ucf-app .search-wrap.state-searching .throbber { display: inline; }
+.ucf-app .search-wrap.state-partial   .partial  { display: inline; }
+.ucf-app .search-wrap.state-complete  .complete { display: inline; }
 
 div.ucf-chart-dialog {
   position: relative;
@@ -488,7 +484,7 @@ div.ucf-chart-dialog select.ucf-block-menu {
   position: relative;
 }
 
-div.ucf-chart-wrapper {
+.ucf-chart-wrapper {
   height: 220px;
   border-bottom: 1px solid #cccccc;
   margin: 0 0 8px 0;
@@ -496,32 +492,32 @@ div.ucf-chart-wrapper {
   overflow: auto;
 }
 
-div.ucf-chart-buttons {
+.ucf-chart-buttons {
   position: relative;
 }
 
-div.ucf-chart-buttons select {
+.ucf-chart-buttons select {
   position: absolute;
   width: 300px;
   top: 2px;
 }
 
-div.ucf-chart-buttons button {
+.ucf-chart-buttons button {
   float: right;
   margin-left: 4px;
 }
 
-div.ucf-chart-buttons button.ui-button span.ui-button-icon-primary {
+.ucf-chart-buttons button.ui-button span.ui-button-icon-primary {
   margin: -8px 0 0 4px;
 }
 
-table.ucf-code-chart {
+.ucf-code-chart {
   border-collapse: collapse;
   font-family: Liberation Sans, Arial, sans-serif;
   background-image: url(images/reserved-bg.png);
 }
 
-table.ucf-code-chart td {
+.ucf-code-chart td {
   border: 1px solid #cccccc;
   background-color: #eeeeee;
   padding: 1px 0 0 0;
@@ -533,24 +529,24 @@ table.ucf-code-chart td {
   height: 26px;
 }
 
-table.ucf-code-chart td.unassigned {
+.ucf-code-chart td.unassigned {
   background-color: transparent;
   opacity : 0.3;
 }
 
-table.ucf-code-chart td.noncharacter {
+.ucf-code-chart td.noncharacter {
   background-color: #aaaaaa;
 }
 
-table.ucf-code-chart td.surrogate {
+.ucf-code-chart td.surrogate {
   background-color: #77aa77;
 }
 
-table.ucf-code-chart td.pua {
+.ucf-code-chart td.pua {
   background-color: #fafad7;
 }
 
-table.ucf-code-chart td.curr-char {
+.ucf-code-chart td.curr-char {
   background-color: #fad184;
 }
 
@@ -619,7 +615,7 @@ div.ucf-tab-help:hover {
   background-position: 0px -56px;
 }
 
-ul#sample-bookmarks li a {
+#sample-bookmarks li a {
   display: block;
   float: left;
   width: 8.5em;
