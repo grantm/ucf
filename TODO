@@ -13,11 +13,6 @@
 * save font selection in cookie
 * any lessons to learn from Uniview? http://people.w3.org/rishida/uniview/
 
-* Anomalous displays:
-  * Search for: link vs /link/
-  * Hangul Syllable AC00, First displayed, but rest not because no descriptions
-  * Combining chars (eg: 0300) not visible in chart
-
 * unassigned       http://localhost/~grant/ucf/?c=U+0378
 * noncharacter     http://localhost/~grant/ucf/?c=U+FDD0
 * surrogate        http://localhost/~grant/ucf/?c=U+D801

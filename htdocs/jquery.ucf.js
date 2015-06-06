@@ -661,7 +661,7 @@
                 if(s.regex) {
                     if(
                         s.regex.test(ch.description)
-                        || (ch.alias && s.regex.test(ch.description))
+                        || (ch.alias && s.regex.test(ch.alias))
                     ) {
                         return ch;
                     }
