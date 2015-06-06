@@ -238,7 +238,12 @@
                     description: desc
                 };
             }
-            var ch = { 'cp': cp, 'reserved': range.type };
+            var ch = {
+                'cp':           cp,
+                'reserved':     range.type,
+                'range_start':  range.first_cp,
+                'range_end':    range.last_cp,
+            };
             switch(range.type) {
                 case 'unassigned':
                     ch.description = "This codepoint is reserved as 'unassigned'";
@@ -851,19 +856,21 @@
         },
 
         increment_code_point: function (inc) {
-            var code = this.curr_cp + inc;
-            if(code === -1) {
+            var cp = this.curr_cp + inc;
+            if(cp === -1) {
                 this.select_codepoint(null);
                 return;
             }
-            var hex  = dec2hex(code, 4);
-            while(!this.code_chart[hex]) {
-                code = code + inc;
-                if(code < 0) { return; }
-                if(code > this.max_codepoint) { return; }
-                hex = dec2hex(code, 4);
+            var ch = this.lookup_char(cp);
+            if(!ch.reserved || ch.show) {
+                this.select_codepoint(cp);
+                return;
+            };
+            if(ch.reserved) {
+                // recurse to handle adjacent reserved blocks
+                this.curr_cp = (inc < 0 ? ch.range_start : ch.range_end);
+                return this.increment_code_point(inc);
             }
-            this.select_codepoint(code);
         },
 
         scroll_char: function (event, delta) {
