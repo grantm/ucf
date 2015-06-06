@@ -363,9 +363,26 @@ form.ucf-app div.char-info table td {
 
 /* -------------------- for search results list ------------------------- */
 
+form.ucf-app .search-results .result-items {
+  position: relative;
+}
+
+form.ucf-app .search-wrap.state-empty .result-items {
+  display: none;
+}
+
 form.ucf-app .result-items li {
-  background-color: #ffffff;
   font-size: 1.1em;
+  color: #FF9B08;
+  font-weight: bold;
+  border: 1px solid transparent;
+  padding: 4px;
+}
+
+form.ucf-app .result-items li:hover {
+  border: 1px solid #fbcb09;
+  background: #fdf5ce url("jquery-ui-1.11.4.custom/images/ui-bg_glass_100_fdf5ce_1x400.png") 50% 50% repeat-x;
+  color: #c77405;
 }
 
 form.ucf-app div.code-point {
@@ -412,9 +429,14 @@ form.ucf-app .search-footer .throbber {
   padding-right: 22px;
 }
 
+form.ucf-app .search-footer .throbber {
+  font-weight: bold;
+}
+
 form.ucf-app .search-wrap.state-partial .search-footer:hover {
   cursor: pointer;
-  background-color: #d7d7d7;
+  background-color: #FF9B08;
+  color: #ffffff;
 }
 
 form.ucf-app .search-wrap .search-footer .complete {

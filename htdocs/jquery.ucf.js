@@ -448,13 +448,13 @@
         build_search_results: function () {
             var app = this;
             this.$search_results =
-                $('<ul />').addClass('result-items ui-menu')
+                $('<ul />').addClass('result-items ui-autocomplete ui-menu  ui-widget ui-widget-content')
                     .on('click', 'li', function() {
                         app.select_codepoint( $(this).data('codepoint') );
                     });
             var $div = $('<div />').addClass('search-results').append(
                 this.$search_results,
-                $('<div />').addClass('search-footer').append(
+                $('<div />').addClass('search-footer ui-widget').append(
                     $('<span />').addClass('throbber').text('Searching ...'),
                     $('<span />').addClass('partial').text('More ...'),
                     $('<span />').addClass('complete').text('Search complete')
