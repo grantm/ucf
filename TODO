@@ -1,4 +1,3 @@
-* add up/down/enter key bindings for search results
 * add support for Unihan codepoints
   * update script to generate two data files
   * kdefinition
@@ -12,9 +11,4 @@
 * enumerate installed fonts for autocomplete
 * save font selection in cookie
 * any lessons to learn from Uniview? http://people.w3.org/rishida/uniview/
-
-* unassigned       http://localhost/~grant/ucf/?c=U+0378
-* noncharacter     http://localhost/~grant/ucf/?c=U+FDD0
-* surrogate        http://localhost/~grant/ucf/?c=U+D801
-* pua              http://localhost/~grant/ucf/?c=U+E39D
 

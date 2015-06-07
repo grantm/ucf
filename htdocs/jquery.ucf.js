@@ -22,6 +22,11 @@
 
     var block_mask = 0xFFFF80
     var preview_reset_list = 'unassigned noncharacter surrogate pua';
+    var key = {
+        ArrowUp:    38,
+        ArrowDown:  40,
+        Enter:      13
+    };
 
 
     /* Utility Functions
@@ -224,7 +229,7 @@
             }
             // q=????
             else if(args.q) {
-                this.$search_input.val(args.q);
+                this.$search_input.val(args.q).focus();
                 this.trigger_search();
             }
         },
@@ -539,7 +544,11 @@
             var app = this;
             this.$search_input.on(
                 "keydown keypress input paste",
-                function() { app.trigger_search(); }
+                function(e) {
+                    if(!app.handle_search_cursor_keys(e)) {
+                        app.trigger_search();
+                    }
+                }
             );
         },
 
@@ -552,6 +561,41 @@
 
         clear_search_results: function () {
             this.$search_results.empty();
+        },
+
+        handle_search_cursor_keys: function (e) {
+            if(e.type !== 'keydown') { return false; }
+            var $li = this.$search_results.find('li.selected');
+            if($li.length === 0) {
+                $li = null;
+            }
+            if(e.which === key.ArrowDown) {
+                if($li) {
+                    $li = $li.next();
+                }
+                else {
+                    $li = this.$search_results.find('li:nth-child(1)');
+                }
+            }
+            else if(e.which === key.ArrowUp) {
+                if($li) {
+                    $li = $li.prev();
+                }
+            }
+            else if(e.which === key.Enter) {
+                if($li) {
+                    this.select_search_item($li);
+                }
+            }
+            else {
+                return false;
+            }
+            e.preventDefault();
+            if($li && $li.length > 0) {
+                this.$search_results.find('li.selected').removeClass('selected');
+                $li.addClass('selected');
+            }
+            return true;
         },
 
         trigger_search: function () {
@@ -727,6 +771,7 @@
             this.$search_results.find('li.selected').removeClass('selected');
             $item.addClass('selected');
             window.scrollTo(0,0);
+            this.$search_input.focus();
         },
 
         set_search_link: function () {
