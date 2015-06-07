@@ -477,7 +477,10 @@
                             "Close": function() { $(this).dialog("close"); }
                         }
                     });
-                    $help_tab.click(function() { $div.dialog('open'); });
+                    $help_tab.click(function() {
+                        $div.dialog('open');
+                        $(sel).scrollTop(0)
+                    });
                     this.$el.append($help_tab);
                 }
             }
