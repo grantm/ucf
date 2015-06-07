@@ -288,7 +288,8 @@
             if(range.type === 'templated') {
                 var desc = range.template.replace(/#/, hex2dec(cp, 4));
                 return {
-                    description: desc
+                    'description':  desc,
+                    'cp':           cp
                 };
             }
             var ch = {
