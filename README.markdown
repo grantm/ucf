@@ -45,7 +45,7 @@ always just [grab the data file from the web site](http://www.mclean.net.nz/ucf/
 Copyright and Licence
 ---------------------
 
-Copyright (C) 2010-2015 Grant McLean
+Copyright (C) 2010-2015 [Grant McLean](http://grantm.github.io/)
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the
