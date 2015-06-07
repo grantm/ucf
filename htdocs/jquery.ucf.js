@@ -893,8 +893,8 @@
                 title:         "Unicode Character Chart",
                 resizable:     false,
                 closeOnEscape: true,
-                width:         575,
-                height:        310,
+                width:         580,
+                height:        320,
             })
             .dialog( "option", "position", { my: "center center", at: "center center", of: "body" } );
         },
