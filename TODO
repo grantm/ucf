@@ -10,5 +10,10 @@
 * display encoded bytes as hex (UTF-8, UTF-16L/E, UTF-32L/E)
 * enumerate installed fonts for autocomplete
 * save font selection in cookie
+* REST API: https://blog.codepoints.net/brand-new-unicode-rest-api.html
+* maybe get latex names from: http://www.w3.org/Math/characters/unicode.xml
 * any lessons to learn from Uniview? http://people.w3.org/rishida/uniview/
 
+Other Unicode sites:
+
+http://shapecatcher.com/

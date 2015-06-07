@@ -348,7 +348,11 @@
             var $table = $('<table />').append(
                 $('<tr />').append(
                     $('<th />').text('Code point'),
-                    $('<td />').text('U+' + hex)
+                    $('<td />').append(
+                        $('<a />')
+                            .attr('href', 'https://codepoints.net/U+' + hex)
+                            .text('U+' + hex)
+                    )
                 )
             );
             if(ch && ch.description.length > 0) {
