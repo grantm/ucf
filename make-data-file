@@ -83,6 +83,12 @@ sub translate_data {
     my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
 
     $parser->parse_string($$xml_ref);
+
+    if($args{out_fh}) {
+        close($args{out_fh});
+        make_gzip_version($output_filename);
+    }
+
 }
 
 
@@ -164,6 +170,7 @@ sub make_gzip_version {
 
     print "Compressing to $gz_file\n";
     system("gzip --best < $base_file > $gz_file");
+    system("touch $base_file $gz_file");
 }
 
 package UCFHandler;
