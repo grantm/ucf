@@ -164,22 +164,26 @@
         max_codepoint:    0,
 
         build_ui: function () {
-            this.start_loading_splash();
-
-            this.load_unicode_data( this.enable_ui ); // callback when done
-
-            this.add_font_dialog();
-            this.add_help_dialog();
-            this.add_code_chart_dialog();
-            this.add_form_elements();
-            this.$el.append(this.$form);
+            this.start_loading_splash(function() {
+                this.add_font_dialog();
+                this.add_help_dialog();
+                this.add_code_chart_dialog();
+                this.add_form_elements();
+                this.$el.append(this.$form);
+                this.load_unicode_data( this.enable_ui ); // callback when done
+            });
         },
 
-        start_loading_splash: function () {
-            var $div = $('<div class="ucf-splash-dlg"/>');
-            this.$splash_dialog = $div;
-            $div.append('<p class="ucf-loading">Please wait &#8230; </p>');
-            $div.dialog({
+        start_loading_splash: function (handler) {
+            var app = this;
+            var $div = this.$splash_dialog = $('<div class="ucf-splash-dlg"/>');
+            $div.append(
+                $('<p class="ucf-loading">Please wait &#8230; </p>').append(
+                    $('<img />')
+                        .attr('src', 'images/throbber.gif')
+                        .on('load', function() { handler.call(app); })
+                )
+            ).dialog({
                 autoOpen:      true,
                 title:         "Loading",
                 resizable:     false,
