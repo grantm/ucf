@@ -314,6 +314,26 @@ sub end_element {
     return $self->_delegate('end_element', $data);
 }
 
+sub start_element_description {
+    my($self, $data) = @_;
+    $self->{description} = '';
+}
+
+sub end_element_description {
+    my($self, $data) = @_;
+    my $description = delete $self->{description};
+    if($description =~ m{(\d+[.]\d+[.]\d+)}) {
+        $description = $1;
+    }
+    $self->output("$description");
+}
+
+sub characters {
+    my($self, $data) = @_;
+    return unless exists $self->{description};
+    $self->{description} .= $data->{Data};
+}
+
 sub start_element_group {
     my($self, $data) = @_;
     my $attr = $self->_attr($data);
@@ -516,7 +536,9 @@ The role of this script is to read the Unicode Character Database XML and
 output a much smaller, plain-text file listing all the characters and block
 ranges with a tiny subset of the attributes from the original data.
 
-The format of the file is a series of lines which describe:
+The file starts with a single line containing the version number of the Unicode
+database that was used to generate the file, followed by a series of lines
+which describe:
 
 =over 4
 

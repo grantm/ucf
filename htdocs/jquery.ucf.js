@@ -1,6 +1,6 @@
 /*
  * Unicode Character Finder
- * Copyright (c) 2010-2015 Grant McLean <grant@mclean.net.nz>
+ * Copyright (c) 2010-2016 Grant McLean <grant@mclean.net.nz>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -154,6 +154,7 @@
     }
 
     UnicodeCharacterFinder.prototype = {
+        unicode_version:  null,
         code_chart:       { },
         code_list:        [ ],
         reserved_ranges:  [ ],
@@ -199,6 +200,9 @@
 
         enable_ui: function () {
             var app = this;
+            $('#unicode-version').text(
+                '\u00A0(Version ' + this.unicode_version + ')'
+            );
             this.populate_code_blocks_menu();
             this.$splash_dialog.dialog('close');
             this.$el.addClass('ready');
@@ -1117,8 +1121,13 @@
                 line = data.substring(i, j);
                 field = line.split("\t");
 
+                // First line is version or 'description' of Unicode source
+                if(this.unicode_version === null) {
+                    this.unicode_version = line;
+                }
+
                 // [ line describes a block
-                if(line.match(/^\[/)) {
+                else if(line.match(/^\[/)) {
                     field[0] = field[0].replace(/^\[/, '');
                     block = {
                         'start'    : field[0],
