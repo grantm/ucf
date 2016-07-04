@@ -1,0 +1,99 @@
+# Manually derived list of fields provided by codepoints.net API
+age	Age
+na	Unicode Name
+na1	Unicode 1 Name
+blk	Block
+gc	General Category
+sc	Script
+bc	Bidirectional Category
+ccc	Combining Class
+dt	Decomposition Type
+dm	Decomposition Mapping
+Lower	Lowercase	B
+slc	Simple Lowercase Mapping
+lc	Lowercase Mapping
+Upper	Uppercase	B
+suc	Simple Uppercase Mapping
+uc	Uppercase Mapping
+stc	Simple Titlecase Mapping
+tc	Titlecase Mapping
+cf	Case Folding
+AHex	ASCII Hex Digit	B
+Alpha	Alphabetic	B
+Bidi_C	Bidi Control	B
+Bidi_M	Bidi Mirrored	B
+Cased	Cased	B
+CE	Composition Exclusion	B
+CI	Case Ignorable	B
+Comp_Ex	Full Composition Exclusion	B
+CWCF	Changes When Casefolded	B
+CWCM	Changes When Casemapped	B
+CWKCF	Changes When NFKC Casefolded	B
+CWL	Changes When Lowercased	B
+CWT	Changes When Titlecased	B
+CWU	Changes When Uppercased	B
+Dash	Dash	B
+Dep	Deprecated	B
+DI	Default Ignorable Code Point	B
+Dia	Diacritic	B
+ea	East Asian Width
+Ext	Extender	B
+FC_NFKC	FC NFKC Closure
+GCB	Grapheme Cluster Break
+Gr_Base	Grapheme Base	B
+Gr_Ext	Grapheme Extend	B
+Gr_Link	Grapheme Link	B
+Hex	Hex Digit	B
+hst	Hangul Syllable Type
+Hyphen	Hyphen	B
+IDC	ID Continue	B
+Ideo	Ideographic	B
+IDS	ID Start	B
+IDSB	IDS Binary Operator	B
+IDST	IDS Trinary Operator and	B
+InPC	Indic Positional Category
+InSC	Indic Syllabic Category
+isc	ISO 10646 Comment
+jg	Joining Group
+Join_C	Join Control	B
+JSN	Jamo Short Name
+jt	Joining Type
+lb	Line Break
+LOE	Logical Order Exception	B
+Math	Math	B
+NFC_QC	NFC Quick Check
+NFD_QC	NFD Quick Check
+NFKC_CF	NFKC Casefold
+NFKC_QC	NFKC Quick Check
+NFKD_QC	NFKD Quick Check
+nt	Numeric Type
+nv	Numeric Value
+OAlpha	Other Alphabetic	B
+ODI	Other Default Ignorable Code Point	B
+OGr_Ext	Other Grapheme Extend	B
+OIDC	Other ID Continue	B
+OIDS	Other ID Start	B
+OLower	Other Lowercase	B
+OMath	Other Math	B
+OUpper	Other Uppercase	B
+Pat_Syn	Pattern Syntax	B
+Pat_WS	Pattern White Space	B
+QMark	Quotation Mark	B
+Radical	Radical	B
+SB	Sentence Break
+scf	Simple Case Folding
+scx	Script Extension
+SD	Soft Dotted	B
+STerm	STerm	B
+Term	Terminal Punctuation	B
+UIdeo	Unified Ideograph	B
+VS	Variation Selector	B
+WB	Word Break
+WSpace	White Space	B
+XIDC	XID Continue	B
+XIDS	XID Start	B
+XO_NFC	Expands On NFC	B
+XO_NFD	Expands On NFD	B
+XO_NFKC	Expands On NFKC	B
+XO_NFKD	Expands On NFKD	B
+

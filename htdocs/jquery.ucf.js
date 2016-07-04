@@ -219,6 +219,7 @@
                 this.add_font_dialog();
                 this.add_help_dialog();
                 this.add_code_chart_dialog();
+                this.add_codepoint_dialog();
                 this.add_form_elements();
                 this.$el.append(this.$form);
                 this.load_unicode_data( this.enable_ui ); // callback when done
@@ -420,7 +421,7 @@
                     $('<th />').text('Code point'),
                     $('<td />').append(
                         $('<a />')
-                            .attr('href', 'https://codepoints.net/U+' + hex)
+                            .addClass('cp-detail')
                             .text('U+' + hex)
                     )
                 )
@@ -1283,8 +1284,118 @@
                 });
         },
 
+        add_codepoint_dialog: function () {
+            var app = this;
+            this.$cp_dialog = $('<div class="ucf-cp-dialog" />')
+            .dialog({
+                autoOpen:      false,
+                title:         "Character detail from codepoints.net",
+                resizable:     true,
+                closeOnEscape: true,
+                width:         620,
+                height:        $(window).height() - 80
+            })
+            .dialog( "option", "position", { my: "center center", at: "center center", of: "body" } );
+            $.ajax({
+                url: './cpp.json',
+                type: 'GET',
+                dataType: 'json',
+            }).then(function(prop_list) {
+                app.codepoint_properties = prop_list;
+            });
+        },
+
+        show_codepoint_dialog: function () {
+            var app = this
+            this.$cp_dialog.empty().append(
+                $('<p />').addClass('ucf-loading')
+                    .text('Loading details from codepoints.net \u2026 ')
+                    .css({marginTop: '30px'})
+                    .append(
+                        $('<img />').attr('src', 'images/throbber.gif')
+                    )
+            ).dialog('open');
+            var cp = this.curr_cp;
+            var cp_hex = dec2hex(cp, 4);
+            var api_url = 'http://codepoints.net/api/v1/codepoint/' + cp_hex;
+            $.ajax({
+                url: api_url,
+                type: 'GET',
+                dataType: 'json',
+            }).then(function(cp_prop) {
+                app.populate_codepoint_dialog(cp_prop);
+            });
+        },
+
+        populate_codepoint_dialog: function (cp_prop) {
+            var $out = this.$cp_dialog.empty();
+            var cp = parseInt(cp_prop.cp, 10);
+            var char = codepoint_to_string(cp);
+            var cp_hex = dec2hex(cp, 4);
+            var cp_url = 'https://codepoints.net/U+' + cp_hex;
+            $out.append(
+                $('<p />').addClass('cp-link').append(
+                    $('<a />').attr({href: cp_url, target: '_blank'}).text(cp_url)
+                )
+            );
+            if(cp_prop.image) {
+                $out.append(
+                    $('<img />').addClass('cp-image')
+                        .attr('src', 'data:image/png;base64,' + cp_prop.image)
+                );
+            }
+            if(cp_prop.abstract) {
+                $out.append(
+                    $('<div />').addClass('abstract').html(cp_prop.abstract)
+                );
+            }
+            var $table = $('<table />').addClass('cp-properties').append(
+                $('<tr />').append(
+                    $('<th />').text('Property'),
+                    $('<th />').text('Value')
+                )
+            );
+            $(this.codepoint_properties).each(function(i, prop) {
+                var name = prop.property;
+                if(cp_prop.hasOwnProperty(name)) {
+                    var $name = $('<td />').text(prop.title).append(
+                        $('<span />').addClass('prop-name')
+                            .text(' (' + name + ')')
+                    );
+                    var $value = $('<td />');
+                    var val = cp_prop[name];
+                    if(prop.boolean) {
+                        if(val === "1") {
+                            $value.addClass('boolean-true').text('\u2714');
+                        }
+                        else {
+                            $value.addClass('boolean-false').text('\u2717');
+                        }
+                    }
+                    else if(typeof val === 'object') {
+                        $value.append(
+                            $('<span />').addClass('cp-hex').text('U+' + cp_hex),
+                            char
+                        );
+                    }
+                    else {
+                        if(prop.map && prop.map[val]) {
+                            val = prop.map[val];
+                        }
+                        $value.text(val);
+                    }
+                    $table.append( $('<tr />').append($name, $value) );
+                }
+            });
+            $out.append($table);
+        },
+
         build_char_details_pane: function () {
-            this.$char_info = $('<div class="char-info"></div>');
+            var app = this;
+            this.$char_info = $('<div class="char-info"></div>')
+                .on('click', '.cp-detail', function() {
+                    app.show_codepoint_dialog();
+                });
             return $('<div class="char-props"></div>').append(
                 $('<div class="char-props-label">Character<br />Properties</div>'),
                 this.$char_info

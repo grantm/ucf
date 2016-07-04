@@ -10,6 +10,12 @@
 #
 # Use --download option to get these files.
 #
+# Also generates a JSON file for use with the codepoints.net API using:
+#
+#   http://www.unicode.org/Public/UCD/latest/ucd/PropertyValueAliases.txt
+#
+# and the manually created source file: codepoints_properties.txt
+#
 # Use --help option for info on command line options and details of the output
 # file format.
 #
@@ -27,6 +33,7 @@ use Getopt::Long  qw(GetOptions);
 use LWP::Simple   qw(mirror RC_OK RC_NOT_MODIFIED);
 use Archive::Zip  qw(:ERROR_CODES :CONSTANTS);
 use Archive::Zip::MemberRead qw();
+use JSON::XS                 qw();
 
 use FindBin;
 use XML::SAX::ParserFactory;
@@ -45,6 +52,14 @@ my $output_file_all       = $FindBin::Bin . '/htdocs/char-data-all.txt';
 my $js_frontend_source    = $FindBin::Bin . '/htdocs/jquery.ucf.js';
 
 my $gcp = '>';  # flag to indicate next char is a GC prefix
+
+my $url_pva_source
+    = 'http://www.unicode.org/Public/UCD/latest/ucd/PropertyValueAliases.txt';
+
+my $codepoints_source     = $local_data_dir . '/codepoints_properties.txt';
+
+my $output_file_json      = $FindBin::Bin . '/htdocs/cpp.json';
+
 
 # Handle command-line arguments
 
@@ -69,6 +84,10 @@ elsif($opt{attr}) {
 
 
 translate_data($source_file_nounihan, $output_file_nounihan);
+
+make_codepoints_json_file(
+    $url_pva_source, $codepoints_source, $output_file_json
+);
 
 exit;
 
@@ -103,7 +122,8 @@ sub translate_data {
 sub unzip_xml {
     my($zip_file) = @_;
 
-    my $local_zip_name  = get_zip_file($zip_file);
+    my $zip_url = $url_latest_source_dir . '/' . $zip_file;
+    my $local_zip_name  = get_source_file($zip_url);
 
     my $zip = Archive::Zip->new();
     if($zip->read($local_zip_name) != AZ_OK) {
@@ -126,14 +146,15 @@ sub unzip_xml {
 }
 
 
-sub get_zip_file {
-    my($zip_file) = @_;
-    my $url             = $url_latest_source_dir . '/' . $zip_file;
-    my $local_zip_name  = $local_data_dir        . '/' . $zip_file;
+sub get_source_file {
+    my($url) = @_;
+
+    my($source_file) = $url =~ m{/([^/]+)$};
+    my $local_file_name = $local_data_dir . '/' . $source_file;
 
     if($opt{download}) {
-        print "Downloading\nFrom: $url\nTo:   $local_zip_name\n";
-        my $rc = mirror($url, $local_zip_name);
+        print "Downloading\nFrom: $url\nTo:   $local_file_name\n";
+        my $rc = mirror($url, $local_file_name);
         if($rc == RC_NOT_MODIFIED) {
             print "Local copy already up to date.\n";
         }
@@ -142,13 +163,13 @@ sub get_zip_file {
         }
     }
 
-    if(! -e $local_zip_name) {
-        my $message = "File does not exist:\n  $local_zip_name\n";
+    if(! -e $local_file_name) {
+        my $message = "File does not exist:\n  $local_file_name\n";
         $message .= "Use --download to get the file\n";
         die $message;
     }
 
-    return $local_zip_name;
+    return $local_file_name;
 }
 
 
@@ -180,6 +201,63 @@ sub make_gzip_version {
     system("gzip --best < $base_file > $gz_file");
     system("touch $base_file $gz_file");
 }
+
+
+sub make_codepoints_json_file {
+    my($pva_source_url, $cpp_source, $output_file) = @_;
+
+    my $local_pva_file = get_source_file($pva_source_url);
+
+    print "Reading $local_pva_file\n";
+    my $pva = {};
+    open my $fh, '<', $local_pva_file;
+    while(<$fh>) {
+        next unless /^\w/;
+        if(
+            my($property, $alias, $value, $value2) =
+                $_ =~ /^(\w+)\s*;\s*(\S+)\s*;\s*(\S+)\s*(?:;\s*(\S+)\s*)?(;|#|$)/
+        ) {
+            my @aliases = ($alias);
+            if($value2 and $alias =~ m{^\d+$}) {
+                push @aliases, $value;
+                $value = $value2;
+            }
+            $value =~ s{^(V\d+)_}{$1.}g;
+            $value =~ s{_}{ }g;
+            foreach my $key (@aliases) {
+                $pva->{$property}->{$key} = $value unless $key eq $value;
+            }
+        }
+    }
+
+    print "Reading $cpp_source\n";
+    my $cpp = [];
+    open $fh, '<', $cpp_source;
+    while(<$fh>) {
+        chomp;
+        my($property, $title, $type) = split(/\t/, $_);
+        next unless $title;
+        push @$cpp, {
+            property  => $property,
+            title     => $title,
+        };
+        if(($type // '') eq 'B') {
+            $cpp->[-1]->{boolean} = JSON::XS::true;
+        }
+        elsif(my $map = $pva->{$property}) {
+            if(keys %$map) {
+                $cpp->[-1]->{map} = $map;
+            }
+        }
+    }
+
+    print "Creating $output_file\n";
+    open my $out, '>', $output_file;
+    print $out JSON::XS->new->ascii->canonical->pretty->encode($cpp);
+
+    make_gzip_version($output_file);
+}
+
 
 package UCFHandler;
 
@@ -743,7 +821,28 @@ PDF URL
 
 The '[' lines do not include or imply an offset.
 
-=cut
+=head1 ADDITIONAL FILES
+
+This script also generates a file called F<cpp.json> which is used by the
+Codepoints.net API interface code.  The file sets up some static mappings to
+control the order in which fields are displayed and some expansions for
+short-form property values.
+
+The two sources of information for the F<cpp.json> file are:
+
+=over 4
+
+=item codepoints_properties.txt
+
+A manually assembled list of field names, titles and value 'types'.
+
+=item PropertyValueAliases.txt
+
+Mirrored from the Unicode site, this file contains aliases/expansions for
+property values.  It's not clear if there's a better source for this
+information.
+
+=back
 
 =head1 AUTHOR AND COPYRIGHT
 
@@ -753,4 +852,6 @@ This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
 Software Foundation, either version 3 of the License, or (at your option) any
 later version.
+
+=cut
 

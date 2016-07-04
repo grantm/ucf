@@ -598,6 +598,86 @@ button.ui-button .ui-button-icon {
   transform: scale(1.6);
 }
 
+.ui-dialog .ucf-cp-dialog.ui-dialog-content {
+  font-size: 120%;
+  background-color: #ffffff;
+}
+
+.ui-dialog .cp-link {
+  margin: 1.4em;
+  font-size: 130%;
+  font-weight: bold;
+}
+
+.ui-dialog .cp-link a {
+  text-decoration: none;
+  outline: none;
+}
+
+.ui-dialog .cp-link a:hover {
+  text-decoration: underline;
+}
+
+.ui-dialog .ucf-cp-dialog.ui-dialog-content > div {
+  margin: 1.8em;
+}
+
+.ucf-cp-dialog .cp-image {
+  display: block;
+  padding: 4px;
+  border: 1px solid rgb(153, 153, 153);
+  margin: 1.8em;
+  box-shadow: 1px 1px 4px rgb(231, 143, 8);
+}
+
+.ucf-cp-dialog .cp-properties {
+  margin: 2em 2em 4em;
+  border-collapse: collapse;
+  font-size: 90%;
+}
+
+.ucf-cp-dialog .cp-properties tr > :nth-child(1) {
+  text-align: right;
+  padding: 0.3em 1em 0.3em 0;
+  width: 55%;
+}
+
+.ucf-cp-dialog .cp-properties tr > :nth-child(2) {
+  text-align: left;
+  padding: 0.3em 0 0.3em 1em;
+  width: 45%;
+}
+
+.ucf-cp-dialog .cp-properties td {
+  border-top: 1px solid #cccccc;
+}
+
+.ucf-cp-dialog .cp-properties tr > :nth-child(1) {
+  border-right: 1px solid #cccccc;
+}
+
+.ucf-cp-dialog .cp-properties .prop-name {
+  font-size: 85%;
+  font-family: monospace;
+  color: #999999;
+}
+
+.ucf-cp-dialog .cp-properties .boolean-true {
+  font-weight: bold;
+  color: #00aa00;
+}
+
+.ucf-cp-dialog .cp-properties .boolean-false {
+  font-weight: bold;
+  color: #aa0000;
+}
+
+.ucf-cp-dialog .cp-properties .cp-hex {
+  font-size: 85%;
+  color: #999999;
+  padding-right: 0.8em;
+}
+
 div.ui-dialog-buttonpane {
   font-weight: bold;
 }
