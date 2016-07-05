@@ -1051,6 +1051,9 @@
                     if(show_char) {
                         $cell.text(codepoint_to_string(cp));
                     }
+                    if(ch.description) {
+                        $cell.attr('title', ch.description);
+                    }
                     $row.append($cell);
                     cp++;
                 }
