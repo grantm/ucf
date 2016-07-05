@@ -439,33 +439,44 @@
             var $font_tab = $('<div class="ucf-tab-font" />');
             this.$el.append($font_tab);
 
-            var $div = $('<div class="ucf-font-menu" />');
-            this.$font_dialog = $div;
-            $div.attr('id', this.$el.data('font_dlg_id'));
+            var $form = $('<form class="ucf-font-menu" />');
+            this.$font_dialog = $form;
+            $form.attr('id', this.$el.data('font_dlg_id'));
             var $inp = $('<input type="text" class="ucf-font" />')
-                .css({'width': '180px'});;
-            $div.append(
-                $('<p>Font name</p>'),
+                .css({'width': '320px'});
+            $form.append(
+                $('<p />').text(
+                    'Select the font used in the main character preview box ' +
+                    'and in the code chart window.'
+                ),
+                $('<p />').text(
+                    'Note: not all characters are available in all fonts.'
+                ),
+                $('<label>Font name</label>'),
                 $inp
             );
 
-            $div.dialog({
+            $form.dialog({
                 autoOpen:      false,
                 title:         "Font Selection",
-                resizable:     false,
+                resizable:     true,
                 closeOnEscape: true,
-                width:         220,
-                height:        160,
+                width:         360,
+                height:        250,
                 buttons:       {
                     "Save":  function() {
                         app.save_font($inp.val());
-                        $div.dialog("close");
+                        $form.dialog("close");
                     },
                     "Cancel": function() { $(this).dialog("close"); }
                 }
+            }).submit(function(e) {
+                e.preventDefault();
+                app.save_font($inp.val());
+                $form.dialog("close");
             });
 
-            $font_tab.click(function() { $div.dialog('open'); });
+            $font_tab.click(function() { $form.dialog('open'); });
         },
 
         add_help_dialog: function () {

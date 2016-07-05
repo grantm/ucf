@@ -479,6 +479,17 @@ div#ucf-help table.search-types td {
 .ucf-app .search-wrap.state-partial   .partial  { display: inline; }
 .ucf-app .search-wrap.state-complete  .complete { display: inline; }
 
+.ucf-font-menu p {
+  margin: 0.5em 0;
+}
+
+.ucf-font-menu label {
+  display: block;
+  font-size: 110%;
+  font-weight: bold;
+  margin-top: 1.0em;
+}
+
 div.ucf-chart-dialog {
   position: relative;
 }
