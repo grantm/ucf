@@ -573,6 +573,11 @@ div.ucf-chart-dialog select.ucf-block-menu {
   background-color: #fad184;
 }
 
+.ucf-code-chart td:hover {
+  background-color: #f8f8f8;
+  transform: scale(1.6);
+}
+
 div.ui-dialog-buttonpane {
   font-weight: bold;
 }
