@@ -1,3 +1,5 @@
+* use 'endless scrolling' to add more search results
+* allow users to save 'favourite' characters (in a cookie?)
 * add support for Unihan codepoints
   * update script to generate two data files
   * kdefinition
@@ -17,3 +19,6 @@
 Other Unicode sites:
 
 http://shapecatcher.com/
+http://wakufactory.jp/densho/font/unimap/
+
+https://github.com/eosrei/emojione-color-font/
