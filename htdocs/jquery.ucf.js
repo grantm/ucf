@@ -924,7 +924,7 @@
                 resizable:     false,
                 closeOnEscape: true,
                 width:         580,
-                height:        320,
+                height:        330,
             })
             .dialog( "option", "position", { my: "center center", at: "center center", of: "body" } );
         },
