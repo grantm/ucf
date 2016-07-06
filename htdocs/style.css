@@ -490,6 +490,10 @@ div#ucf-help table.search-types td {
   margin-top: 1.0em;
 }
 
+.ui-autocomplete.ui-menu {
+  z-index: 200;
+}
+
 div.ucf-chart-dialog {
   position: relative;
 }
