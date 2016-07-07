@@ -499,6 +499,10 @@ div#ucf-help table.search-types td {
   z-index: 200;
 }
 
+.ui-dialog {
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.4);
+}
+
 div.ucf-chart-dialog {
   position: relative;
 }
