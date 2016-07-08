@@ -406,15 +406,16 @@
         },
 
         show_character_detail: function () {
+            var app = this;
             var cp = this.curr_cp;
             if(cp === null) {
                 return;
             }
-            var hex   = dec2hex(cp, 4);
             var block = this.block_from_codepoint(cp);
             var ch    = this.curr_ch;
             var gc    = this.gen_cat[ch.gc];
-            this.$char_link.attr('href', '?c=U+' + hex);
+            var u_cp  = 'U+' + dec2hex(cp, 4);
+            this.$char_link.attr('href', '?c=' + u_cp);
 
             var $table = $('<table />').append(
                 $('<tr />').append(
@@ -422,7 +423,12 @@
                     $('<td />').append(
                         $('<a />')
                             .addClass('cp-detail')
-                            .text('U+' + hex)
+                            .attr('href', 'https://codepoints.net/' + u_cp)
+                            .text(u_cp)
+                            .on('click', function(e) {
+                                e.preventDefault();
+                                app.show_codepoint_dialog();
+                            })
                     )
                 )
             );
@@ -1391,11 +1397,7 @@
         },
 
         build_char_details_pane: function () {
-            var app = this;
-            this.$char_info = $('<div class="char-info"></div>')
-                .on('click', '.cp-detail', function() {
-                    app.show_codepoint_dialog();
-                });
+            this.$char_info = $('<div class="char-info"></div>');
             return $('<div class="char-props"></div>').append(
                 $('<div class="char-props-label">Character<br />Properties</div>'),
                 this.$char_info
