@@ -406,7 +406,7 @@ div#ucf-help table.search-types td {
 .ucf-app .result-items li.selected,
 .ucf-app .result-items li:hover {
   border: 1px solid #fbcb09;
-  background: #fdf5ce url("jquery-ui-1.11.4.custom/images/ui-bg_glass_100_fdf5ce_1x400.png") 50% 50% repeat-x;
+  background: #fdf5ce url(images/ui-bg-glass.png) 50% 50% repeat-x;
   color: #c77405;
 }
 
