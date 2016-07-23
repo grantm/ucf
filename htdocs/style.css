@@ -161,7 +161,8 @@ div#ucf-help table.search-types td {
 }
 
 .ucf-app .search-wrap input.search {
-  width: 686px;
+  width: 100%;
+  box-sizing: border-box;
   font-size: 120%;
   padding: 5px;
 }
@@ -241,7 +242,7 @@ div#ucf-help table.search-types td {
   color: #333333;
   background-color: transparent;
   margin: 20px 25px 5px 25px;
-  width: 250px;
+  width: 248px;
   height: 160px;
   font-size: 130px;
   text-align: center;
@@ -278,10 +279,10 @@ div#ucf-help table.search-types td {
   font-weight: bold;
   color: #666666 !important;
   font-size: 12px;
-  padding: 0 0.6em 0 0;
+  padding: 0 0 0 0;
   margin-bottom: 6px;
   margin-right: 2px;
-  width: 83px;
+  width: 62px;
   height: 25px
 }
 
@@ -664,5 +665,84 @@ div.ucf-tab-help:hover {
   display: block;
   float: left;
   width: 8.5em;
+}
+
+.scratchpad {
+  margin: 1em 0;
+}
+
+.scratchpad .scratchpad-mode {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.scratchpad .scratchpad-mode li {
+  display: inline-block;
+  margin: 0;
+  padding: 0 0.5em 4px 0.5em;
+  float: right;
+}
+
+.scratchpad .scratchpad-mode input {
+  vertical-align: middle;
+  margin: 0 0.2em 0.2em 0;
+}
+
+.scratchpad textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  font-size: 20px;
+}
+
+.scratchpad .codepoints {
+  clear: both;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.5em;
+  border: 1px solid #cccccc;
+  border-radius: 3px;
+}
+
+.scratchpad.text-mode div.codepoints {
+  display: none;
+}
+
+.scratchpad.cp-mode textarea {
+  display: none;
+}
+
+
+.scratchpad .codepoints li {
+  display: inline-block;
+  list-style: none;
+  font-size: 24px;
+  margin: 4px;
+  background-color: #FFFFFF;
+  border: 1px solid #FF9B08;
+  border-radius: 3px;
+}
+
+.scratchpad .codepoints span {
+  display: block;
+  min-height: 40px;
+  box-sizing: border-box;
+  width: 100%;
+  text-align: center;
+  padding: 3px;
+}
+
+.scratchpad .codepoints li::after {
+  content: attr(data-cp);
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 2px 2px 0px;
+  text-align: center;
+  font-size: 11px;
+  line-height: 13px;
+  background-color: #FF9B08;
+  color: #FFFFFF;
 }
 

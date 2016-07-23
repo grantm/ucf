@@ -162,6 +162,7 @@
         html_entities:    [ ],
         unique_ids:       [ ],
         max_codepoint:    0,
+        scratchpad_mode:  'text',
 
         build_ui: function () {
             this.start_loading_splash(function() {
@@ -264,6 +265,7 @@
                 this.$form.addClass('empty');
                 this.$prev_char_btn.button('disable');
                 this.$next_char_btn.button('disable');
+                this.$add_char_btn.button('disable');
             }
             else if(ch.reserved) {
                 var str = ch.show ? codepoint_to_string(cp) : '';
@@ -274,6 +276,7 @@
                 this.$preview_input.val(codepoint_to_string(cp));
                 this.$prev_char_btn.button('enable');
                 this.$next_char_btn.button('enable');
+                this.$add_char_btn.button('enable');
             }
         },
 
@@ -506,6 +509,102 @@
                     });
                     this.$el.append($help_tab);
                 }
+            }
+        },
+
+        scratchpad_pane: function () {
+            var app = this;
+            this.$scratchpad_textarea = $('<textarea />');
+            this.$scratchpad_cp_list = $('<ul />')
+                .on('dblclick', 'li', function() {
+                    var cp_hex = $(this).attr('data-cp');
+                    app.select_codepoint(hex2dec(cp_hex));
+                })
+                .sortable({
+                    appendTo: document.body
+                });
+            this.$scratchpad = $('<div />').addClass("scratchpad text-mode")
+                .append(
+                    $('<ul />').addClass('scratchpad-mode').append(
+                        $('<li />').append(
+                            $('<label />').append(
+                                $('<input type="radio" name="scratchpad_mode" value="cp" />'),
+                                'Codepoints'
+                            )
+                        ).click(function() { app.toggle_scratchpad_mode('cp') }),
+                        $('<li />').append(
+                            $('<label />').append(
+                                $('<input type="radio" name="scratchpad_mode" value="text" checked />'),
+                                'Text'
+                            )
+                        ).click(function() { app.toggle_scratchpad_mode('text') })
+                    ),
+                    this.$scratchpad_textarea,
+                    $('<div />').addClass('codepoints').append(
+                        this.$scratchpad_cp_list
+                    )
+                );
+            return this.$scratchpad;
+        },
+
+        toggle_scratchpad_mode: function (new_mode) {
+            if(this.scratchpad_mode === new_mode) {
+                return;
+            }
+            if(new_mode === 'text') {
+                this.set_scratchpad_text_from_codepoints();
+                this.$scratchpad.removeClass('cp-mode').addClass('text-mode');
+            }
+            else {
+                this.set_scratchpad_codepoints_from_text();
+                this.$scratchpad.removeClass('text-mode').addClass('cp-mode');
+            }
+            this.scratchpad_mode = new_mode;
+        },
+
+        set_scratchpad_codepoints_from_text: function () {
+            this.$scratchpad_cp_list.empty();
+            var text = this.$scratchpad.find('textarea').val();
+            for(var i = 0; i < text.length; i++) {
+                var cp = string_to_codepoint(text.substr(i, 2));
+                if(cp >= 0xD800) {  // skip the 2nd half of a surrogate pair
+                    i++;
+                }
+                this.append_scratchpad_codepoint(cp);
+            }
+        },
+
+        set_scratchpad_text_from_codepoints: function () {
+            var text = '';
+            this.$scratchpad_cp_list.find('li span').each(function() {
+                text += $(this).text();
+            });
+            this.$scratchpad_textarea.val(text);
+        },
+
+        append_scratchpad_codepoint: function (cp) {
+            var hex_cp = dec2hex(cp, 4);
+            var ch = this.lookup_char(cp);
+            var $cp = $('<li />').attr('data-cp', hex_cp).append(
+                $('<span />').text(codepoint_to_string(cp))
+            );
+            if(ch && ch.description) {
+                $cp.attr('title', ch.description);
+            }
+            this.$scratchpad_cp_list.append($cp);
+        },
+
+        add_current_char_to_scratchpad: function () {
+            if(this.curr_cp === null) {
+                return;
+            }
+            if(this.scratchpad_mode === 'text') {
+                var text = this.$scratchpad_textarea.val()
+                         + codepoint_to_string(this.curr_cp);
+                this.$scratchpad_textarea.val(text);
+            }
+            else {
+                this.append_scratchpad_codepoint(this.curr_cp);
             }
         },
 
@@ -818,6 +917,7 @@
         add_form_elements: function () {
             this.$form = $('<form class="ucf-app empty" />').append(
                 this.char_info_pane(),
+                this.scratchpad_pane(),
                 this.char_search_field()
             ).submit(function(event) {
                 event.preventDefault();
@@ -864,13 +964,18 @@
             this.$char_menu_btn =
                 $('<button class="char-menu" title="Show code chart" />')
                     .text('Chart')
-                    .button({ icons: { primary: 'ui-icon-circle-triangle-s' } })
+                    .button({ icons: { primary: 'ui-icon-calculator' } })
                     .click(function() { app.display_chart_dialog(); });
             this.$next_char_btn =
                 $('<button class="char-next" title="Next character" />')
                     .text('Next')
                     .button({ icons: { primary: 'ui-icon-circle-triangle-e' } })
                     .click(function() { app.increment_code_point(1); });
+            this.$add_char_btn =
+                $('<button class="char-add" title="Add to scratchpad" />')
+                    .text('Add')
+                    .button({ icons: { primary: 'ui-icon-circle-arrow-s' } })
+                    .click(function() { app.add_current_char_to_scratchpad(); });
             this.$char_link =
                 $('<a class="char-link" title="Link to this character" />')
                     .html('&#167;')
@@ -879,6 +984,7 @@
                 this.$prev_char_btn,
                 this.$char_menu_btn,
                 this.$next_char_btn,
+                this.$add_char_btn,
                 this.$char_link
             );
         },
