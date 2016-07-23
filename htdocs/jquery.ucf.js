@@ -514,7 +514,7 @@
 
         scratchpad_pane: function () {
             var app = this;
-            this.$scratchpad_textarea = $('<textarea />');
+            this.$scratchpad_textarea = $('<textarea />').prop('spellcheck', false);
             this.$scratchpad_cp_list = $('<ul />')
                 .on('dblclick', 'li', function() {
                     var cp_hex = $(this).attr('data-cp');
