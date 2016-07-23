@@ -62,7 +62,7 @@ ul li {
   margin: 0.2em 0 0.2em 1.4em;
   padding: 0;
 }
-body .ui-state-default {
+body button.ui-button {
   color: #333333 !important;
 }
 
@@ -274,11 +274,11 @@ div#ucf-help table.search-types td {
   left: 25px;
 }
 
-.ucf-app .char-buttons button.ui-button.ui-state-default {
+.ucf-app .char-buttons button.ui-button {
   font-weight: bold;
   color: #666666 !important;
   font-size: 12px;
-  padding: 0 0 0 0;
+  padding: 0 0.6em 0 0;
   margin-bottom: 6px;
   margin-right: 2px;
   width: 83px;
@@ -532,6 +532,18 @@ div.ucf-chart-dialog select.ucf-block-menu {
 .ucf-chart-buttons button {
   float: right;
   margin-left: 4px;
+}
+
+button.ui-button {
+  padding: 0.4em 0.9em 0.4em 0.8em;
+}
+
+button.ui-button .ui-button-icon-space {
+  display: none;
+}
+
+button.ui-button .ui-button-icon {
+  margin-right: 0.2em;
 }
 
 .ucf-chart-buttons button.ui-button span.ui-button-icon-primary {
