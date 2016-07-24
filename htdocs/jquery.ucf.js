@@ -559,14 +559,25 @@
         },
 
         toggle_open_scratchpad: function () {
-            var $sp = this.$scratchpad_wrap
-            if($sp.hasClass('open')) {
-                $sp.removeClass('open');
-                $sp.find('.scratchpad').slideUp('fast');
+            if(this.$scratchpad_wrap.hasClass('open')) {
+                this.close_scratchpad();
             }
             else {
-                $sp.addClass('open');
-                $sp.find('.scratchpad').slideDown('fast');
+                this.open_scratchpad();
+            }
+        },
+
+        open_scratchpad: function () {
+            if(!this.$scratchpad_wrap.hasClass('open')) {
+                this.$scratchpad_wrap.addClass('open')
+                    .find('.scratchpad').slideDown('fast');
+            }
+        },
+
+        close_scratchpad: function () {
+            if(this.$scratchpad_wrap.hasClass('open')) {
+                this.$scratchpad_wrap.removeClass('open')
+                    .find('.scratchpad').slideUp('fast');
             }
         },
 
@@ -618,6 +629,7 @@
         },
 
         add_current_char_to_scratchpad: function () {
+            this.open_scratchpad();
             if(this.curr_cp === null) {
                 return;
             }
