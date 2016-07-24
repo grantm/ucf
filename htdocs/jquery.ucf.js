@@ -522,14 +522,19 @@
             this.$scratchpad_textarea = $('<textarea />')
                 .addClass('needs-font')
                 .prop('placeholder', 'Add characters here to save them for later')
-                .prop('spellcheck', false);
+                .prop('spellcheck', false)
+                .val(localStorage.ucf_scratchpad || '')
+                .on('change', function () {
+                    localStorage.ucf_scratchpad = $(this).val();
+                });
             this.$scratchpad_cp_list = $('<ul />')
                 .on('dblclick', 'li', function() {
                     var cp_hex = $(this).attr('data-cp');
                     app.select_codepoint(hex2dec(cp_hex));
                 })
                 .sortable({
-                    appendTo: document.body
+                    appendTo: document.body,
+                    update: function () { app.set_scratchpad_text_from_codepoints(); }
                 });
             this.$scratchpad_wrap = $('<div />').addClass('scratchpad-wrap text-mode').append(
                 $('<div />').addClass('scratchpad').append(
@@ -614,7 +619,7 @@
             this.$scratchpad_cp_list.find('li span').each(function() {
                 text += $(this).text();
             });
-            this.$scratchpad_textarea.val(text);
+            this.$scratchpad_textarea.val(text).change();
         },
 
         append_scratchpad_codepoint: function (cp) {
@@ -644,10 +649,11 @@
             if(this.scratchpad_mode === 'text') {
                 var text = this.$scratchpad_textarea.val()
                          + codepoint_to_string(this.curr_cp);
-                this.$scratchpad_textarea.val(text);
+                this.$scratchpad_textarea.val(text).change();
             }
             else {
                 this.append_scratchpad_codepoint(this.curr_cp);
+                this.set_scratchpad_text_from_codepoints();
             }
         },
 
