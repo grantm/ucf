@@ -137,6 +137,7 @@ div#ucf-help table.search-types td {
 
 .ucf-app .search-wrap {
   margin: 0 0 1.6em 0;
+  padding: 30px 0 0 0;
   position: relative;
   clear: both;
   z-index: 1;
@@ -145,7 +146,7 @@ div#ucf-help table.search-types td {
 .ucf-app .search-wrap .search-reset {
   position: absolute;
   right: 2px;
-  top: 1.3em;
+  top: 54px;
   padding: 6px 8px;
   font-weight: bold;
   cursor: pointer;
@@ -184,7 +185,7 @@ div#ucf-help table.search-types td {
   background-color: #eeeeee;
   float: left;
   width: 100%;
-  margin: 0 0 30px 0;
+  margin: 0;
   z-index: 2;
 }
 
@@ -667,14 +668,60 @@ div.ucf-tab-help:hover {
   width: 8.5em;
 }
 
+.scratchpad-wrap {
+  position: relative;
+  float: left;
+  width: 100%;
+  margin: 0;
+}
+
+.scratchpad-wrap .handle {
+  display: block;
+  position: absolute;
+  right: 26px;
+  z-index: 2;
+  background-image: linear-gradient( 180deg, #C8CCC8, #eeeeee 40%);
+  color: #bbbbbb;
+  padding: 1px 10px 4px 10px;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  font-family: Liberation Sans, Arial, sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.scratchpad-wrap .handle:hover {
+  color: #FF9B08;
+  padding-top: 8px;
+  text-decoration: none;
+}
+
+.scratchpad-wrap .handle::after {
+  content: '\25BC';
+}
+
+.scratchpad-wrap.open .handle::after {
+  content: '\25B2';
+}
+
 .scratchpad {
-  margin: 1em 0;
+  display: none;
+  padding: 0 8px 8px 8px;
+  background-color: #eeeeee;
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+  overflow: hidden;
+  max-height: auto;
 }
 
 .scratchpad .scratchpad-mode {
   list-style: none;
   margin: 0;
   padding: 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #666666;
 }
 
 .scratchpad .scratchpad-mode li {
@@ -686,7 +733,7 @@ div.ucf-tab-help:hover {
 
 .scratchpad .scratchpad-mode input {
   vertical-align: middle;
-  margin: 0 0.2em 0.2em 0;
+  margin: 0 0.2em 0.1em 0;
 }
 
 .scratchpad textarea {
@@ -694,22 +741,24 @@ div.ucf-tab-help:hover {
   box-sizing: border-box;
   resize: vertical;
   font-size: 20px;
+  min-height: 60px;
 }
 
 .scratchpad .codepoints {
   clear: both;
   width: 100%;
   box-sizing: border-box;
+  min-height: 60px;
   padding: 0.5em;
   border: 1px solid #cccccc;
   border-radius: 3px;
 }
 
-.scratchpad.text-mode div.codepoints {
+.scratchpad-wrap.text-mode div.codepoints {
   display: none;
 }
 
-.scratchpad.cp-mode textarea {
+.scratchpad-wrap.cp-mode textarea {
   display: none;
 }
 

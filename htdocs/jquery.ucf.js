@@ -523,9 +523,9 @@
                 .sortable({
                     appendTo: document.body
                 });
-            this.$scratchpad = $('<div />').addClass("scratchpad text-mode")
-                .append(
-                    $('<ul />').addClass('scratchpad-mode').append(
+            this.$scratchpad_wrap = $('<div />').addClass('scratchpad-wrap text-mode').append(
+                $('<div />').addClass('scratchpad').append(
+                    $('<ul />').addClass('scratchpad-mode ui-widget').append(
                         $('<li />').append(
                             $('<label />').append(
                                 $('<input type="radio" name="scratchpad_mode" value="cp" />'),
@@ -543,8 +543,24 @@
                     $('<div />').addClass('codepoints').append(
                         this.$scratchpad_cp_list
                     )
-                );
-            return this.$scratchpad;
+                ),
+                $('<a />').addClass('handle').text('Scratchpad').click(function () {
+                    app.toggle_open_scratchpad();
+                })
+            );
+            return this.$scratchpad_wrap;
+        },
+
+        toggle_open_scratchpad: function () {
+            var $sp = this.$scratchpad_wrap
+            if($sp.hasClass('open')) {
+                $sp.removeClass('open');
+                $sp.find('.scratchpad').slideUp('fast');
+            }
+            else {
+                $sp.addClass('open');
+                $sp.find('.scratchpad').slideDown('fast');
+            }
         },
 
         toggle_scratchpad_mode: function (new_mode) {
@@ -553,18 +569,18 @@
             }
             if(new_mode === 'text') {
                 this.set_scratchpad_text_from_codepoints();
-                this.$scratchpad.removeClass('cp-mode').addClass('text-mode');
+                this.$scratchpad_wrap.removeClass('cp-mode').addClass('text-mode');
             }
             else {
                 this.set_scratchpad_codepoints_from_text();
-                this.$scratchpad.removeClass('text-mode').addClass('cp-mode');
+                this.$scratchpad_wrap.removeClass('text-mode').addClass('cp-mode');
             }
             this.scratchpad_mode = new_mode;
         },
 
         set_scratchpad_codepoints_from_text: function () {
             this.$scratchpad_cp_list.empty();
-            var text = this.$scratchpad.find('textarea').val();
+            var text = this.$scratchpad_textarea.val();
             for(var i = 0; i < text.length; i++) {
                 var cp = string_to_codepoint(text.substr(i, 2));
                 if(cp >= 0xD800) {  // skip the 2nd half of a surrogate pair
