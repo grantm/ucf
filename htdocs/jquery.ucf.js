@@ -267,16 +267,21 @@
                 this.$next_char_btn.button('disable');
                 this.$add_char_btn.button('disable');
             }
-            else if(ch.reserved) {
-                var str = ch.show ? codepoint_to_string(cp) : '';
-                this.$preview_input.val(str);
-                this.$preview_input.addClass(ch.reserved);
-            }
             else {
-                this.$preview_input.val(codepoint_to_string(cp));
                 this.$prev_char_btn.button('enable');
                 this.$next_char_btn.button('enable');
                 this.$add_char_btn.button('enable');
+                if(ch.reserved) {
+                    var str = ch.show ? codepoint_to_string(cp) : '';
+                    this.$preview_input.val(str);
+                    this.$preview_input.addClass(ch.reserved);
+                    if(!ch.show) {
+                        this.$add_char_btn.button('disable');
+                    }
+                }
+                else {
+                    this.$preview_input.val(codepoint_to_string(cp));
+                }
             }
         },
 
