@@ -624,7 +624,14 @@
                 $('<span />').text(codepoint_to_string(cp))
             );
             if(ch && ch.description) {
-                $cp.attr('title', ch.description);
+                var title = ch.description;
+                if(ch.alias) {
+                    title += ' ' + ch.alias;
+                }
+                if(title.length > 30) {
+                    title = title.substr(0, 60).replace(/( \S+)?$/, '\u2026');
+                }
+                $cp.attr('title', title);
             }
             this.$scratchpad_cp_list.append($cp);
         },
