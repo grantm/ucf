@@ -521,6 +521,7 @@
             var app = this;
             this.$scratchpad_textarea = $('<textarea />')
                 .addClass('needs-font')
+                .prop('placeholder', 'Add characters here to save them for later')
                 .prop('spellcheck', false);
             this.$scratchpad_cp_list = $('<ul />')
                 .on('dblclick', 'li', function() {
