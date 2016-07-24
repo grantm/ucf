@@ -514,7 +514,9 @@
 
         scratchpad_pane: function () {
             var app = this;
-            this.$scratchpad_textarea = $('<textarea />').prop('spellcheck', false);
+            this.$scratchpad_textarea = $('<textarea />')
+                .addClass('needs-font')
+                .prop('spellcheck', false);
             this.$scratchpad_cp_list = $('<ul />')
                 .on('dblclick', 'li', function() {
                     var cp_hex = $(this).attr('data-cp');
@@ -540,7 +542,7 @@
                         ).click(function() { app.toggle_scratchpad_mode('text') })
                     ),
                     this.$scratchpad_textarea,
-                    $('<div />').addClass('codepoints').append(
+                    $('<div />').addClass('codepoints needs-font').append(
                         this.$scratchpad_cp_list
                     )
                 ),
