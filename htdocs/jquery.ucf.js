@@ -575,6 +575,10 @@
 
         open_scratchpad: function () {
             if(!this.$scratchpad_wrap.hasClass('open')) {
+                if(this.scratchpad_mode === 'text') {
+                    // sync state with UI after browser tab restore
+                    this.$scratchpad_wrap.find('input[name=scratchpad_mode][value=text]').prop('checked', true);
+                }
                 this.$scratchpad_wrap.addClass('open')
                     .find('.scratchpad').slideDown('fast');
             }
