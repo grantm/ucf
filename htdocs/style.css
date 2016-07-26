@@ -773,7 +773,7 @@ div.ucf-tab-help:hover {
   border-radius: 3px;
 }
 
-.scratchpad .codepoints span {
+.scratchpad .codepoints li > span {
   display: block;
   min-height: 40px;
   box-sizing: border-box;
