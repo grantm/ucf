@@ -556,6 +556,7 @@
             this.$scratchpad_wrap = $('<div />').addClass('scratchpad-wrap text-mode').append(
                 $('<div />').addClass('scratchpad').append(
                     $('<ul />').addClass('scratchpad-mode ui-widget').append(
+                        this.build_scratchpad_menu(),
                         $('<li />').append(
                             $('<label />').append(
                                 $('<input type="radio" name="scratchpad_mode" value="cp" />'),
@@ -579,6 +580,61 @@
                 })
             );
             return this.$scratchpad_wrap;
+        },
+
+        build_scratchpad_menu: function () {
+            var app = this;
+            var menu_button = $('<li />').append(
+                $('<button />').addClass('menu-button').text('\u2630')
+            );
+
+            var $menu = $('<ul />')
+                .addClass('scratchpad-menu')
+                .append(
+                    $('<li />').text('Clear scratchpad').data('item', 'clear'),
+                    $('<li />').text('Normalise to NFC (Composed)').data('item', 'to_nfc'),
+                    $('<li />').text('Normalise to NFD (Decomposed)').data('item', 'to_nfd')
+                )
+                .menu({
+                    select: function(e, ui) {
+                        $menu.hide();
+                        var method = 'scratchpad_menu_' + ui.item.data('item');
+                        if(app[method]) {
+                            app[method].apply(app);
+                        }
+                    }
+                }).hide();
+            $('body').append($menu).on('click', function() { $menu.hide();} );
+
+            return menu_button.on('click', function(e) {
+                e.stopPropagation();
+                $menu.show().position(
+                    { my: "right top", at: "right botton", of: menu_button}
+                );
+            });
+        },
+
+        scratchpad_menu_clear: function () {
+            this.$scratchpad_textarea.val('').change();
+            if(this.scratchpad_mode === 'cp') {
+                this.set_scratchpad_codepoints_from_text();
+            }
+        },
+
+        scratchpad_menu_to_nfc: function () {
+            var text = this.$scratchpad_textarea.val().normalize('NFC');
+            this.$scratchpad_textarea.val(text);
+            if(this.scratchpad_mode === 'cp') {
+                this.set_scratchpad_codepoints_from_text();
+            }
+        },
+
+        scratchpad_menu_to_nfd: function () {
+            var text = this.$scratchpad_textarea.val().normalize('NFD');
+            this.$scratchpad_textarea.val(text);
+            if(this.scratchpad_mode === 'cp') {
+                this.set_scratchpad_codepoints_from_text();
+            }
         },
 
         toggle_open_scratchpad: function () {

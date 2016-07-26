@@ -724,7 +724,7 @@ div.ucf-tab-help:hover {
   color: #666666;
 }
 
-.scratchpad .scratchpad-mode li {
+.scratchpad .scratchpad-mode > li {
   display: inline-block;
   margin: 0;
   padding: 0 0.5em 4px 0.5em;
@@ -734,6 +734,29 @@ div.ucf-tab-help:hover {
 .scratchpad .scratchpad-mode input {
   vertical-align: middle;
   margin: 0 0.2em 0.1em 0;
+}
+
+.scratchpad .menu-button {
+  padding: 0;
+}
+
+.scratchpad .menu-button:focus {
+  outline: none;
+}
+
+.scratchpad-menu.ui-menu {
+  display: inline-block;
+}
+
+.scratchpad-menu li {
+  padding: 2px 4px;
+  border: 1px solid transparent;
+}
+
+.scratchpad-menu li:hover {
+  color: #c77405;
+  background-color: #fdf5ce;
+  border: 1px solid #fbcb09;
 }
 
 .scratchpad textarea {
