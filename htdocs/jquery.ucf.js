@@ -143,6 +143,19 @@
         return "unknown";
     }
 
+    function check_local_storage() {
+        try {
+            var storage = window.localStorage;
+            var test = '__storage_test__';
+            storage.setItem(test, test);
+            storage.removeItem(test);
+            return true;
+        }
+        catch(e) {
+            return false;
+        }
+    }
+
 
     /* UnicodeCharacterFinder Class Definition
      * ======================================= */
@@ -163,6 +176,7 @@
         unique_ids:       [ ],
         max_codepoint:    0,
         scratchpad_mode:  'text',
+        local_storage_available: check_local_storage(),
 
         build_ui: function () {
             this.start_loading_splash(function() {
@@ -522,11 +536,14 @@
             this.$scratchpad_textarea = $('<textarea />')
                 .addClass('needs-font')
                 .prop('placeholder', 'Add characters here to save them for later')
-                .prop('spellcheck', false)
-                .val(localStorage.ucf_scratchpad || '')
-                .on('change', function () {
-                    localStorage.ucf_scratchpad = $(this).val();
-                });
+                .prop('spellcheck', false);
+            if(this.local_storage_available) {
+                this.$scratchpad_textarea
+                    .val(window.localStorage.ucf_scratchpad || '')
+                    .on('change', function () {
+                        window.localStorage.ucf_scratchpad = $(this).val();
+                    });
+            }
             this.$scratchpad_cp_list = $('<ul />')
                 .on('dblclick', 'li', function() {
                     var cp_hex = $(this).attr('data-cp');
