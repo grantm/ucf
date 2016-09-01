@@ -792,6 +792,11 @@
                     app.find_more_results();
                 })
             );
+            $(window).on('scroll', function() {
+                if(app.scroll_trigger_point && $(document).scrollTop() > app.scroll_trigger_point) {
+                    app.find_more_results();
+                }
+            });
             return $div;
         },
 
@@ -908,7 +913,8 @@
                 return;
             }
             this.set_search_state('searching');
-            for(var i = 0; i < 10; i++) {
+            var max_height = $(document).height() + $(window).height() - this.opt.scroll_trigger_zone * 2;
+            for(var i = 0; i < 30; i++) {
                 var ch = this.next_match();
                 if(!ch) {
                     break;
@@ -931,7 +937,11 @@
                             $desc
                         )
                 );
+                if($(document).height() >= max_height) {
+                    break;
+                }
             }
+            this.scroll_trigger_point = $(document).height() - $(window).height() - this.opt.scroll_trigger_zone;
             if(this.search.done) {
                 this.set_search_state('complete');
             }
@@ -1535,6 +1545,7 @@
         title:                'Unicode Character Finder',
         search_delay:         800,
         data_file_no_unihan:  'char-data-nounihan.txt',
+        scroll_trigger_zone:  20,
         font_list:            [
             'Aegean', 'Aegyptus', 'Agency FB', 'Agency FB Bold', 'Algerian',
             'Andale Mono', 'Arial', 'Arial Black', 'Arial Narrow',

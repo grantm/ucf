@@ -23,6 +23,7 @@ html, body {
   background-color: #000000;
   font-size: 12px;
   line-height: 150%;
+  border-bottom: 30px solid #000000;
 }
 
 .footer a {
