@@ -797,7 +797,14 @@
                     app.find_more_results();
                 }
             });
+            $(window).on('resize', function() {
+                app.set_scroll_trigger();
+            });
             return $div;
+        },
+
+        set_scroll_trigger: function () {
+            this.scroll_trigger_point = $(document).height() - $(window).height() - this.opt.scroll_trigger_zone;
         },
 
         init_search_input: function () {
@@ -941,7 +948,7 @@
                     break;
                 }
             }
-            this.scroll_trigger_point = $(document).height() - $(window).height() - this.opt.scroll_trigger_zone;
+            this.set_scroll_trigger();
             if(this.search.done) {
                 this.set_search_state('complete');
             }
