@@ -684,7 +684,7 @@
             var text = this.$scratchpad_textarea.val();
             for(var i = 0; i < text.length; i++) {
                 var cp = string_to_codepoint(text.substr(i, 2));
-                if(cp >= 0xD800) {  // skip the 2nd half of a surrogate pair
+                if((text.charCodeAt(i) & 0xF800) === 0xD800) {  // skip the 2nd half of a surrogate pair
                     i++;
                 }
                 this.append_scratchpad_codepoint(cp);
