@@ -671,7 +671,7 @@ The '[' lines do not include or imply an offset.
 
 =head1 AUTHOR AND COPYRIGHT
 
-Copyright (c) 2010-2015 Grant McLean <grant@mclean.net.nz>
+Copyright (c) 2010-2017 Grant McLean <grant@mclean.net.nz>
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU Affero General Public License as published by the Free
