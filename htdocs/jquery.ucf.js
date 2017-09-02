@@ -603,19 +603,19 @@
             this.$scratchpad_wrap = $('<div />').addClass('scratchpad-wrap text-mode').append(
                 $('<div />').addClass('scratchpad').append(
                     $('<ul />').addClass('scratchpad-mode ui-widget').append(
-                        this.build_scratchpad_menu(),
+                        $('<li />').append(
+                            $('<label />').append(
+                                $('<input type="radio" name="scratchpad_mode" value="text" checked />'),
+                                'Text'
+                            )
+                        ).click(function() { app.toggle_scratchpad_mode('text') }),
                         $('<li />').append(
                             $('<label />').append(
                                 $('<input type="radio" name="scratchpad_mode" value="cp" />'),
                                 'Codepoints'
                             )
                         ).click(function() { app.toggle_scratchpad_mode('cp') }),
-                        $('<li />').append(
-                            $('<label />').append(
-                                $('<input type="radio" name="scratchpad_mode" value="text" checked />'),
-                                'Text'
-                            )
-                        ).click(function() { app.toggle_scratchpad_mode('text') })
+                        this.build_scratchpad_menu()
                     ),
                     this.$scratchpad_textarea,
                     $('<div />').addClass('codepoints needs-font').append(

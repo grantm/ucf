@@ -187,6 +187,7 @@ div#ucf-help table.search-types td {
   float: left;
   width: 100%;
   margin: 0;
+  padding: 0 0 4px 0;
   z-index: 2;
 }
 
@@ -243,7 +244,7 @@ div#ucf-help table.search-types td {
   z-index: 2;
   color: #333333;
   background-color: transparent;
-  margin: 20px 25px 5px 25px;
+  margin: 20px 25px 5px 16px;
   width: 248px;
   height: 180px;
   font-size: 130px;
@@ -274,7 +275,7 @@ div#ucf-help table.search-types td {
 
 .ucf-app .char-buttons {
   position: relative;
-  left: 25px;
+  left: 16px;
 }
 
 .ucf-app .char-buttons button.ui-button {
@@ -708,7 +709,7 @@ div.ucf-tab-help:hover {
 
 .scratchpad {
   display: none;
-  padding: 0 8px 8px 8px;
+  padding: 0 16px 16px 16px;
   background-color: #eeeeee;
   border-bottom-left-radius: 6px;
   border-bottom-right-radius: 6px;
@@ -720,6 +721,7 @@ div.ucf-tab-help:hover {
   list-style: none;
   margin: 0;
   padding: 0;
+  text-align: right;
   font-size: 14px;
   font-weight: bold;
   color: #666666;
@@ -727,9 +729,13 @@ div.ucf-tab-help:hover {
 
 .scratchpad .scratchpad-mode > li {
   display: inline-block;
+  vertical-align: middle;
   margin: 0;
   padding: 0 0.5em 4px 0.5em;
-  float: right;
+}
+
+.scratchpad .scratchpad-mode > li:last-child {
+  padding-right: 0;
 }
 
 .scratchpad .scratchpad-mode input {
