@@ -42,13 +42,16 @@
         return parseInt(hex, 16);
     }
 
-    function codepoint_to_string(cp) {
+    function codepoint_to_string(cp, base_char) {
+        if(!base_char) {
+            base_char = '';
+        }
         if(cp < 65536) {
-            return String.fromCharCode(cp);
+            return base_char + String.fromCharCode(cp);
         }
         var hi = Math.floor((cp - 0x10000) / 0x400) + 0xD800;
         var lo = ((cp - 0x10000) % 0x400) + 0xDC00;
-        return String.fromCharCode(hi) + String.fromCharCode(lo);
+        return base_char + String.fromCharCode(hi) + String.fromCharCode(lo);
     }
 
     function string_to_codepoint(str) {
@@ -294,7 +297,9 @@
                     }
                 }
                 else {
-                    this.$preview_input.val(codepoint_to_string(cp));
+                    var base_char = ch.is_cc ? this.opt.combining_base_char : '';
+                    var text = codepoint_to_string(cp, base_char);
+                    this.$preview_input.val(text);
                 }
             }
         },
@@ -693,8 +698,13 @@
 
         set_scratchpad_text_from_codepoints: function () {
             var text = '';
-            this.$scratchpad_cp_list.find('li span').each(function() {
-                text += $(this).text();
+            this.$scratchpad_cp_list.find('li span').each(function(i, el) {
+                var $el = $(el);
+                var char_text = $el.text();
+                if($el.parent().hasClass('combining-char')) {
+                    char_text = char_text.slice(1);
+                }
+                text += char_text;
             });
             this.$scratchpad_textarea.val(text).change();
         },
@@ -702,9 +712,14 @@
         append_scratchpad_codepoint: function (cp) {
             var hex_cp = dec2hex(cp, 4);
             var ch = this.lookup_char(cp);
+            var base_char = ch.is_cc ? this.opt.combining_base_char : '';
+            var text = codepoint_to_string(cp, base_char);
             var $cp = $('<li />').attr('data-cp', hex_cp).append(
-                $('<span />').text(codepoint_to_string(cp))
+                $('<span />').text(text)
             );
+            if(ch.is_cc) {
+                $cp.addClass('combining-char');
+            }
             if(ch && ch.description) {
                 var title = ch.description;
                 if(ch.alias) {
@@ -1397,7 +1412,7 @@
                 }
 
                 // [ line describes a block
-                else if(line.match(/^\[/)) {
+                else if(line[0] === '[') {
                     field[0] = field[0].replace(/^\[/, '');
                     block = {
                         'start'    : field[0],
@@ -1435,10 +1450,17 @@
 
                         // " line describes a character
                         case '"':
+                            // Initial letter of desc will be lowercase if it's a combining char
+                            var desc = field[0];
+                            var is_cc = desc[0] === desc[0].toLowerCase();
+                            desc = desc.replace(/^./, desc[0].toUpperCase());
                             this.code_chart[code] = {
-                                description:  field[0],
+                                description:  desc,
                                 cp:           curr_cp
                             };
+                            if(is_cc) {
+                                this.code_chart[code].is_cc = true;
+                            }
                             if(field[1] && field[1].match(/^&(\w+);/)) {
                                 var ent_name = RegExp.$1;
                                 this.html_entities.push({
@@ -1520,12 +1542,12 @@
             handler.call(this);
         },
 
-        block_from_codepoint: function (code) {
+        block_from_codepoint: function (cp) {
             for(var i = 0; i < this.code_blocks.length; i++) {
-                if(code > this.code_blocks[i].end_dec){
+                if(cp > this.code_blocks[i].end_dec){
                     continue;
                 }
-                if(code < this.code_blocks[i].start_dec){
+                if(cp < this.code_blocks[i].start_dec){
                     return null;
                 }
                 return this.code_blocks[i];
@@ -1553,6 +1575,7 @@
         search_delay:         800,
         data_file_no_unihan:  'char-data-nounihan.txt',
         scroll_trigger_zone:  20,
+        combining_base_char:  '\u25cc',
         font_list:            [
             'Aegean', 'Aegyptus', 'Agency FB', 'Agency FB Bold', 'Algerian',
             'Andale Mono', 'Arial', 'Arial Black', 'Arial Narrow',

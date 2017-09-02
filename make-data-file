@@ -182,6 +182,7 @@ sub new {
     return bless {
         @_,
         last_code_point => 0,
+        group_attr      => {},
     }, $class;
 }
 
@@ -265,6 +266,12 @@ sub is_control_char {
     return $self->group_is_control_char;
 }
 
+sub group_attr {
+    my $self = shift;
+    $self->{group_attr} = shift if @_;
+    return $self->{group_attr};
+}
+
 sub char_attr {
     my $self = shift;
     $self->{char_attr} = shift if @_;
@@ -337,9 +344,15 @@ sub characters {
 sub start_element_group {
     my($self, $data) = @_;
     my $attr = $self->_attr($data);
+    $self->group_attr($attr);
     $self->group_is_control_char(($attr->{gc} // '') eq 'Cc' ? 1 : 0);
     $self->group_name_template($attr->{na});
     $self->group_is_pua(($attr->{blk} // '') =~ /PUA/ ? 1 : 0);
+}
+
+sub end_element_group {
+    my($self) = @_;
+    $self->group_attr({});
 }
 
 sub start_element_char {
@@ -438,6 +451,17 @@ sub end_element_char {
     }
     $aliases = "\t" . $aliases if $aliases ne '';
     my $prefix = $name =~ /^[+"%#^*!\[&]/ ? '"' : '';
+
+    # If it's a combining character, make first letter of name lowercase
+    my $gc = $attr->{gc} // $self->group_attr->{gc} // '';
+    my $ccc = $attr->{ccc} // $self->group_attr->{ccc};
+    if($gc eq 'Me' or ($ccc and $ccc ne '0')) {
+        $name =~ s{^(.)}{ lc($1) }e;
+    }
+    else {
+        $name =~ s{^(.)}{ uc($1) }e;
+    }
+
     $self->output("$offset$prefix$name$aliases");
     if(my $target = $self->{char}) {
         return unless $attr->{cp} eq $target;
@@ -577,7 +601,8 @@ are:
 
 =item *
 
-description
+description (note: descriptions seem to always be upper case, but we for the
+initial letter to lower case to flag combining characters)
 
 =item *
 

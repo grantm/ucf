@@ -786,7 +786,6 @@ div.ucf-tab-help:hover {
   display: none;
 }
 
-
 .scratchpad .codepoints li {
   display: inline-block;
   list-style: none;
@@ -795,6 +794,10 @@ div.ucf-tab-help:hover {
   background-color: #FFFFFF;
   border: 1px solid #FF9B08;
   border-radius: 3px;
+}
+
+.scratchpad .codepoints li.combining-char {
+  background-color: #FFE6C1;
 }
 
 .scratchpad .codepoints li > span {
