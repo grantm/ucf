@@ -245,7 +245,7 @@ div#ucf-help table.search-types td {
   background-color: transparent;
   margin: 20px 25px 5px 25px;
   width: 248px;
-  height: 160px;
+  height: 180px;
   font-size: 130px;
   text-align: center;
   border: 2px solid #bbbbbb;
@@ -356,8 +356,8 @@ div#ucf-help table.search-types td {
 }
 
 .ucf-app .char-info table {
-  margin: 22px 0 0 0;
-  width: 375px;
+  margin: 16px 0 16px 0;
+  width: 388px;
   border-collapse: collapse;
   font-size: 14px;
   color: #333333;
@@ -381,7 +381,7 @@ div#ucf-help table.search-types td {
 }
 
 .ucf-app .char-info table td {
-  width: 236px;
+  width: 250px;
   background-color: #fcfcfc;
   padding-left: 8px;
 }

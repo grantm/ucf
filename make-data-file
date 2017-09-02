@@ -13,6 +13,9 @@
 # Use --help option for info on command line options and details of the output
 # file format.
 #
+# The list of 'General Category' details is hardcoded in the JS frontend, so
+# we parse it out from there to ensure both ends are in sync.
+#
 
 use 5.014;
 use strict;
@@ -39,6 +42,7 @@ my $source_file_all       = 'ucd.all.grouped.zip';
 my $output_file_nounihan  = $FindBin::Bin . '/htdocs/char-data-nounihan.txt';
 my $output_file_all       = $FindBin::Bin . '/htdocs/char-data-all.txt';
 
+my $js_frontend_source    = $FindBin::Bin . '/htdocs/jquery.ucf.js';
 
 # Handle command-line arguments
 
@@ -80,6 +84,8 @@ sub translate_data {
     $args{entity_map} = load_entities_files();
 
     my $handler = UCFHandler->new(%args);
+    $handler->load_general_categories($js_frontend_source);
+
     my $parser  = XML::SAX::ParserFactory->parser(Handler => $handler);
 
     $parser->parse_string($$xml_ref);
@@ -184,6 +190,40 @@ sub new {
         last_code_point => 0,
         group_attr      => {},
     }, $class;
+}
+
+sub load_general_categories {
+    my($self, $js_file) = @_;
+
+    # Open JS file and seek to the relevant section
+    open my $fh, '<', $js_file;
+    $_ = '';
+    $_ = <$fh> until /var general_categories_spec/;
+
+    my $i = 0;
+    my %gen_cat;
+    while(<$fh>) {
+        last unless /\S/;   # Bail out of first blank line
+        my($line) = $_ =~ m{"([^"]+)\\n"} or next;
+        my($code, $category, $extra) = split /\s+=>\s+/, $line or next;
+        $gen_cat{$code} = {
+            category  => $category,
+            extra     => $extra,
+            code      => chr( ord('0') + $i++),
+        };
+    }
+    $self->{gen_cat} = \%gen_cat;
+}
+
+sub general_category_code {
+    my($self, $attr) = @_;
+    my $gc = $attr->{gc} // $self->group_attr->{gc}
+        // die "No 'gc' for U+$attr->{cp}";
+    my $cat = $self->{gen_cat}->{$gc}
+        // die "General category code '$gc' is not yet supported";
+    my $code = '<' . $cat->{code};
+    return '' if(($self->{last_gc_code} // '') eq $code);
+    return $self->{last_gc_code} = $code;
 }
 
 sub output {
@@ -453,7 +493,9 @@ sub end_element_char {
     my $prefix = $name =~ /^[+"%#^*!\[&]/ ? '"' : '';
 
     # If it's a combining character, make first letter of name lowercase
+    my $gc_code = $self->general_category_code($attr);
     my $gc = $attr->{gc} // $self->group_attr->{gc} // '';
+    die "No 'gc' for U+$cp" unless $gc;
     my $ccc = $attr->{ccc} // $self->group_attr->{ccc};
     if($gc eq 'Me' or ($ccc and $ccc ne '0')) {
         $name =~ s{^(.)}{ lc($1) }e;
@@ -462,7 +504,7 @@ sub end_element_char {
         $name =~ s{^(.)}{ uc($1) }e;
     }
 
-    $self->output("$offset$prefix$name$aliases");
+    $self->output("$offset$prefix$gc_code$name$aliases");
     if(my $target = $self->{char}) {
         return unless $attr->{cp} eq $target;
         print "$cp\t$name$aliases\n";
@@ -601,8 +643,10 @@ are:
 
 =item *
 
-description (note: descriptions seem to always be upper case, but we for the
-initial letter to lower case to flag combining characters)
+description (may be prefixed with '<x' where 'x' is an index for the general
+category of this and following characters; note also: descriptions seem to
+always be upper case, but we force the initial letter to lower case to flag
+combining characters)
 
 =item *
 

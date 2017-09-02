@@ -28,6 +28,38 @@
         Enter:      13
     };
 
+    var general_categories_spec = ''
+        + "Lu => Uppercase_Letter      => an uppercase letter\n"
+        + "Ll => Lowercase_Letter      => a lowercase letter\n"
+        + "Lt => Titlecase_Letter      => a digraphic character, with first part uppercase\n"
+        + "Lm => Modifier_Letter       => a modifier letter\n"
+        + "Lo => Other_Letter          => other letters, including syllables and ideographs\n"
+        + "Mn => Nonspacing_Mark       => a nonspacing combining mark (zero advance width)\n"
+        + "Mc => Spacing_Mark          => a spacing combining mark (positive advance width)\n"
+        + "Me => Enclosing_Mark        => an enclosing combining mark\n"
+        + "Nd => Decimal_Number        => a decimal digit\n"
+        + "Nl => Letter_Number         => a letterlike numeric character\n"
+        + "No => Other_Number          => a numeric character of other type\n"
+        + "Pc => Connector_Punctuation => a connecting punctuation mark, like a tie\n"
+        + "Pd => Dash_Punctuation      => a dash or hyphen punctuation mark\n"
+        + "Ps => Open_Punctuation      => an opening punctuation mark (of a pair)\n"
+        + "Pe => Close_Punctuation     => a closing punctuation mark (of a pair)\n"
+        + "Pi => Initial_Punctuation   => an initial quotation mark\n"
+        + "Pf => Final_Punctuation     => a final quotation mark\n"
+        + "Po => Other_Punctuation     => a punctuation mark of other type\n"
+        + "Sm => Math_Symbol           => a symbol of mathematical use\n"
+        + "Sc => Currency_Symbol       => a currency sign\n"
+        + "Sk => Modifier_Symbol       => a non-letterlike modifier symbol\n"
+        + "So => Other_Symbol          => a symbol of other type\n"
+        + "Zs => Space_Separator       => a space character (of various non-zero widths)\n"
+        + "Zl => Line_Separator        => U+2028 LINE SEPARATOR only\n"
+        + "Zp => Paragraph_Separator   => U+2029 PARAGRAPH SEPARATOR only\n"
+        + "Cc => Control               => a C0 or C1 control code\n"
+        + "Cf => Format                => a format control character\n"
+        + "Cs => Surrogate             => a surrogate code point\n"
+        + "Co => Private_Use           => a private-use character\n"
+        + "Cn => Unassigned            => a reserved unassigned code point or a noncharacter\n";
+
 
     /* Utility Functions
      * ================= */
@@ -176,6 +208,7 @@
         reserved_ranges:  [ ],
         code_blocks:      [ ],
         html_entities:    [ ],
+        gc:               [ ],
         unique_ids:       [ ],
         max_codepoint:    0,
         scratchpad_mode:  'text',
@@ -379,6 +412,7 @@
             var hex   = dec2hex(cp, 4);
             var block = this.block_from_codepoint(cp);
             var ch    = this.curr_ch;
+            var gc    = this.gen_cat[ch.gc];
             this.$char_link.attr('href', '?c=U+' + hex);
 
             var $table = $('<table />').append(
@@ -401,6 +435,14 @@
                 }
                 $table.append(
                     $('<tr />').append( $('<th />').text('Description'), $td )
+                );
+            }
+            if(gc) {
+                $table.append(
+                    $('<tr />').append(
+                        $('<th />').text('Gen. Category').attr('title', 'General Category'),
+                        $('<td />').text(gc.category).attr('title', gc.extra)
+                    )
                 );
             }
             if(!ch.reserved || ch.pua) {
@@ -1394,12 +1436,30 @@
             $.get(data_url, null, function(data, status) {
                 app.parse_unicode_data(data, status, handler);
             }, 'text' );
+            this.load_general_categories();
+        },
+
+        load_general_categories: function () {
+            var gen_cat = [];
+            general_categories_spec.split("\n").forEach(function(line) {
+                var part = line.split(/\s+=>\s+/);
+                if(part.length === 3) {
+                    gen_cat.push({
+                        code:     part[0],
+                        category: part[1],
+                        extra:    part[2]
+                    });
+                }
+            });
+            this.gen_cat = gen_cat;
         },
 
         parse_unicode_data: function (data, status, handler) {
             var i = 0;
             var j, str, line, field, offset, type, code, ent_name, range_end, block;
             var curr_cp = 0;
+            var gc_code_offset = string_to_codepoint('0');
+            var curr_gc;
             while(i < data.length) {
                 j = data.indexOf("\n", i);
                 if(j < 1) { break; }
@@ -1450,13 +1510,19 @@
 
                         // " line describes a character
                         case '"':
-                            // Initial letter of desc will be lowercase if it's a combining char
                             var desc = field[0];
+                            // A prefix of '<x' indicates 'General Category' 'x'
+                            if(desc[0] === '<') {
+                                curr_gc = string_to_codepoint(desc[1]) - gc_code_offset;
+                                desc = desc.slice(2);
+                            }
+                            // Initial letter of desc will be lowercase if it's a combining char
                             var is_cc = desc[0] === desc[0].toLowerCase();
                             desc = desc.replace(/^./, desc[0].toUpperCase());
                             this.code_chart[code] = {
                                 description:  desc,
-                                cp:           curr_cp
+                                cp:           curr_cp,
+                                gc:           curr_gc
                             };
                             if(is_cc) {
                                 this.code_chart[code].is_cc = true;
