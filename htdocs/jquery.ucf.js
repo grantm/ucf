@@ -1516,13 +1516,13 @@
                         // " line describes a character
                         case '"':
                             var desc = field[0];
-                            // A prefix of '<x' indicates 'General Category' 'x'
-                            if(desc[0] === '<') {
+                            // A prefix of '>x' indicates 'General Category' 'x'
+                            if(desc[0] === '>') {
                                 curr_gc = string_to_codepoint(desc[1]) - gc_code_offset;
                                 desc = desc.slice(2);
                             }
                             // Initial letter of desc will be lowercase if it's a combining char
-                            var is_cc = desc[0] === desc[0].toLowerCase();
+                            var is_cc = (desc[0] === desc[0].toLowerCase() && desc[0] !== desc[0].toUpperCase());
                             desc = desc.replace(/^./, desc[0].toUpperCase());
                             this.code_chart[code] = {
                                 description:  desc,

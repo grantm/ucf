@@ -44,6 +44,8 @@ my $output_file_all       = $FindBin::Bin . '/htdocs/char-data-all.txt';
 
 my $js_frontend_source    = $FindBin::Bin . '/htdocs/jquery.ucf.js';
 
+my $gcp = '>';  # flag to indicate next char is a GC prefix
+
 # Handle command-line arguments
 
 my(%opt, %args);
@@ -221,7 +223,7 @@ sub general_category_code {
         // die "No 'gc' for U+$attr->{cp}";
     my $cat = $self->{gen_cat}->{$gc}
         // die "General category code '$gc' is not yet supported";
-    my $code = '<' . $cat->{code};
+    my $code = $gcp . $cat->{code};
     return '' if(($self->{last_gc_code} // '') eq $code);
     return $self->{last_gc_code} = $code;
 }
@@ -492,12 +494,17 @@ sub end_element_char {
     $aliases = "\t" . $aliases if $aliases ne '';
     my $prefix = $name =~ /^[+"%#^*!\[&]/ ? '"' : '';
 
-    # If it's a combining character, make first letter of name lowercase
+    die "$cp name starts with '$gcp'" if $name =~ /^$gcp/;
+
+    # Add a gc prefix if the 'General Category' has changed
     my $gc_code = $self->general_category_code($attr);
     my $gc = $attr->{gc} // $self->group_attr->{gc} // '';
     die "No 'gc' for U+$cp" unless $gc;
+
+    # If it's a combining character, make first letter of name lowercase
     my $ccc = $attr->{ccc} // $self->group_attr->{ccc};
     if($gc eq 'Me' or ($ccc and $ccc ne '0')) {
+        die "'$name' does not start with a letter" unless $name =~ /[a-zA-Z]/;
         $name =~ s{^(.)}{ lc($1) }e;
     }
     else {
