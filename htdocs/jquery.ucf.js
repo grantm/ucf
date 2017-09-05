@@ -992,12 +992,16 @@
                 if(ch.prefix) {
                     $desc.prepend( $('<span class="prefix" />').text(ch.prefix) );
                 }
+                var $sample = $('<div />').addClass('code-sample needs-font').text("\u00A0" + character);
+                if(this.current_font) {
+                    $sample.css({'fontFamily': this.current_font});
+                }
                 this.$search_results.append(
                     $('<li>').addClass('ui-menu-item').attr('role', 'menuitem')
                         .data('codepoint', ch.cp)
                         .append(
                             $('<div />').addClass('code-point').text('U+' + code),
-                            $('<div />').addClass('code-sample').text("\u00A0" + character),
+                            $sample,
                             $desc
                         )
                 );
@@ -1426,6 +1430,7 @@
         },
 
         save_font: function (new_font) {
+            this.current_font = new_font;
             this.$el.find('.needs-font').css({'fontFamily': new_font});
             this.$code_chart_table.css({'fontFamily': new_font});
         },
