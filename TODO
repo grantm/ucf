@@ -1,5 +1,4 @@
-* use 'endless scrolling' to add more search results
-* allow users to save 'favourite' characters (in a cookie?)
+* consider using a web font (Source Serif?)
 * add support for Unihan codepoints
   * update script to generate two data files
   * kdefinition
