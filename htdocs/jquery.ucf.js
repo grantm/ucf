@@ -1,6 +1,6 @@
 /*
  * Unicode Character Finder
- * Copyright (c) 2010-2017 Grant McLean <grant@mclean.net.nz>
+ * Copyright (c) 2010-2020 Grant McLean <grant@mclean.net.nz>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
