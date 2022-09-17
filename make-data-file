@@ -5,8 +5,8 @@
 #
 # Uses local copies of:
 #
-#   http://www.unicode.org/Public/UCD/latest/ucdxml/ucd.nounihan.grouped.zip
-#   http://www.unicode.org/Public/UCD/latest/ucdxml/ucd.unihan.grouped.zip
+#   https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.nounihan.grouped.zip
+#   https://www.unicode.org/Public/UCD/latest/ucdxml/ucd.unihan.grouped.zip
 #
 # Use --download option to get these files.
 #
@@ -31,8 +31,8 @@ use Archive::Zip::MemberRead qw();
 use FindBin;
 use XML::SAX::ParserFactory;
 
-my $url_latest_source_dir = 'http://www.unicode.org/Public/UCD/latest/ucdxml';
-my $url_pdf_base          = 'http://www.unicode.org/charts/PDF';
+my $url_latest_source_dir = 'https://www.unicode.org/Public/UCD/latest/ucdxml';
+my $url_pdf_base          = 'https://www.unicode.org/charts/PDF';
 
 my $local_data_dir        = $FindBin::Bin . '/unicode-source-data';
 
